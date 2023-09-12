@@ -18,7 +18,6 @@ func Connect() *pgxpool.Pool{
 	}
 
 	dsn := os.Getenv("DSN")
-	print(dsn)
 	
 	pool,err := pgxpool.Connect(context.Background(),dsn)
 	

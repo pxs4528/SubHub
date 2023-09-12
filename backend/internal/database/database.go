@@ -4,12 +4,23 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/jackc/pgx/v4"
+	"github.com/joho/godotenv"
 )
-func connect_to_db() {
-	dsn := ""
+func Connect() {
+
+	envErr := godotenv.Load(".env")
+	if envErr != nil {
+		fmt.Println("Couldn't load env file")
+		os.Exit(1)
+	}
+
+	dsn := os.Getenv("DSN")
+	print(dsn)
+
 	ctx := context.Background()
 	conn,err := pgx.Connect(ctx,dsn)
 	defer conn.Close(context.Background())

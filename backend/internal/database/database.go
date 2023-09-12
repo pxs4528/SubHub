@@ -3,14 +3,13 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
-	"time"
 
-	"github.com/jackc/pgx/v4"
+	// "github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 )
-func Connect() {
+func Connect() *pgxpool.Pool{
 
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
@@ -20,21 +19,16 @@ func Connect() {
 
 	dsn := os.Getenv("DSN")
 	print(dsn)
-
-	ctx := context.Background()
-	conn,err := pgx.Connect(ctx,dsn)
-	defer conn.Close(context.Background())
-
+	
+	pool,err := pgxpool.Connect(context.Background(),dsn)
+	
 	if err != nil {
-		log.Fatal("Couldn't connect to database")
+		fmt.Fprintf(os.Stderr,"Unable to connect to database: %v\n",err)
+		os.Exit(1)
 	}
+	defer pool.Close()
 
-	var now time.Time
 
-	err = conn.QueryRow(ctx,"SELECT NOW()").Scan(&now)
-	if err != nil {
-		log.Fatal("Failed to query")
-	}
+	return pool
 
-	fmt.Println(now)
 }

@@ -2,10 +2,9 @@ package database
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"os"
 
-	// "github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -13,21 +12,20 @@ func Connect() *pgxpool.Pool{
 
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
-		fmt.Println("Couldn't load env file")
-		os.Exit(1)
+		log.Fatalln("Error loading env")
 	}
 
-	dsn := os.Getenv("DSN")
+	conn_str := os.Getenv("CONN_STR")
 	
-	pool,err := pgxpool.Connect(context.Background(),dsn)
-	
+	config,err := pgxpool.ParseConfig(conn_str)
+	config.MinConns = 5
+	config.MaxConns = 15
 	if err != nil {
-		fmt.Fprintf(os.Stderr,"Unable to connect to database: %v\n",err)
-		os.Exit(1)
+		log.Fatalln("Error configuring Connection Pool")
 	}
-	defer pool.Close()
-
-
+	pool,err := pgxpool.ConnectConfig(context.Background(),config)
+	if err != nil {
+		log.Fatalln("Error connecting to the database")
+	}
 	return pool
-
 }

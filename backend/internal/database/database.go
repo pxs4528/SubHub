@@ -6,14 +6,11 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/joho/godotenv"
+	
 )
 func Connect() *pgxpool.Pool{
 
-	envErr := godotenv.Load(".env")
-	if envErr != nil {
-		log.Fatalln("Error loading env")
-	}
+	
 
 	conn_str := os.Getenv("CONN_STR")
 	

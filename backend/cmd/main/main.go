@@ -5,17 +5,28 @@ import (
 	"backend/internal/routes"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 
 
 
 func main() {
+
+	envErr := godotenv.Load(".env")
+	if envErr != nil {
+		log.Fatalln("Error loading env")
+	}
+
 	pool := database.Connect()
 
 	router := routes.NewRouter(pool)
+
+	fmt.Printf("\nStarting Server on http://localhost:8080\n\n")
 
 	servErr := http.ListenAndServe("localhost:8080",router)
 

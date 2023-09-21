@@ -19,6 +19,7 @@ type UserData struct {
 }
 
 func SignUp(writer http.ResponseWriter,response *http.Request, pool *pgxpool.Pool) {
+	// read data that was sent from response body
 	userData,err := io.ReadAll(response.Body)
 	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
@@ -26,10 +27,12 @@ func SignUp(writer http.ResponseWriter,response *http.Request, pool *pgxpool.Poo
 		return
 	}
 
+	// have a new uuid string
 	id := uuid.New().String()
 
 	var user UserData
 
+	// deseralize userData and insert it in struct user
 	if err := json.Unmarshal(userData,&user); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		writer.Write([]byte("Json Unmarshal failed"))
@@ -38,6 +41,7 @@ func SignUp(writer http.ResponseWriter,response *http.Request, pool *pgxpool.Poo
 
 	password := user.Password
 
+	// making a hash password using bcrypt
 	hashPass, err := bcrypt.GenerateFromPassword([]byte(password),bcrypt.DefaultCost)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -45,7 +49,10 @@ func SignUp(writer http.ResponseWriter,response *http.Request, pool *pgxpool.Poo
 		return
 	}
 
-	rows,err := pool.Query(context.Background(),"SELECT email FROM public.users WHERE email = $1",user.Email)
+	// check and see if user already exists in the db
+	rows,err := pool.Query(context.Background(),`SELECT email 
+												FROM public.users 
+												WHERE email = $1`,user.Email)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		writer.Write([]byte("Query Error"))
@@ -58,7 +65,9 @@ func SignUp(writer http.ResponseWriter,response *http.Request, pool *pgxpool.Poo
 		return
 	}
 
-	_,err = pool.Exec(context.Background(),"INSERT INTO public.users VALUES ($1,$2,$3,$4)",id,user.Email,user.Name,hashPass)
+	// if user doesn't exist then we inset it into the database
+	_,err = pool.Exec(context.Background(), `INSERT INTO public.users 
+											VALUES ($1,$2,$3,$4)`,id,user.Email,user.Name,hashPass)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		writer.Write([]byte("Query Error"))

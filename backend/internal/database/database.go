@@ -11,15 +11,15 @@ import (
 func Connect() *pgxpool.Pool{
 
 	
-
+	// get db conn-str from env
 	conn_str := os.Getenv("CONN_STR")
 	
+	// configure connection pool
 	config,err := pgxpool.ParseConfig(conn_str)
-	config.MinConns = 5
-	config.MaxConns = 15
 	if err != nil {
 		log.Fatalln("Error configuring Connection Pool")
 	}
+	// connect to connection pool
 	pool,err := pgxpool.ConnectConfig(context.Background(),config)
 	if err != nil {
 		log.Fatalln("Error connecting to the database")

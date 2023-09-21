@@ -11,9 +11,12 @@ import (
 
 
 func NewRouter(pool *pgxpool.Pool) http.Handler{
+	// make a new http router
 	mux := http.NewServeMux()
 
+	// all the routes
 	mux.HandleFunc("/auth/google/login",authentication.GoogleLogin)
+
 	mux.HandleFunc("/auth/google/callback", func(w http.ResponseWriter, r *http.Request) {
 		authentication.GoogleCallback(w,r,pool)
 	})
@@ -26,5 +29,6 @@ func NewRouter(pool *pgxpool.Pool) http.Handler{
 		user.GetAllUser(w,r,pool)
 	})
 
+	// return router
 	return mux
 }

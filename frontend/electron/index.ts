@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 // Native
 import { join } from 'path';
 

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { ipcRenderer, contextBridge } from 'electron';
 
 declare global {

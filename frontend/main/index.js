@@ -1,7 +1,4 @@
 "use strict";
-import electronIsDev from "electron-is-dev";
-import { join } from "path";
-import { app, BrowserWindow, ipcMain } from "electron";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };

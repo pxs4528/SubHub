@@ -5,7 +5,6 @@ dist-ssr
 *.local
 
 # production
-/main
 /dist
 /src/out
 

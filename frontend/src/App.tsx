@@ -12,6 +12,11 @@ function App() {
   const [isSent, setSent] = useState(false);
   const [fromMain, setFromMain] = useState<string | null>(null);
 
+  const gotoLogin = () => {
+    window.location.href = '/login';
+    
+  };
+
   const handleToggle = () => {
     if (isOpen) {
       setOpen(false);
@@ -53,10 +58,14 @@ function App() {
           >
             Click Me
           </button>
+          <button className="bg-red-400 py-2 px-4 rounded focus:outline-none shadow hover:bg-red-200"
+          onClick={gotoLogin}>
+            Login
+          </button>
           {isOpen && (
             <div className="flex flex-col space-y-4 items-center">
               <div className="flex space-x-3">
-                <h1 className="text-xl text-gray-50">💝 Welcome 💝, now send a message to the Main 📩📩</h1>
+                <h1 className="text-xl text-gray-50">Welcome</h1>
                 <button
                   onClick={sendMessageToElectron}
                   className=" bg-green-400 rounded px-4 py-0 focus:outline-none hover:bg-green-300"

@@ -1,14 +1,13 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
-/* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react';
-// eslint-disable-next-line prettier/prettier
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from 'react';
 import AppBar from './AppBar';
 
 
 
-function LoginFunc() {
+export default function Login() {
   console.log(window.ipcRenderer);
 
 
@@ -51,13 +50,3 @@ function LoginFunc() {
     </div>
   );
 }
-
-export default function Login() {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/login" element={<LoginFunc />} />
-            </Routes>
-        </Router>
-    );}
-

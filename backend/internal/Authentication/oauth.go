@@ -96,16 +96,30 @@ func GoogleCallback(writer http.ResponseWriter, request *http.Request, pool *pgx
 	user.ID = uuid.New().String()
 	user.AuthType = "Google"
 
-	_,err = pool.Exec(context.Background(),`INSERT INTO public.users
-											VALUES ($1,$2,$3,$4,$5);`,user.ID,user.Name,user.Email,user.Password,user.AuthType)
-	
+	rows,err := pool.Query(context.Background(),`SELECT *
+												FROM public.users
+												WHERE email = $1;`,user.Email)
+												
 	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+		writer.Write([]byte("Query Error"))
+		return
+	}	
+
+	if rows.Next() {
 		writer.WriteHeader(http.StatusOK)
 		return
-	}
+	} else {
 
-	// if strings.Contains(err.Error(),"")
-	writer.WriteHeader(http.StatusCreated)
+		_,err = pool.Exec(context.Background(),`INSERT INTO public.users
+											VALUES ($1,$2,$3,$4,$5);`,user.ID,user.Name,user.Email,user.Password,user.AuthType)
+	
+		if err != nil {
+			writer.WriteHeader(http.StatusCreated)
+			return
+		}
+
+	}
 
 	
 }

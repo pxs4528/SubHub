@@ -1,8 +1,7 @@
 package routes
 
 import (
-	authentication "backend/internal/Authentication/google-oauth"
-	"backend/internal/Authentication/signup"
+	authentication "backend/internal/Authentication"
 	"backend/internal/user"
 	"net/http"
 
@@ -15,14 +14,14 @@ func NewRouter(pool *pgxpool.Pool) http.Handler{
 	mux := http.NewServeMux()
 
 	// all the routes
-	mux.HandleFunc("/auth/google/login",authentication.GoogleLogin)
+	mux.HandleFunc("/auth/google/login",authentication.OauthLogin)
 
 	mux.HandleFunc("/auth/google/callback", func(w http.ResponseWriter, r *http.Request) {
 		authentication.GoogleCallback(w,r,pool)
 	})
 
 	mux.HandleFunc("/auth/signup", func(w http.ResponseWriter, r *http.Request) {
-		signup.SignUp(w,r,pool)
+		authentication.NewSignUp(w,r,pool)
 	})
 	
 	mux.HandleFunc("/getalluser", func(w http.ResponseWriter, r *http.Request) {

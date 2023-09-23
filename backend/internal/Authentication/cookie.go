@@ -1,4 +1,4 @@
-package cookies
+package authentication
 
 import (
 	"net/http"

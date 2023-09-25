@@ -1,12 +1,13 @@
 package authentication
 
 import (
-	
+	jwt "backend/internal/login/JWT"
 	"context"
 	"encoding/json"
 	"io"
 	"net/http"
 	"os"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"golang.org/x/oauth2"
@@ -36,18 +37,18 @@ func OauthLogin(response http.ResponseWriter, request *http.Request) {
 
 	googleConfig := AuthConfig()
 
-	url := googleConfig.AuthCodeURL("subhub")
+	url := googleConfig.AuthCodeURL(os.Getenv("State"))
 
 	http.Redirect(response,request,url,http.StatusSeeOther)
 }
 
 
-func GoogleCallback(writer http.ResponseWriter, request *http.Request, pool *pgxpool.Pool) {
+func GoogleCallback(response http.ResponseWriter, request *http.Request, pool *pgxpool.Pool) {
 	//we are checking to see if "state" is in the query google returns
 	state := request.URL.Query().Get("state")
-	if state != "subhub" {
-		writer.Write([]byte("State doesn't exists"))
-		writer.WriteHeader(http.StatusConflict)
+	if state != os.Getenv("State") {
+		response.Write([]byte("State doesn't exists"))
+		response.WriteHeader(http.StatusConflict)
 		return
 	}
 
@@ -57,31 +58,31 @@ func GoogleCallback(writer http.ResponseWriter, request *http.Request, pool *pgx
 
 	googleConfig := AuthConfig()
 	if googleConfig == nil {
-		writer.Write([]byte("Error with google config"))
-		writer.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte("Error with google config"))
+		response.WriteHeader(http.StatusInternalServerError)
 	}
 
 	// we will get the access token from google which we will need for getting data
 	token,err := googleConfig.Exchange(context.Background(),code)
 	if err != nil {
-		writer.Write([]byte("Error fetching token"))
-		writer.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte("Error fetching token"))
+		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	// we will be getting user profile by using access token
 	responseData,err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token="+token.AccessToken)
 	if err != nil {
-		writer.Write([]byte("User Data Fetch Failed"))
-		writer.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte("User Data Fetch Failed"))
+		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	// reading what get request returned 
 	userData,err := io.ReadAll(responseData.Body)
 	if err != nil {
-		writer.Write([]byte("Json Parsing Failed"))
-		writer.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Json Parsing Failed"))
+		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -89,8 +90,8 @@ func GoogleCallback(writer http.ResponseWriter, request *http.Request, pool *pgx
 	var user UserData
 	// desearlizing userData and getting specific value that are in struct user
 	if err := json.Unmarshal(userData,&user); err != nil {
-		writer.Write([]byte("Json Unmarshal failed"))
-		writer.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte("Json Unmarshal failed"))
+		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	user.ID = uuid.New().String()
@@ -101,13 +102,15 @@ func GoogleCallback(writer http.ResponseWriter, request *http.Request, pool *pgx
 												WHERE email = $1;`,user.Email)
 												
 	if err != nil {
-		writer.WriteHeader(http.StatusInternalServerError)
-		writer.Write([]byte("Query Error"))
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte("Query Error"))
 		return
 	}	
 
+	jwt.Generate(response,request,user.Email)
+	
 	if rows.Next() {
-		writer.WriteHeader(http.StatusOK)
+		response.WriteHeader(http.StatusOK)
 		return
 	} else {
 
@@ -115,11 +118,9 @@ func GoogleCallback(writer http.ResponseWriter, request *http.Request, pool *pgx
 											VALUES ($1,$2,$3,$4,$5);`,user.ID,user.Name,user.Email,user.Password,user.AuthType)
 	
 		if err != nil {
-			writer.WriteHeader(http.StatusCreated)
+			response.WriteHeader(http.StatusCreated)
 			return
 		}
 
 	}
-
-	
 }

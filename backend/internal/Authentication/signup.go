@@ -16,7 +16,13 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 	response.Header().Set("Content-Type","application/json")
 
 	var user UserData
-	json.NewDecoder(request.Body).Decode(&user)
+	err := json.NewDecoder(request.Body).Decode(&user)
+	if err != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Mission Json Data"))
+		return
+	}
+
 	user.ID = uuid.New().String()
 	hpass,err := hashPassword(user.Password)
 	if err != nil {

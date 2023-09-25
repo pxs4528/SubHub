@@ -1,5 +1,9 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable no-console */
+/* eslint-disable import/no-duplicates */
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import AppBar from './AppBar';
 import './Login.module.css';
@@ -54,34 +58,28 @@ export default function Signup() {
       </div>
       <div className="mb-4">
         <label className="block mb-1" htmlFor="email">Enter Email Address</label>
-        <input onChange={
-          (e) => {
-          }
-        } id="email" type="text" name="email" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
+        <input id="email" type="text" name="email" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
       </div>
       <div className="mb-4">
-        <label className="block mb-1" htmlFor="email">Confirm Email Address</label>
+        <label className="block mb-1" htmlFor="emailC">Confirm Email Address</label>
         <input onChange={
           (e) => {
             setEmail(e.target.value);
           }
-        } id="email" type="text" name="email" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
+        } id="emailC" type="text" name="email" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
       </div>
 
       <div className="mb-4">
         <label className="block mb-1" htmlFor="password">Enter Password</label>
-        <input onChange={
-          (e) => {
-          }
-        } id="password" type="password" name="password" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
+        <input  id="password" type="password" name="password" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
       </div>
       <div className="mb-4">
-        <label className="block mb-1" htmlFor="password">Confirm Password</label>
+        <label className="block mb-1" htmlFor="passwordC">Confirm Password</label>
         <input onChange={
           (e) => {
             setPass(e.target.value);
           }
-        } id="password" type="password" name="password" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
+        } id="passwordC" type="password" name="password" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
       </div>
       <div className="mt-6">
         <button

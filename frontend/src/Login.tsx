@@ -5,9 +5,10 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-duplicates
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import AppBar from './AppBar';
+import Icon from './assets/subhub-high-resolution-logo-black-on-transparent-background.png';
 import './Login.module.css';
 
 
@@ -46,7 +47,8 @@ export default function Login() {
 
 <div className="w-full min-h-screen bg-gray-50 flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
   <div className="w-full sm:max-w-md p-5 mx-auto">
-    <h2 className="mb-12 text-center text-5xl font-extrabold">Welcome to SubHub.</h2>
+  <h2 className="mb-4 text-center text-5xl font-extrabold">Welcome to</h2>
+  <img className='mb-4 w-full flex-col' src={Icon} alt="Icon of Electron" />
     <form>
       <div className="mb-4">
         <label className="block mb-1" htmlFor="email">Email-Address</label>

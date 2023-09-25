@@ -20,15 +20,14 @@ export default function Signup() {
   const Navigate = useNavigate();
 
   const validate = () => {
-    console.log("email", email, pass);
-    fetch('http://localhost:8080/api/login', {
-      method: 'GET',
+    fetch('http://localhost:8080/auth/signup', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, email, pass }),
+      body: JSON.stringify({ email, name, pass }),
     }).then((res) => {
-      if (res.status === 200) {
+      if (res.status === 201) {
         Navigate('/login');
       }
     });

@@ -10,3 +10,6 @@ type UserData struct {
 	AuthType string `json:"authtype"`
 }
 
+type JWTData struct {
+	Token string `json:"token"`
+}

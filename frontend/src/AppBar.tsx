@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import Icon from './assets/subhub-website-favicon-color.png'
+import Icon from './assets/Screenshot_2023-09-25_005311-transformed.png'
 
 function AppBar() {
   const [isMaximize, setMaximize] = useState(false);

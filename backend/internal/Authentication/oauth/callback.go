@@ -2,7 +2,7 @@ package oauth
 
 import (
 	authentication "backend/internal/Authentication"
-	jwt "backend/internal/login/JWT"
+	// jwt "backend/internal/login/JWT"
 	"context"
 	"encoding/json"
 	"io"
@@ -80,23 +80,23 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		return
 	}
 
-	JWTToken,err := jwt.Generate(user.ID)
-	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Error Generating JWT Token"))
-		return
-	}
+	// JWTToken,err := jwt.Generate(user.ID)
+	// if err != nil {
+	// 	response.WriteHeader(http.StatusInternalServerError)
+	// 	response.Write([]byte("Error Generating JWT Token"))
+	// 	return
+	// }
 	
 	if rows.Next() {
-		http.SetCookie(response,
-			&http.Cookie{
-				Name:"Token",
-				Value: JWTToken,
-				HttpOnly: true,
-				Secure: true,
-				SameSite: http.SameSiteStrictMode,
-			},
-		)
+		// http.SetCookie(response,
+		// 	&http.Cookie{
+		// 		Name:"Token",
+		// 		Value: JWTToken,
+		// 		HttpOnly: true,
+		// 		Secure: true,
+		// 		SameSite: http.SameSiteStrictMode,
+		// 	},
+		// )
 		http.Redirect(response,request,"/",http.StatusSeeOther)
 		return
 

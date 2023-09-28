@@ -1,6 +1,8 @@
 package jwt
 
 import (
+	"encoding/json"
+	"net/http"
 	"os"
 	"time"
 
@@ -13,7 +15,11 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func Generate(ID string) (string,error){
+type JWTStruct struct {
+	Token string `json:"token"`
+}
+
+func Generate(response http.ResponseWriter,ID string,ch chan []byte) {
 
 	claims := &Claims{
 		ID: ID,
@@ -25,8 +31,20 @@ func Generate(ID string) (string,error){
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,claims)
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("Secret")))
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte("Error generating JWT"))
+		return
+	}
 
-	return tokenString,err
+	tokenJson,err := json.Marshal(&JWTStruct{Token: tokenString})
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte("Error Marshalling Json"))
+		return
+	}
+	println(ID,tokenString,tokenJson)
+	ch <- tokenJson
 
 }
 

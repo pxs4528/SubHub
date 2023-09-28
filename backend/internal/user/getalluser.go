@@ -29,13 +29,15 @@ func GetAllUser(writer http.ResponseWriter, response *http.Request, pool *pgxpoo
 	// loops through each user and put it into users array
 	for rows.Next() {
 		var user UserData
-		err := rows.Scan(&user.ID,&user.Email,&user.Name,&user.Password)
-		if err != nil {
-			writer.WriteHeader(http.StatusInternalServerError)
-			writer.Write([]byte("Error Scanning Table"))
-			return
-		}
-		users = append(users, user)
+	err := rows.Scan(&user.ID, &user.Email, &user.Name, &user.Password)
+	if err != nil {
+		// Log the specific error
+		writer.WriteHeader(http.StatusInternalServerError)
+		writer.Write([]byte("Error Scanning Table"))
+		return
+	}
+	users = append(users, user)
+
 	}
 
 	// error handling 

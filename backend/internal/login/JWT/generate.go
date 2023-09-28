@@ -43,7 +43,6 @@ func Generate(response http.ResponseWriter,ID string,ch chan []byte) {
 		response.Write([]byte("Error Marshalling Json"))
 		return
 	}
-	println(ID,tokenString,tokenJson)
 	ch <- tokenJson
 
 }

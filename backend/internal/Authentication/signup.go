@@ -1,6 +1,8 @@
 package authentication
 
 import (
+	// jwt "backend/internal/login/JWT"
+	jwt "backend/internal/login/JWT"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -10,8 +12,6 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
-
-
 
 func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool.Pool) {
 	response.Header().Set("Content-Type","application/json")
@@ -23,8 +23,13 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 		response.Write([]byte("Mission Json Data"))
 		return
 	}
-	ch := make(chan bool)
-	go UserExist(user,pool,ch)
+	existUser := make(chan bool)
+
+	genJwt := make(chan []byte)
+
+	go UserExist(user,pool,existUser)
+
+	go jwt.Generate(response,user.ID,genJwt)
 
 	user.ID = uuid.New().String()
 	hpass,err := HashPassword(user.Password)
@@ -36,19 +41,28 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 	user.Password = string(hpass)
 	user.AuthType = "Regular"
 
-	userExist := <- ch
-
+	userExist := <- existUser
+	JWT := <- genJwt
 	if !userExist {
 		response.WriteHeader(http.StatusConflict)
 		response.Write([]byte("User Already Exist"))
 		return
 	} else {
-		_,_ = pool.Exec(context.Background(), `INSERT INTO public.users 
-												VALUES ($1,$2,$3,$4,$5);`,user.ID,user.Name,user.Email,user.Password,user.AuthType)
-
-		response.WriteHeader(http.StatusCreated)
+		err := InsertUser(user,pool)
+		if err != nil {
+			response.WriteHeader(http.StatusInternalServerError)
+			response.Write([]byte("Query Error"))
+			return
+		}
 	}
+	response.WriteHeader(http.StatusCreated)
+	response.Write(JWT)
+}
 
+func InsertUser(user UserData, pool *pgxpool.Pool) error{
+	_,err := pool.Exec(context.Background(), `INSERT INTO public.users 
+												VALUES ($1,$2,$3,$4,$5);`,user.ID,user.Name,user.Email,user.Password,user.AuthType)
+	return err
 }
 
 func UserExist(user UserData, pool *pgxpool.Pool, ch chan bool){

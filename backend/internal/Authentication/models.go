@@ -9,7 +9,3 @@ type UserData struct {
 	Password string `json:"password"`
 	AuthType string `json:"authtype"`
 }
-
-type JWTData struct {
-	Token string `json:"token"`
-}

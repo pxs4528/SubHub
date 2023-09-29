@@ -2,20 +2,21 @@ package oauth
 
 import (
 	authentication "backend/internal/Authentication"
+	jwt "backend/internal/login/JWT"
 	// jwt "backend/internal/login/JWT"
 	"context"
 	"encoding/json"
 	"io"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.Pool) {
-	
+	response.Header().Set("Content-Type","application/json")
+
 	//we are checking to see if "state" is in the query google returns
 	state := request.URL.Query().Get("state")
 	if state != os.Getenv("State") {
@@ -61,6 +62,13 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 
 
 	var user authentication.UserData
+	user.AuthType = "Google"
+	
+	existUser := make(chan bool)
+	
+	genJwt := make(chan []byte)
+	
+	
 	// desearlizing userData and getting specific value that are in struct user
 	if err := json.Unmarshal(userData,&user); err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
@@ -68,54 +76,24 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		return
 	}
 	user.ID = uuid.New().String()
-	user.AuthType = "Google"
-
-	rows,err := pool.Query(context.Background(),`SELECT *
-												FROM public.users
-												WHERE email = $1;`,user.Email)
-												
-	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Query Error"))
-		return
-	}
-
-	// JWTToken,err := jwt.Generate(user.ID)
-	// if err != nil {
-	// 	response.WriteHeader(http.StatusInternalServerError)
-	// 	response.Write([]byte("Error Generating JWT Token"))
-	// 	return
-	// }
+	go authentication.UserExist(user,pool,existUser)
+	go jwt.Generate(response,user.ID,genJwt)
 	
-	if rows.Next() {
-		// http.SetCookie(response,
-		// 	&http.Cookie{
-		// 		Name:"Token",
-		// 		Value: JWTToken,
-		// 		HttpOnly: true,
-		// 		Secure: true,
-		// 		SameSite: http.SameSiteStrictMode,
-		// 	},
-		// )
-		http.Redirect(response,request,"/",http.StatusSeeOther)
-		return
+	userExist := <- existUser
+	JWT := <- genJwt
 
+	if !userExist {
+		response.WriteHeader(http.StatusAccepted)
+		response.Write(JWT)
+		return
 	} else {
-		http.SetCookie(response,
-			&http.Cookie{
-				Name: "Name",
-				Value: user.Name,
-				Expires: time.Now().Add(time.Hour * 1),
-			},
-		)
-		
-		_,err = pool.Exec(context.Background(),`INSERT INTO public.users
-											VALUES ($1,$2,$3,$4,$5);`,user.ID,user.Name,user.Email,user.Password,user.AuthType)
-	
+		err := authentication.InsertUser(user,pool)
 		if err != nil {
-			http.Redirect(response,request,"/",http.StatusSeeOther)
+			response.WriteHeader(http.StatusInternalServerError)
+			response.Write([]byte("Query Error"))
 			return
 		}
-
 	}
+	response.WriteHeader(http.StatusCreated)
+	response.Write(JWT)
 }

@@ -8,6 +8,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+
+
 func InsertUser(user UserData, pool *pgxpool.Pool) error{
 	_,err := pool.Exec(context.Background(), `INSERT INTO public.users 
 												VALUES ($1,$2,$3,$4,$5);`,user.ID,user.Name,user.Email,user.Password,user.AuthType)

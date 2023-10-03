@@ -2,8 +2,7 @@ package oauth
 
 import (
 	authentication "backend/internal/Authentication"
-	jwt "backend/internal/login/JWT"
-	// jwt "backend/internal/login/JWT"
+	jwt "backend/internal/JWT"
 	"context"
 	"encoding/json"
 	"io"

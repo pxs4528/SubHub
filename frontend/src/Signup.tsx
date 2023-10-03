@@ -20,7 +20,7 @@ export default function Signup() {
   const Navigate = useNavigate();
 
   const validate = () => {
-    fetch('http://localhost:8080/auth/signup', {
+    fetch('http://localhost:8080/auth/google/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

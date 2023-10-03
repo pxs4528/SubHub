@@ -8,7 +8,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-
 /*
 This query will insert the user in the database, we are passing UserData which will have ID, Name, Email, Password, and AuthType
 and second parameter is the connection pool. If there was an error inserting user, it will be handled in signup.go and callback.go
@@ -39,4 +38,12 @@ We are using bcrypt for hashing password
 func HashPassword(password string) ([]byte,error){
 	hpass,err := bcrypt.GenerateFromPassword([]byte(password),bcrypt.DefaultCost)
 	return hpass,err
+}
+
+func GetPassword(user UserData, pool *pgxpool.Pool, ch chan string) {
+	var password string
+	err := pool.QueryRow(context.Background(),`SELECT email
+												FROM publc.user
+												WHERE email = $1`,user.Email).Scan(&password)
+	
 }

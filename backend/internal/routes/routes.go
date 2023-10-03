@@ -9,7 +9,7 @@ import (
 	"github.com/rs/cors"
 )
 
-/* 
+/*
 NewRouter making mux which is a router library that go has
 we are passing connection pool as a parameter which is called in main
 and returning http.Handler which is basically the router
@@ -39,10 +39,6 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 
 	mux.HandleFunc("/auth/signup", func(response http.ResponseWriter, request *http.Request) {
 		authentication.NewSignUp(response, request, pool)
-	})
-
-	mux.HandleFunc("/",func(response http.ResponseWriter, request *http.Request) {
-		response.Write([]byte("BRUHBRUH"))
 	})
 
 	handler := c.Handler(mux)

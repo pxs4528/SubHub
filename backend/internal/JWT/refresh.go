@@ -1,5 +1,0 @@
-package jwt
-
-func Refresh() {
-	
-}

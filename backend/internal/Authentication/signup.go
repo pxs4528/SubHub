@@ -3,7 +3,6 @@ package authentication
 import (
 	// jwt "backend/internal/login/JWT"
 	jwt "backend/internal/JWT"
-	twofa "backend/internal/twoFA"
 	"encoding/json"
 	"net/http"
 
@@ -52,7 +51,6 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 	user.AuthType = "Regular"
 	userExist := <- existUser
 	JWT := <- genJwt
-	twofa.Send(user.Email)
 	if !userExist {
 		response.WriteHeader(http.StatusConflict)
 		response.Write([]byte("User Already Exist"))

@@ -24,9 +24,7 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		return
 	}
 
-
 	code := request.URL.Query().Get("code")
-
 
 	googleConfig := Config()
 	if googleConfig == nil {

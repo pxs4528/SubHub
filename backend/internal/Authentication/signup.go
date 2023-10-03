@@ -32,15 +32,15 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 		response.Write([]byte("Mission Json Data"))
 		return
 	}
+	user.ID = uuid.New().String()
+	
 	existUser := make(chan bool)
-
 	genJwt := make(chan []byte)
 
 	go UserExist(user,pool,existUser)
 
 	go jwt.Generate(response,user.ID,genJwt)
 
-	user.ID = uuid.New().String()
 	hpass,err := HashPassword(user.Password)
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)

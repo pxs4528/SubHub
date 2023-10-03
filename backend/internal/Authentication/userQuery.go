@@ -39,11 +39,3 @@ func HashPassword(password string) ([]byte,error){
 	hpass,err := bcrypt.GenerateFromPassword([]byte(password),bcrypt.DefaultCost)
 	return hpass,err
 }
-
-func GetPassword(user UserData, pool *pgxpool.Pool, ch chan string) {
-	var password string
-	err := pool.QueryRow(context.Background(),`SELECT email
-												FROM publc.user
-												WHERE email = $1`,user.Email).Scan(&password)
-	
-}

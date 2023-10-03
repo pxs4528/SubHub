@@ -6,13 +6,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 
 type Claims struct {
-	ID string `json:"email"`
-	jwt.StandardClaims
+	ID string `json:"id"`
+	jwt.RegisteredClaims
 }
 
 type JWTStruct struct {
@@ -23,8 +23,8 @@ func Generate(response http.ResponseWriter,ID string,ch chan []byte) {
 
 	claims := &Claims{
 		ID: ID,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(1 * time.Hour)},
 		},
 	}
 

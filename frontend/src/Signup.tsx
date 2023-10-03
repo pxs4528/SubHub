@@ -34,8 +34,10 @@ export default function Signup() {
     });
   }
 
-
-
+// TODO: Add Redirection to home page after registration
+// Perhaps, figure whats going on.
+// TODO: Maybe figure out how to extend border for <h2> element
+// Implement Login, instead button
   return (
     <div className="flex flex-col h-screen">
       {window.Main && (
@@ -45,9 +47,10 @@ export default function Signup() {
       )}
 
 <div className="w-full min-h-screen  bg-black flex space-y-2000 sm:justify-center items-center pt-6 sm:pt-0">
-  <div className="border-white border-2 border-solid	rounded-xl">
-    <div className="w-full sm:max-w-md p-5 mx-auto">
-      <h2 className="mb-12 text-white text-center text-4xl font-extrabold">Welcome to SubHub!</h2>
+  <div className=" w-fit border-white h-400 border-2 border-solid	rounded-xl">
+    <div className="p-5">
+      <h2 className=" mb-12 uppercase text-white text-center text-4xl font-extrabold">Welcome to SubHub!  </h2>
+      <hr className="-mt-12 mb-12 border-t-2 border-gray-300"></hr>
       {/* <img className='mb-4 w-full flex-col' src={Icon} alt="Icon of Electron" /> */}
       <form>
       <div className="mb-4">
@@ -91,7 +94,7 @@ export default function Signup() {
               validate();
             }
           }
-          className="w-full inline-flex items-center justify-center px-4 py-2 bg-[#111111] border border-transparent rounded-md font-semibold capitalize text-white hover:bg-blue-700 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25 transition">Sign Up</button>
+          className="w-full inline-flex text-black items-center justify-center px-4 py-2 bg-[#4d4d4d] border border-transparent rounded-md font-semibold capitalize text-white hover:bg-white active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25 transition">Sign Up</button>
         </div>
       </form>
     </div>

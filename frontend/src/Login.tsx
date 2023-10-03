@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import AppBar from './AppBar';
-import Icon from './assets/Screenshot_2023-09-25_005311-transformed.png';
+import Icon from './assets/Standard Collection 26.svg';
 import './Login.module.css';
 
 
@@ -35,6 +35,8 @@ export default function Login() {
     });
   }
 
+    
+
 
 
   return (
@@ -45,13 +47,16 @@ export default function Login() {
         </div>
       )}
 
-<div className="w-full min-h-screen bg-gray-50 flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+<div className="dark:bg-stone-900 w-full min-h-screen bg-gray-50 flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
   <div className="w-full sm:max-w-md p-5 mx-auto">
-  <h2 className="mb-4 text-center text-5xl font-extrabold">Welcome to</h2>
-  <img className='mb-4 w-full flex-col' src={Icon} alt="Icon of Electron" />
+  <h2 className="dark:text-white mb-4 text-center text-5xl font-extrabold">Welcome back to</h2>
+  <div className='flex flex-auto items-center px-16'>
+  <img className='mb-4 w-1/6 flex-col' src={Icon} alt="Icon of Electron" />
+  <h2 className= "text-[#9C90AC] mb-4 px-2 text-center text-5xl font-extrabold">SubHub!</h2>
+  </div>
     <form>
       <div className="mb-4">
-        <label className="block mb-1" htmlFor="email">Email-Address</label>
+        <label className="dark:text-white block mb-1" htmlFor="email">Email-Address</label>
         <input onChange={
           (e) => {
             setEmail(e.target.value);
@@ -59,7 +64,7 @@ export default function Login() {
         } id="email" type="text" name="email" className="py-2 px-3 border border-gray-300 focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
       </div>
       <div className="mb-4">
-        <label className="block mb-1" htmlFor="password">Password</label>
+        <label className="dark:text-white block mb-1" htmlFor="password">Password</label>
         <input onChange={
           (e) => {
             setPass(e.target.value);
@@ -69,9 +74,9 @@ export default function Login() {
       <div className="mt-6 flex items-center justify-between">
         <div className="flex items-center">
           <input id="remember_me" type="checkbox" className="border border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
-          <label htmlFor="remember_me" className="ml-2 block text-sm leading-5 text-gray-900"> Remember me </label>
+          <label  htmlFor="remember_me" className=" dark:text-white ml-2 block text-sm leading-5 text-gray-900"> Remember me </label>
         </div>
-        <a href="/app" className="text-sm"> Forgot your password? </a>
+        <a href="/app" className="dark:text-white text-sm"> Forgot your password? </a>
       </div>
       <div className="mt-6">
         <button 
@@ -84,7 +89,7 @@ export default function Login() {
         className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold capitalize text-white hover:bg-blue-700 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 disabled:opacity-25 transition">Sign In</button>
       </div>
       <div className="mt-6 text-center">
-        <a href="/signup" className="underline">Sign up for an account</a>
+        <a href="/signup" className="dark:text-white underline">Sign up for an account</a>
       </div>
     </form>
   </div>

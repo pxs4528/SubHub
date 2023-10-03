@@ -4,6 +4,7 @@
 /* eslint-disable import/no-duplicates */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Icon from './assets/Screenshot_2023-09-25_005311-transformed.png';
 import React from 'react';
 import AppBar from './AppBar';
 import './Login.module.css';
@@ -13,7 +14,7 @@ import './Login.module.css';
 
 export default function Signup() {
     console.log(window.ipcRenderer);
-
+  const text = " "
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const [name, setName] = useState('');
@@ -43,54 +44,57 @@ export default function Signup() {
         </div>
       )}
 
-<div className="w-full min-h-screen bg-gray-50 flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-  <div className="w-full sm:max-w-md p-5 mx-auto">
-    <h2 className="mb-12 text-center text-4xl font-extrabold">Welcome to SubHub!</h2>
-    <form>
-    <div className="mb-4">
-        <label className="block mb-1" htmlFor="name">Enter Name</label>
-        <input onChange={
-          (e) => {
-            setName(e.target.value);
-          }
-        } id="name" type="text" name="name" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
-      </div>
+<div className="w-full min-h-screen  bg-black flex space-y-2000 sm:justify-center items-center pt-6 sm:pt-0">
+  <div className="border-white border-2 border-solid	rounded-xl">
+    <div className="w-full sm:max-w-md p-5 mx-auto">
+      <h2 className="mb-12 text-white text-center text-4xl font-extrabold">Welcome to SubHub!</h2>
+      {/* <img className='mb-4 w-full flex-col' src={Icon} alt="Icon of Electron" /> */}
+      <form>
       <div className="mb-4">
-        <label className="block mb-1" htmlFor="email">Enter Email Address</label>
-        <input id="email" type="text" name="email" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1" htmlFor="emailC">Confirm Email Address</label>
-        <input onChange={
-          (e) => {
-            setEmail(e.target.value);
-          }
-        } id="emailC" type="text" name="email" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
-      </div>
+          {/* <label className="block mb-1" htmlFor="name">Name</label> */}
+          <input onChange={
+            (e) => {
+              setName(e.target.value);
+            }
+          } id="name" type="text" name="name" placeholder='Name' className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
+        </div>
+        <div className="mb-4">
+          {/* <label className="block mb-1" htmlFor="email">Email Address</label> */}
+          <input id="email" type="text" name="email" placeholder='Email' className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
+        </div>
+        <div className="mb-4">
+          {/* <label className="block mb-1" htmlFor="emailC">Confirm Email Address</label> */}
+          <input onChange={
+            (e) => {
+              setEmail(e.target.value);
+            }
+          } id="emailC" type="text" name="email"placeholder='Confirm Email' className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
+        </div>
 
-      <div className="mb-4">
-        <label className="block mb-1" htmlFor="password">Enter Password</label>
-        <input  id="password" type="password" name="password" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1" htmlFor="passwordC">Confirm Password</label>
-        <input onChange={
-          (e) => {
-            setPass(e.target.value);
+        <div className="mb-4">
+          {/* <label className="block mb-1" htmlFor="password">Password</label> */}
+          <input  id="password" type="password" name="password" placeholder='Password' className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
+        </div>
+        <div className="mb-4">
+          {/* <label className="block mb-1" htmlFor="passwordC">Confirm Password</label> */}
+          <input onChange={
+            (e) => {
+              setPass(e.target.value);
+            }
+          } id="passwordC" type="password" name="password" placeholder='Confirm Password' className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
+        </div>
+        <div className="mt-6">
+          <button
+          onClick={
+            (e) => {
+              e.preventDefault();
+              validate();
+            }
           }
-        } id="passwordC" type="password" name="password" className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full" />
-      </div>
-      <div className="mt-6">
-        <button
-        onClick={
-          (e) => {
-            e.preventDefault();
-            validate();
-          }
-        }
-        className="w-full inline-flex items-center justify-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold capitalize text-white hover:bg-red-700 active:bg-red-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25 transition">Sign Up</button>
-      </div>
-    </form>
+          className="w-full inline-flex items-center justify-center px-4 py-2 bg-[#111111] border border-transparent rounded-md font-semibold capitalize text-white hover:bg-blue-700 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25 transition">Sign Up</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
     </div>

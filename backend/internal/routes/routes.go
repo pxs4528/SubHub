@@ -3,6 +3,7 @@ package routes
 import (
 	authentication "backend/internal/Authentication"
 	"backend/internal/Authentication/oauth"
+	jwt "backend/internal/JWT"
 	"net/http"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -40,6 +41,8 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/auth/signup", func(response http.ResponseWriter, request *http.Request) {
 		authentication.NewSignUp(response, request, pool)
 	})
+
+	mux.HandleFunc("/verify",jwt.Validate)
 
 	handler := c.Handler(mux)
 

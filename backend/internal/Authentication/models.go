@@ -9,3 +9,8 @@ type UserData struct {
 	Password string `json:"password"`
 	AuthType string `json:"authtype"`
 }
+
+type LoginData struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
+}

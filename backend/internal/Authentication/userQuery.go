@@ -3,8 +3,8 @@ package authentication
 import (
 	"context"
 
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -31,6 +31,25 @@ func UserExist(user UserData, pool *pgxpool.Pool, ch chan bool){
 	ch <- err == pgx.ErrNoRows
 }
 
+func GetUser(loginCred LoginData, pool *pgxpool.Pool) UserData{
+
+	var user UserData
+	err := pool.QueryRow(context.Background(),`SELECT id, name, email, password, authtype
+												FROM public.users
+												WHERE email = $1;`,loginCred.Email).Scan(&user.ID,&user.Name,&user.Email,&user.Password,&user.AuthType)
+	if err == pgx.ErrNoRows {
+		return UserData{
+			ID: "",
+			Name: "",
+			Email: "",
+			Password: "",
+			AuthType: "",
+		}
+	}
+	return user
+}
+
+
 /*
 We are hasing the user password, here by passing password as a parameter, and it will return the hash password along with error if there is any. 
 We are using bcrypt for hashing password
@@ -39,3 +58,10 @@ func HashPassword(password string) ([]byte,error){
 	hpass,err := bcrypt.GenerateFromPassword([]byte(password),bcrypt.DefaultCost)
 	return hpass,err
 }
+
+func VerifyPassword(hash []byte, password []byte) bool{
+	err := bcrypt.CompareHashAndPassword(hash,password)
+	return err == nil
+}
+
+

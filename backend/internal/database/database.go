@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 	
 )
 
@@ -32,7 +32,7 @@ func Connect() *pgxpool.Pool{
 		log.Fatalln("Error configuring Connection Pool")
 	}
 	// connect to connection pool
-	pool,err := pgxpool.ConnectConfig(context.Background(),config)
+	pool,err := pgxpool.NewWithConfig(context.Background(),config)
 	if err != nil {
 		log.Fatalln("Error connecting to the database")
 	}

@@ -6,7 +6,7 @@ import (
 	jwt "backend/internal/JWT"
 	"net/http"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/cors"
 )
 
@@ -35,7 +35,7 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/auth/google/login", oauth.Login)
 
 	mux.HandleFunc("/auth/google/callback", func(response http.ResponseWriter, request *http.Request) {
-		oauth.Callback(response, request, pool)
+		oauth.Callback(response, request,pool)
 	})
 
 	mux.HandleFunc("/auth/signup", func(response http.ResponseWriter, request *http.Request) {
@@ -43,6 +43,10 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	})
 
 	mux.HandleFunc("/verify",jwt.Validate)
+
+	mux.HandleFunc("/auth/login",func(response http.ResponseWriter, request *http.Request) {
+		authentication.Login(response,request,pool)
+	})
 
 	handler := c.Handler(mux)
 

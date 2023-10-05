@@ -5,7 +5,7 @@ import (
 	jwt "backend/internal/JWT"
 	"context"
 	"encoding/json"
-	"io"
+
 	"net/http"
 	"os"
 
@@ -50,27 +50,20 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 	}
 
 	// reading what get request returned 
-	userData,err := io.ReadAll(responseData.Body)
+	var user authentication.UserData
+	err = json.NewDecoder(responseData.Body).Decode(&user)
 	if err != nil {
 		response.WriteHeader(http.StatusBadRequest)
 		response.Write([]byte("Json Parsing Failed"))
 		return
 	}
 
-
-	var user authentication.UserData
 	user.AuthType = "Google"
 	
 	existUser := make(chan string)
 	genJwtNewID := make(chan []byte)
 	genJwt := make(chan []byte)
 
-	// desearlizing userData and getting specific value that are in struct user
-	if err := json.Unmarshal(userData,&user); err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Json Unmarshal failed"))
-		return
-	}
 	user.ID = uuid.New().String()
 	go authentication.UserExist(user,pool,existUser)
 	userExist := <- existUser

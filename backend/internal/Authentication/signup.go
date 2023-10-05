@@ -4,6 +4,7 @@ import (
 	// jwt "backend/internal/login/JWT"
 	jwt "backend/internal/JWT"
 	"encoding/json"
+
 	"net/http"
 
 	"github.com/google/uuid"
@@ -23,6 +24,7 @@ after getting JWT, we check if user exists or not and if they do exist, we retur
 return the JWT
 */
 func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool.Pool) {
+	
 	response.Header().Set("Content-Type","application/json")
 
 	var user UserData

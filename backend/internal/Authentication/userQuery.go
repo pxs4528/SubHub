@@ -23,12 +23,16 @@ This query will check if the user exists, we are passing UserData and connection
 have boolean value, ch is used to call this function concurrently, after doing the query we will check if err == NoRows meaning we didn't get
 anything from the query, and assign that boolean value to channel
 */
-func UserExist(user UserData, pool *pgxpool.Pool, ch chan bool){
-	var exists int
-	err := pool.QueryRow(context.Background(), `SELECT * 
+func UserExist(user UserData, pool *pgxpool.Pool, ch chan string){
+	var id string
+	err := pool.QueryRow(context.Background(), `SELECT id 
 												FROM public.users
-												WHERE email = $1;`,user.Email).Scan(&exists)
-	ch <- err == pgx.ErrNoRows
+												WHERE email = $1;`,user.Email).Scan(&id)
+	if err == pgx.ErrNoRows {
+		ch <- ""
+	} else {
+		ch <- id
+	}
 }
 
 func GetUser(loginCred LoginData, pool *pgxpool.Pool) UserData{

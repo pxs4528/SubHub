@@ -34,7 +34,7 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 	}
 	user.ID = uuid.New().String()
 	
-	existUser := make(chan bool)
+	existUser := make(chan string)
 	genJwt := make(chan []byte)
 
 	go UserExist(user,pool,existUser)
@@ -51,7 +51,7 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 	user.AuthType = "Regular"
 	userExist := <- existUser
 	JWT := <- genJwt
-	if !userExist {
+	if userExist != "" {
 		response.WriteHeader(http.StatusConflict)
 		response.Write([]byte("User Already Exist"))
 		return

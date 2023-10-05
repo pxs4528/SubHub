@@ -14,6 +14,10 @@ type token struct {
 	Token string `json:"token"`
 }
 
+type UserCred struct {
+	ID string `json:"id"`
+}
+
 func Validate(response http.ResponseWriter,request *http.Request) {
 	var jwtToken token
 	err := json.NewDecoder(request.Body).Decode(&jwtToken)
@@ -39,9 +43,7 @@ func Validate(response http.ResponseWriter,request *http.Request) {
 		response.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-
-	id := claims.ID
-	jsonID,err := json.Marshal(id)
+	jsonID,err := json.Marshal(&UserCred{ID: claims.ID})
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		return

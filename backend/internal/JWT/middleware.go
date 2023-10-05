@@ -34,16 +34,29 @@ func Validate(response http.ResponseWriter,request *http.Request) {
 		return
 	}
 
+	claims,ok := token.Claims.(*Claims)
+	if !ok {
+		response.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	id := claims.ID
+	jsonID,err := json.Marshal(id)
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	expTime, err := token.Claims.GetExpirationTime()
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	
+
 	if expTime.Unix() < time.Now().Unix() {
 		response.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
 	response.WriteHeader(http.StatusAccepted)
+	response.Write(jsonID)
 }

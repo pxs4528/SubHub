@@ -61,11 +61,10 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 	var user authentication.UserData
 	user.AuthType = "Google"
 	
-	existUser := make(chan bool)
-	
+	existUser := make(chan string)
+	genJwtNewID := make(chan []byte)
 	genJwt := make(chan []byte)
-	
-	
+
 	// desearlizing userData and getting specific value that are in struct user
 	if err := json.Unmarshal(userData,&user); err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
@@ -74,23 +73,23 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 	}
 	user.ID = uuid.New().String()
 	go authentication.UserExist(user,pool,existUser)
-	go jwt.Generate(response,user.ID,genJwt)
-	
 	userExist := <- existUser
-	JWT := <- genJwt
-
-	if !userExist {
+	if userExist != "" {
+		go jwt.Generate(response,userExist,genJwt)
+		JWT := <- genJwt
 		response.WriteHeader(http.StatusAccepted)
 		response.Write(JWT)
 		return
-	} else {
-		err := authentication.InsertUser(user,pool)
-		if err != nil {
-			response.WriteHeader(http.StatusInternalServerError)
-			response.Write([]byte("Query Error"))
+		} else {
+			go jwt.Generate(response,user.ID,genJwtNewID)
+			err := authentication.InsertUser(user,pool)
+			JWT := <- genJwtNewID
+			if err != nil {
+				response.WriteHeader(http.StatusInternalServerError)
+				response.Write([]byte("Query Error"))
 			return
 		}
+		response.WriteHeader(http.StatusCreated)
+		response.Write(JWT)
 	}
-	response.WriteHeader(http.StatusCreated)
-	response.Write(JWT)
 }

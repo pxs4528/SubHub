@@ -29,12 +29,12 @@ func Connect() *pgxpool.Pool{
 	// configure connection pool
 	config,err := pgxpool.ParseConfig(conn_str)
 	if err != nil {
-		log.Fatalln("Error configuring Connection Pool")
+		log.Fatalln(err.Error())
 	}
 	// connect to connection pool
 	pool,err := pgxpool.NewWithConfig(context.Background(),config)
 	if err != nil {
-		log.Fatalln("Error connecting to the database")
+		log.Fatalln(err.Error())
 	}
 	return pool
 }

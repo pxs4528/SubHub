@@ -2,35 +2,39 @@ package twofa
 
 import (
 	"fmt"
-	"net/smtp"
+	"log"
 	"os"
+
+	"gopkg.in/gomail.v2"
 )
 
-func Send(email string) {
+func Send(email string,name string,code int) {
 
-  // Sender data.
-	from := os.Getenv("MAIL")
-	password := os.Getenv("PASSWD")
+	htmpBody := `
+		<html>
+		<body>
+			<p>Hi %s,</p>
+		
+			<p>Your verification code is: <b>%d</b></p>
 
-  // Receiver email address.
-	to := []string{
-		email,
-	}
+			<p>Enter this code to complete your login.</p>
 
-  // smtp server configuration.
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587"
+			<p>Thanks,<br>SubHub Team</p>
+		</body>
+		</html>
 
-  // Message.
-	message := []byte("HOAI CARRRRRRRRRIESSSSSSSSSSSSSSS!!!!!!!!!!!")
-  // Authentication.
-	auth := smtp.PlainAuth("", from, password, smtpHost)
+	`
 
-  // Sending email.
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
-	if err != nil {
-		fmt.Println(err)
+
+
+	m := gomail.NewMessage()
+	m.SetHeader("From",os.Getenv("MAIL"))
+	m.SetHeader("Subject","2FA Authentication Code")
+	m.SetBody("text/html",fmt.Sprintf(htmpBody,name,code))
+	m.SetHeader("To",email)
+	
+	if err := gomail.NewDialer("smtp.gmail.com",587,os.Getenv("MAIL"),os.Getenv("PASSWD")).DialAndSend(m); err != nil {
+		log.Printf("Fail to send email %v", err)
 		return
 	}
-	fmt.Println("Email Sent Successfully!")
 }

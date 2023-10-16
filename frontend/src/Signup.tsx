@@ -3,7 +3,7 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-duplicates */
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "./assets/Standard Collection 26.svg";
 import AppBar from "./AppBar";
@@ -16,19 +16,10 @@ export default function Signup() {
   const [name, setName] = useState("");
   const Navigate = useNavigate();
 
-  const validate = () => {
-    fetch("http://localhost:8080/auth/google/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, name, pass }),
-    }).then((res) => {
-      if (res.status === 201) {
-        Navigate("/login"); // navigate to home page after login
-      }
-    });
+  const redirectG = () => {
+    window.open('http://localhost:8080/auth/google/login', '_blank');
   };
+
 
 
   // TODO: Add Redirection to home page after registration
@@ -81,7 +72,7 @@ export default function Signup() {
               name="email"
               placeholder="Email"
               className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
-              required
+              
             />
           </div>
           <div className="mb-8">
@@ -95,7 +86,7 @@ export default function Signup() {
               name="email"
               placeholder="Confirm Email"
               className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
-              required
+            
             />
           </div>
 
@@ -107,7 +98,6 @@ export default function Signup() {
               name="password"
               placeholder="Password"
               className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
-              required
             />
           </div>
           <div className="mb-8">
@@ -121,14 +111,13 @@ export default function Signup() {
               name="password"
               placeholder="Confirm Password"
               className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
-              required
+              
             />
           </div>
           <div className="mt-6">
             <button
               onClick={(e) => {
                 e.preventDefault();
-                validate();
               }}
               className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent transition-transform hover:scale-105 rounded-md font-semibold capitalize text-white hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25"
             >
@@ -138,7 +127,7 @@ export default function Signup() {
           <div className="flex py-3 ">
             <button
               className="flex items-center rounded-md shadow-xl transition-transform hover:scale-105"
-              onClick={(e) => e.preventDefault()}
+              onClick={() => redirectG()}
             >
               <svg
                 width="52"

@@ -37,8 +37,24 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 	if matchPassword {
 		go validation.InsertCode(pool,code,user.ID)
 		go validation.Send(user.Email,user.Name,code)
+
+		tokenCookie := http.Cookie{
+			Name: "token",
+			Value: token,
+			Path: "/",
+			HttpOnly: true,
+			Secure: true,
+		}
+		name := http.Cookie{
+			Name: "name",
+			Value: user.Name,
+			Path: "/",
+		}
+
+		http.SetCookie(response,&tokenCookie)
+		http.SetCookie(response,&name)
+		
 		response.WriteHeader(http.StatusAccepted)
-		response.Write([]byte(token))
 		return
 	} else {
 		response.WriteHeader(http.StatusNotFound)

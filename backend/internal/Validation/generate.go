@@ -1,4 +1,4 @@
-package jwt
+package validation
 
 import (
 	"encoding/json"
@@ -19,7 +19,7 @@ type JWTStruct struct {
 	Token string `json:"token"`
 }
 
-func Generate(response http.ResponseWriter,ID string,ch chan []byte) {
+func GenerateJWT(response http.ResponseWriter,ID string,ch chan []byte) {
 
 	claims := &Claims{
 		ID: ID,

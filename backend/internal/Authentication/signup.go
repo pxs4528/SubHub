@@ -1,9 +1,9 @@
 package authentication
 
 import (
-	// jwt "backend/internal/login/JWT"
-	jwt "backend/internal/JWT"
+	validation "backend/internal/Validation"
 	"encoding/json"
+	"math/rand"
 
 	"net/http"
 
@@ -44,9 +44,11 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 
 	genJwt := make(chan []byte)
 
+	insertErr := make(chan error)
+
 	go UserExist(user,pool,existUser)
 
-	go jwt.Generate(response,user.ID,genJwt)
+	go validation.GenerateJWT(response,user.ID,genJwt)
 
 	hpass,err := HashPassword(user.Password)
 	if err != nil {
@@ -56,6 +58,8 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 		return
 
 	}
+	code := rand.Intn(999999-100000+1) + 100000
+	
 	user.Password = string(hpass)
 
 	user.AuthType = "Regular"
@@ -71,16 +75,22 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 		return
 
 	} else {
-
+		go validation.Send(user.Email,user.Name,code)
+		go validation.InsertCode(pool,code,user.ID,insertErr)
 		err := InsertUser(user,pool)
-
 		if err != nil {
-
 			response.WriteHeader(http.StatusInternalServerError)
 			response.Write([]byte("Query Error"))
 			return
 
 		}
+		err = <- insertErr
+		if err != nil {
+			response.WriteHeader(http.StatusInternalServerError)
+			response.Write([]byte("Query Error"))
+			return
+		}
+
 	}
 
 	response.WriteHeader(http.StatusCreated)

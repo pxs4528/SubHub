@@ -2,7 +2,7 @@ package oauth
 
 import (
 	authentication "backend/internal/Authentication"
-	jwt "backend/internal/JWT"
+	validation "backend/internal/Validation"
 	"context"
 	"encoding/json"
 
@@ -74,7 +74,7 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 
 	if userExist != "" {
 
-		go jwt.Generate(response,userExist,genJwt)
+		go validation.GenerateJWT(response,userExist,genJwt)
 		JWT := <- genJwt
 		response.WriteHeader(http.StatusAccepted)
 		response.Write(JWT)
@@ -82,7 +82,7 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 
 	} else {
 
-		go jwt.Generate(response,user.ID,genJwtNewID)
+		go validation.GenerateJWT(response,user.ID,genJwtNewID)
 		err := authentication.InsertUser(user,pool)
 		JWT := <- genJwtNewID
 		if err != nil {

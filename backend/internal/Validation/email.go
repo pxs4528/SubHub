@@ -1,4 +1,4 @@
-package twofa
+package validation
 
 import (
 	"fmt"

@@ -62,9 +62,9 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 	
 	existUser := make(chan string)
 
-	genJwtNewID := make(chan []byte)
+	genJwtNewID := make(chan string)
 
-	genJwt := make(chan []byte)
+	genJwt := make(chan string)
 
 	user.ID = uuid.New().String()
 
@@ -75,8 +75,18 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 	if userExist != "" {
 		go validation.GenerateJWT(response,userExist,genJwt)
 		JWT := <- genJwt
-		response.WriteHeader(http.StatusAccepted)
-		response.Write(JWT)
+
+		cookie := http.Cookie{
+			Name: "token",
+			Value: JWT,
+			Path: "/",
+			HttpOnly: true,
+			Secure: true,
+		}
+		http.SetCookie(response,&cookie)
+		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
+		// response.WriteHeader(http.StatusAccepted)
+		// response.Write(JWT)
 		return
 
 	} else {
@@ -84,8 +94,17 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		go validation.GenerateJWT(response,user.ID,genJwtNewID)
 		go authentication.InsertUser(user,pool)
 		JWT := <- genJwtNewID
-		response.WriteHeader(http.StatusCreated)
-		response.Write(JWT)
+		cookie := http.Cookie{
+			Name: "token",
+			Value: JWT,
+			Path: "/",
+			HttpOnly: true,
+			Secure: true,
+		}
+		http.SetCookie(response,&cookie)
+		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
+		// response.WriteHeader(http.StatusCreated)
+		// response.Write(JWT)
 		return
 	}
 }

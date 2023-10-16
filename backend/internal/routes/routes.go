@@ -49,7 +49,8 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/validate-two-fa",func(response http.ResponseWriter, request *http.Request) {
 		validation.ValidateCode(response,request,pool)
 	})
-	// mux.HandleFunc("/validate2FA",twofa.Validate)
+
+	mux.HandleFunc("/getName",validation.GetName)
 
 	handler := c.Handler(mux)
 

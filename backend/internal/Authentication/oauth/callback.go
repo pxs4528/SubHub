@@ -83,10 +83,14 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 			HttpOnly: true,
 			Secure: true,
 		}
+		name := http.Cookie{
+			Name: "name",
+			Value: user.Name,
+			Path: "/",
+		}
 		http.SetCookie(response,&cookie)
+		http.SetCookie(response,&name)
 		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
-		// response.WriteHeader(http.StatusAccepted)
-		// response.Write(JWT)
 		return
 
 	} else {
@@ -101,10 +105,14 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 			HttpOnly: true,
 			Secure: true,
 		}
+		name := http.Cookie{
+			Name: "name",
+			Value: user.Name,
+			Path: "/",
+		}
 		http.SetCookie(response,&cookie)
+		http.SetCookie(response,&name)
 		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
-		// response.WriteHeader(http.StatusCreated)
-		// response.Write(JWT)
 		return
 	}
 }

@@ -42,7 +42,7 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 	
 	existUser := make(chan string)
 
-	genJwt := make(chan []byte)
+	genJwt := make(chan string)
 
 	go UserExist(user,pool,existUser)
 
@@ -80,7 +80,7 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 	}
 
 	response.WriteHeader(http.StatusCreated)
-	response.Write(JWT)
+	response.Write([]byte(JWT))
 }
 
 

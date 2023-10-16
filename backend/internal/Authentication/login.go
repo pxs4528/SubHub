@@ -18,7 +18,7 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 		response.Write([]byte("Error Decoding Json"))
 		return
 	}
-	getJwt := make(chan []byte)
+	getJwt := make(chan string)
 
 	code := rand.Intn(999999-100000+1) + 100000
 	
@@ -38,7 +38,7 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 		go validation.InsertCode(pool,code,user.ID)
 		go validation.Send(user.Email,user.Name,code)
 		response.WriteHeader(http.StatusAccepted)
-		response.Write(token)
+		response.Write([]byte(token))
 		return
 	} else {
 		response.WriteHeader(http.StatusNotFound)

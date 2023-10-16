@@ -1,7 +1,6 @@
 package validation
 
 import (
-	"encoding/json"
 	"net/http"
 	"os"
 	"time"
@@ -19,7 +18,7 @@ type JWTStruct struct {
 	Token string `json:"token"`
 }
 
-func GenerateJWT(response http.ResponseWriter,ID string,ch chan []byte) {
+func GenerateJWT(response http.ResponseWriter,ID string,ch chan string) {
 
 	claims := &Claims{
 		ID: ID,
@@ -37,13 +36,7 @@ func GenerateJWT(response http.ResponseWriter,ID string,ch chan []byte) {
 		return
 	}
 
-	tokenJson,err := json.Marshal(&JWTStruct{Token: tokenString})
-	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Error Marshalling Json"))
-		return
-	}
-	ch <- tokenJson
+	ch <- tokenString
 
 }
 

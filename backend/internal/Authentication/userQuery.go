@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"context"
+	"log"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,10 +13,13 @@ import (
 This query will insert the user in the database, we are passing UserData which will have ID, Name, Email, Password, and AuthType
 and second parameter is the connection pool. If there was an error inserting user, it will be handled in signup.go and callback.go
 */
-func InsertUser(user UserData, pool *pgxpool.Pool) error{
+func InsertUser(user UserData, pool *pgxpool.Pool){
 	_,err := pool.Exec(context.Background(), `INSERT INTO public.users 
 												VALUES ($1,$2,$3,$4,$5);`,user.ID,user.Name,user.Email,user.Password,user.AuthType)
-	return err
+	if err != nil {
+		log.Printf("Error inserting the user in database: %v",err)
+		return
+	}
 }
 
 /*

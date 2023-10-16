@@ -44,8 +44,6 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 
 	genJwt := make(chan []byte)
 
-	insertErr := make(chan error)
-
 	go UserExist(user,pool,existUser)
 
 	go validation.GenerateJWT(response,user.ID,genJwt)
@@ -75,21 +73,9 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 		return
 
 	} else {
+		go InsertUser(user,pool)
 		go validation.Send(user.Email,user.Name,code)
-		go validation.InsertCode(pool,code,user.ID,insertErr)
-		err := InsertUser(user,pool)
-		if err != nil {
-			response.WriteHeader(http.StatusInternalServerError)
-			response.Write([]byte("Query Error"))
-			return
-
-		}
-		err = <- insertErr
-		if err != nil {
-			response.WriteHeader(http.StatusInternalServerError)
-			response.Write([]byte("Query Error"))
-			return
-		}
+		go validation.InsertCode(pool,code,user.ID)
 
 	}
 

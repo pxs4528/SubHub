@@ -46,7 +46,7 @@ export default function Signup() {
 <div className="w-full min-h-screen  bg-gray-50 flex sm:justify-center items-center pt-6 sm:pt-0 ">
   <div className=" border-black bg-white h-400 border-2 border-solid	rounded-xl">
     <div className="p-5">
-      <h2 className=" mb-12 text-black text-center text-5xl font-extrabold"><a className='mr-5'>Welcome to</a>  <img className='mb-4 h-8 inline-flex w-xs' src={Icon} alt="Icon of Electron" />  Subhub! </h2>
+      <h2 className=" mb-12 text-black text-center text-5xl font-extrabold">Welcome to Subhub! </h2>
       {/* <hr className="-mt-12 mb-12 border-t-2 border-gray-300"></hr> */}
       
       <form>

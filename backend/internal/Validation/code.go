@@ -3,6 +3,7 @@ package validation
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"time"
@@ -18,20 +19,27 @@ type TokenCode struct {
 
 
 
-func InsertCode(pool *pgxpool.Pool,code int,id string, ch chan error){
+func InsertCode(pool *pgxpool.Pool,code int,id string){
 	var res int
 	err := pool.QueryRow(context.Background(),`SELECT code
 											FROM public.twofa
-											WHERE id = $1;`,id).Scan(&res)
+											WHERE id = $1;`,id).Scan(&res) 
 	if err == pgx.ErrNoRows {
 		_,err = pool.Exec(context.Background(), `INSERT INTO public.twofa 
 													VALUES ($1,$2,$3);`,id,code,time.Now().Add(3 * time.Minute))
-	} else {
+		if err != nil {
+			log.Printf("Error inserting the code %v",err)
+			return
+		}
+	} else{
 		_, err = pool.Exec(context.Background(),`UPDATE public.twofa
 												SET code = $1
 												WHERE id = $2;`,code,id)	
+		if err != nil {
+			log.Printf("Error updating the code %v",err)
+			return
+		}
 	}
-	ch <- err
 }
 
 

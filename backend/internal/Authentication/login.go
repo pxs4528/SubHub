@@ -19,7 +19,6 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 		return
 	}
 	getJwt := make(chan []byte)
-	insertErr := make(chan error)
 
 	code := rand.Intn(999999-100000+1) + 100000
 	
@@ -36,15 +35,8 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 	matchPassword := VerifyPassword([]byte(user.Password),[]byte(login.Password))
 	token := <- getJwt
 	if matchPassword {
-		go validation.InsertCode(pool,code,user.ID,insertErr)
+		go validation.InsertCode(pool,code,user.ID)
 		go validation.Send(user.Email,user.Name,code)
-		err = <- insertErr
-		if err != nil {
-			response.WriteHeader(http.StatusInternalServerError)
-			response.Write([]byte("Query Error"))
-			return
-		}
-		
 		response.WriteHeader(http.StatusAccepted)
 		response.Write(token)
 		return

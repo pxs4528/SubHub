@@ -69,11 +69,10 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 	user.ID = uuid.New().String()
 
 	go authentication.UserExist(user,pool,existUser)
-
+	
 	userExist := <- existUser
-
+	
 	if userExist != "" {
-
 		go validation.GenerateJWT(response,userExist,genJwt)
 		JWT := <- genJwt
 		response.WriteHeader(http.StatusAccepted)
@@ -83,13 +82,8 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 	} else {
 
 		go validation.GenerateJWT(response,user.ID,genJwtNewID)
-		err := authentication.InsertUser(user,pool)
+		go authentication.InsertUser(user,pool)
 		JWT := <- genJwtNewID
-		if err != nil {
-			response.WriteHeader(http.StatusInternalServerError)
-			response.Write([]byte("Query Error"))
-			return
-		}
 		response.WriteHeader(http.StatusCreated)
 		response.Write(JWT)
 		return

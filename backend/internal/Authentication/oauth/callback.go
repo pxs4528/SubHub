@@ -2,7 +2,7 @@ package oauth
 
 import (
 	authentication "backend/internal/Authentication"
-	jwt "backend/internal/JWT"
+	validation "backend/internal/Validation"
 	"context"
 	"encoding/json"
 
@@ -61,28 +61,37 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 	user.AuthType = "Google"
 	
 	existUser := make(chan string)
+
 	genJwtNewID := make(chan []byte)
+
 	genJwt := make(chan []byte)
 
 	user.ID = uuid.New().String()
+
 	go authentication.UserExist(user,pool,existUser)
+
 	userExist := <- existUser
+
 	if userExist != "" {
-		go jwt.Generate(response,userExist,genJwt)
+
+		go validation.GenerateJWT(response,userExist,genJwt)
 		JWT := <- genJwt
 		response.WriteHeader(http.StatusAccepted)
 		response.Write(JWT)
 		return
-		} else {
-			go jwt.Generate(response,user.ID,genJwtNewID)
-			err := authentication.InsertUser(user,pool)
-			JWT := <- genJwtNewID
-			if err != nil {
-				response.WriteHeader(http.StatusInternalServerError)
-				response.Write([]byte("Query Error"))
+
+	} else {
+
+		go validation.GenerateJWT(response,user.ID,genJwtNewID)
+		err := authentication.InsertUser(user,pool)
+		JWT := <- genJwtNewID
+		if err != nil {
+			response.WriteHeader(http.StatusInternalServerError)
+			response.Write([]byte("Query Error"))
 			return
 		}
 		response.WriteHeader(http.StatusCreated)
 		response.Write(JWT)
+		return
 	}
 }

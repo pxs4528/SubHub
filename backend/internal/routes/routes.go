@@ -3,7 +3,7 @@ package routes
 import (
 	authentication "backend/internal/Authentication"
 	"backend/internal/Authentication/oauth"
-	jwt "backend/internal/JWT"
+	validation "backend/internal/Validation"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -42,11 +42,14 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 		authentication.NewSignUp(response, request, pool)
 	})
 
-	mux.HandleFunc("/verify",jwt.Validate)
-
 	mux.HandleFunc("/auth/login",func(response http.ResponseWriter, request *http.Request) {
 		authentication.Login(response,request,pool)
 	})
+
+	mux.HandleFunc("/validate-two-fa",func(response http.ResponseWriter, request *http.Request) {
+		validation.ValidateCode(response,request,pool)
+	})
+	// mux.HandleFunc("/validate2FA",twofa.Validate)
 
 	handler := c.Handler(mux)
 

@@ -10,19 +10,13 @@ import (
 )
 
 
+func JWT(cookieToken string) (string,int,error){
 
-type UserCred struct {
-	ID string `json:"id"`
-}
-
-
-func JWT(body TokenCode,) (string,int,error){
-
-	token,err := jwt.ParseWithClaims(body.Token,&Claims{}, func(t *jwt.Token) (interface{}, error) {
+	token,err := jwt.ParseWithClaims(cookieToken,&Claims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("Secret")),nil
 	})
 	if err != nil {
-		return "",http.StatusInternalServerError,err
+		return "",http.StatusUnauthorized,err
 	}
 
 	if !token.Valid {

@@ -13,7 +13,6 @@ import (
 )
 
 type TokenCode struct {
-	Token string `json:"token"`
 	Code int `json:"code"`
 }
 
@@ -50,8 +49,13 @@ func ValidateCode(response http.ResponseWriter,request *http.Request,pool *pgxpo
 		response.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	cookie,err := request.Cookie("token")
+	if err != nil {
+		http.Redirect(response,request,"http://localhost:3000/login",http.StatusNotFound)
+		return
+	}
 
-	id,httpCode,err := JWT(reqBody)
+	id,httpCode,err := JWT(cookie.Value)
 	if err != nil || httpCode != http.StatusAccepted{
 		response.WriteHeader(httpCode)
 		return

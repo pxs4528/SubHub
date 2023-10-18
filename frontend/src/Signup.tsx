@@ -5,7 +5,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Icon from "./assets/Standard Collection 26.svg";
+import Icon from "C:\\Users\\nickf\\Downloads\\Untitledpic.svg";
 import AppBar from "./AppBar";
 import "./Login.module.css";
 
@@ -32,20 +32,18 @@ export default function Signup() {
         </div>
       )}
 
-      <div className="dark:bg-stone-900 w-full min-h-screen bg-gray-50 flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-        <div className="w-full sm:max-w-md p-5 mx-auto">
+      <div className="dark:bg-stone-900 min-h-screen bg-gray-50 flex  sm:justify-center items-center pt-6 sm:pt-0">
+        <div className="w-full sm:max-w-md p-5">
           <h2 className="dark:text-white mb-4 text-center md:text-5xl text-lg font-extrabold">
             Welcome to
           </h2>
           <div className="flex flex-auto items-center px-16">
             <img
-              className="mb-4 w-1/6 flex-col"
+              className="dark:invert mb-4 w-full flex-col"
               src={Icon}
               alt="Icon of SubHub"
             />
-            <h2 className="text-[#9C90AC] mb-4 px-2 text-center md:text-5xl text-lg font-extrabold">
-              SubHub!
-            </h2>
+            
           </div>
         </div>
         {/* <hr className="-mt-12 mb-12 border-t-2 border-gray-300"></hr> */}
@@ -61,7 +59,7 @@ export default function Signup() {
               type="text"
               name="name"
               placeholder="Name"
-              className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
+              className="py-2 px-3 box-content border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
             />
           </div>
           <div className="mb-8">
@@ -71,7 +69,7 @@ export default function Signup() {
               type="text"
               name="email"
               placeholder="Email"
-              className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
+              className="py-2 px-3 box-content border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
               
             />
           </div>
@@ -85,7 +83,7 @@ export default function Signup() {
               type="text"
               name="email"
               placeholder="Confirm Email"
-              className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
+              className="py-2 px-3 box-content border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
             
             />
           </div>
@@ -97,7 +95,7 @@ export default function Signup() {
               type="password"
               name="password"
               placeholder="Password"
-              className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
+              className="py-2 px-3 box-content border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
             />
           </div>
           <div className="mb-8">
@@ -110,7 +108,7 @@ export default function Signup() {
               type="password"
               name="password"
               placeholder="Confirm Password"
-              className="py-2 px-3 border border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
+              className="py-2 px-3 box-content border-gray-300 focus:border-red-300 focus:outline-none focus:ring focus:ring-red-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
               
             />
           </div>
@@ -119,12 +117,12 @@ export default function Signup() {
               onClick={(e) => {
                 e.preventDefault();
               }}
-              className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent transition-transform hover:scale-105 rounded-md font-semibold capitalize text-white hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25"
+              className="w-full box-content inline-flex items-center justify-center px-3 py-2 bg-blue-600 border border-transparent transition-transform hover:scale-105 rounded-md font-semibold capitalize text-white hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25"
             >
               Sign Up
             </button>
           </div>
-          <div className="flex py-3 ">
+          <div className="py-3 px-3.5 pt-10">
             <button
               className="flex items-center rounded-md shadow-xl transition-transform hover:scale-105"
               onClick={() => redirectG()}

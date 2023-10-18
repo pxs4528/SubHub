@@ -8,10 +8,11 @@ import (
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
-
-func GetMax(response http.ResponseWriter,request *http.Request, pool *pgxpool.Pool){
+func Search(response http.ResponseWriter,request *http.Request,pool *pgxpool.Pool) {
 	cookie,err := request.Cookie("token")
 	if err != nil {
 		http.Redirect(response,request,"http://localhost:3000/login",http.StatusNotFound)
@@ -23,17 +24,27 @@ func GetMax(response http.ResponseWriter,request *http.Request, pool *pgxpool.Po
 		return
 	}
 
+	var name NameStruct
+	err = json.NewDecoder(request.Body).Decode(&name)
+	if err != nil {
+		log.Printf("Error decoding name json: %v",err)
+		return
+	}
+	caser := cases.Lower(language.AmericanEnglish)
+	name.Name = caser.String(name.Name)
+
 	var subscriptions []GetSubscription
 
 	row,err := pool.Query(context.Background(),`SELECT name,amount,date
 												FROM public.subscriptions
-												WHERE id = $1
+												WHERE name LIKE $1 AND id = $2
 												ORDER BY amount DESC
-												LIMIT 4;`,id)
+												LIMIT 10;`,"%"+name.Name+"%",id)
 	if err != nil {
-		log.Printf("Error Getting Subscription: %v",err)
+		log.Printf("Error getting Subscription Duration: %v",err)
 		return
 	}
+	caser = cases.Title(language.AmericanEnglish)
 	for row.Next() {
 		var subscription GetSubscription
 		err := row.Scan(&subscription.Name,&subscription.Amount,&subscription.Date)
@@ -41,7 +52,8 @@ func GetMax(response http.ResponseWriter,request *http.Request, pool *pgxpool.Po
 			log.Printf("Error reading the subscription: %v",err)
 			return
 		}
-		subscriptions = append(subscriptions, subscription)
+		subscription.Name = caser.String(subscription.Name)
+		subscriptions = append(subscriptions,subscription)
 	}
 	if err := row.Err(); err != nil {
 		log.Printf("Error with the row: %v",err)
@@ -58,5 +70,3 @@ func GetMax(response http.ResponseWriter,request *http.Request, pool *pgxpool.Po
 	response.WriteHeader(http.StatusOK)
 	response.Write(jsonSub)
 }
-
-

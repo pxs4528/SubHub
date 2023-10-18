@@ -15,3 +15,7 @@ type GetSubscription struct {
 	Amount float32 `json:"amount"`
 	Date time.Time `json:"date"`
 }
+
+type NameStruct struct {
+	Name string `json:"name"`
+}

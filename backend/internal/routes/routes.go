@@ -58,8 +58,12 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 		subscriptions.Insert(response,request,pool)
 	})
 
-	mux.HandleFunc("/get-max",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/subscriptions/getMax",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.GetMax(response,request,pool)
+	})
+
+	mux.HandleFunc("/suscriptions/search",func(response http.ResponseWriter, request *http.Request) {
+		subscriptions.Search(response,request,pool)
 	})
 
 	handler := c.Handler(mux)

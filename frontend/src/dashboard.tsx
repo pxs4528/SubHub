@@ -37,14 +37,14 @@ export default function dashboard() {
   }
 
   function SideBarClose(){
-    document.getElementById("overlap-8").style.opacity = "0"
+    document.getElementById("overlap-8")!.style.opacity = "0"
     
-    document.getElementById("NavOpen").style.opacity = "100"
+    document.getElementById("NavOpen")!.style.opacity = "100"
   }
 
   function SideBarOpen() {
-    document.getElementById("overlap-8").style.opacity = "100"
-    document.getElementById("NavOpen").style.opacity = "0"
+    document.getElementById("overlap-8")!.style.opacity = "100"
+    document.getElementById("NavOpen")!.style.opacity = "0"
   }
 
   const Navigate = useNavigate();

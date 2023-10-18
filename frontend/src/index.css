@@ -15,7 +15,6 @@
 
   .index {
     background-color: #fafbff;
-    display: flex;
     flex-direction: row;
     justify-content: center;
     width: 100%;
@@ -974,6 +973,23 @@
   .index .input {
     background: transparent;
     border: none;
+    outline: none;
+    color: #b5b7c0;
+    font-family: "Poppins", Helvetica;
+    font-size: 14px;
+    font-weight: 400;
+    left: 40px;
+    letter-spacing: -0.14px;
+    line-height: normal;
+    padding: 0;
+    position: absolute;
+    top: 10px;
+  }
+
+  .index .input1 {
+    background: transparent;
+    border: none;
+    outline: none;
     color: #b5b7c0;
     font-family: "Poppins", Helvetica;
     font-size: 14px;
@@ -1007,7 +1023,7 @@
     box-shadow: 0px 10px 60px #e1ecf880;
     height: 1198px;
     position: relative;
-    width: 306px;
+    width: 100%;
   }
   
   .index .list-menu-wrapper {
@@ -1167,12 +1183,22 @@
     position: absolute;
     top: 0;
   }
+
+  .index .NavOpen {
+    z-index: 1;
+    position:absolute;
+    opacity: 0;
+    left: 0;
+    top:62px;
+    height: 25px;
+    width: 37px;
+  }
   
   .index .setting {
-    height: 37px;
+    height: 25px;
     left: 0;
     position: absolute;
-    top: 1px;
+    top: 2px;
     width: 37px;
   }
   

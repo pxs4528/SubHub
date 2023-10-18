@@ -20,8 +20,32 @@ import './index.css';
 export default function dashboard() {
   console.log(window.ipcRenderer);
 
-  
 
+  function DropdownMenu()
+  {
+    console.log('hi')
+  }
+  
+  function TopSearchFunction(e: React.FormEvent<HTMLInputElement>) { 
+    let input = (e.target as HTMLInputElement).value
+    console.log(input)
+  }
+
+  function FilterTable(e: React.FormEvent<HTMLInputElement>) {
+    let input = (e.target as HTMLInputElement).value
+    console.log(input)
+  }
+
+  function SideBarClose(){
+    document.getElementById("overlap-8").style.opacity = "0"
+    
+    document.getElementById("NavOpen").style.opacity = "100"
+  }
+
+  function SideBarOpen() {
+    document.getElementById("overlap-8").style.opacity = "100"
+    document.getElementById("NavOpen").style.opacity = "0"
+  }
 
   const Navigate = useNavigate();
 
@@ -33,7 +57,7 @@ export default function dashboard() {
         <div className="app-bar">
           <AppBar />
         </div>
-        )};
+        )}
       <div className="div">
         <div className="overlap">
           <div className="earning">
@@ -231,7 +255,12 @@ export default function dashboard() {
             </div>
             <div className="div-wrapper">
               <div className="overlap-group-4">
-                <div className="text-wrapper-32">Search</div>
+                <div className="overlap-6"><input className="input" placeholder="Search" onInput={e => FilterTable(e)} type="text" />
+            <img
+              className="search"
+              alt="Search"
+              src="https://cdn.animaapp.com/projects/652caec9cd622539e3544593/releases/652caf6c8e0f2ac1913234dd/img/search-1.svg"
+            /></div>
                 <img
                   className="search"
                   alt="Search"
@@ -241,11 +270,13 @@ export default function dashboard() {
             </div>
             <div className="overlap-wrapper">
               <div className="overlap-5">
+                <button onClick={e=>DropdownMenu()}>
                 <img
                   className="chevron-down-2"
                   alt="Chevron down"
                   src="https://cdn.animaapp.com/projects/652caec9cd622539e3544593/releases/652caf6c8e0f2ac1913234dd/img/chevron-down-1.svg"
                 />
+                </button>
                 <div className="text-wrapper-33">Last 30 days</div>
               </div>
             </div>
@@ -253,7 +284,7 @@ export default function dashboard() {
         </div>
         <div className="search-2">
           <div className="overlap-6">
-            <input className="input" placeholder="Search" type="text" />
+            <input className="input1" placeholder="Search" type="text" onInput={e => TopSearchFunction(e)} />
             <img
               className="search"
               alt="Search"
@@ -261,9 +292,17 @@ export default function dashboard() {
             />
           </div>
         </div>
+        
         <div className="overlap-7">
           <div className="side-menu">
-            <div className="overlap-8">
+            <button onClick={e => SideBarOpen()}>
+              <img
+                      className="NavOpen" id="NavOpen"
+                      alt="Setting"
+                      src="./assets/menu-symbol-of-three-parallel-lines-svgrepo-com.svg"
+                    />
+            </button>
+            <div className="overlap-8" id = "overlap-8">
               <div className="list-menu-wrapper">
                 <div className="list-menu">
                   <img
@@ -314,11 +353,13 @@ export default function dashboard() {
               />
               <div className="group-14">
                 <div className="text-wrapper-39">GSM</div>
+                <button onClick={e=>SideBarClose()}>
                 <img
                   className="setting"
                   alt="Setting"
-                  src="https://cdn.animaapp.com/projects/652caec9cd622539e3544593/releases/652caf6c8e0f2ac1913234dd/img/setting-1.svg"
+                  src="./assets/menu-symbol-of-three-parallel-lines-svgrepo-com.svg"
                 />
+                </button>
               </div>
               <div className="text-wrapper-40">v.01</div>
             </div>

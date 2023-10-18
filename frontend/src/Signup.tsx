@@ -5,7 +5,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Icon from "C:\\Users\\nickf\\Downloads\\Untitledpic.svg";
+import Icon from "./assets/Untitledpic.svg";
 import AppBar from "./AppBar";
 import "./Login.module.css";
 

@@ -32,7 +32,7 @@ func Insert(response http.ResponseWriter, request *http.Request, pool *pgxpool.P
 		return
 	}
 	subscription.ID = id
-	caser := cases.Title(language.AmericanEnglish)
+	caser := cases.Lower(language.AmericanEnglish)
 	subscription.Name = caser.String(subscription.Name)
 	var name string
 	err = pool.QueryRow(context.Background(),`SELECT name
@@ -52,3 +52,4 @@ func Insert(response http.ResponseWriter, request *http.Request, pool *pgxpool.P
 
 	response.WriteHeader(http.StatusAccepted)
 }
+

@@ -1,7 +1,6 @@
 # SubHub - Subscription Manager
 
-![SubHub Logo](/workspaces/SubHub/frontend/src/assets/Untitledpic.svg)
-
+<img src="frontend/src/assets/Untitledpic.svg"/>
 ## Table of Contents
 
 - [Project Overview](#project-overview)

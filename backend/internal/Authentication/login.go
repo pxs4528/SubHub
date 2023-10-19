@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"backend/internal/Response"
 	validation "backend/internal/Validation"
 	"encoding/json"
 	"math/rand"
@@ -10,23 +11,21 @@ import (
 )
 
 func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Pool) {
-	response.Header().Set("Content-Type","application/json")
+
 	var login LoginData
 	err := json.NewDecoder(request.Body).Decode(&login)
 	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Error Decoding Json"))
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 	getJwt := make(chan string)
-
 	code := rand.Intn(999999-100000+1) + 100000
 	
 	user := GetUser(login,pool)
 	
 	go validation.Send(user.Email,user.Name,code)
 	if user.ID == "" {
-		response.WriteHeader(http.StatusNotFound)
+		Response.Send(response,http.StatusNotFound,"User not found",nil)
 		return
 	}
 	go validation.GenerateJWT(response,user.ID,getJwt)
@@ -54,10 +53,10 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 		http.SetCookie(response,&tokenCookie)
 		http.SetCookie(response,&name)
 		
-		response.WriteHeader(http.StatusAccepted)
+		Response.Send(response,http.StatusAccepted,"User logged in",nil)
 		return
 	} else {
-		response.WriteHeader(http.StatusNotFound)
+		Response.Send(response,http.StatusNotFound,"User not found",nil)
 		return
 	}
 	

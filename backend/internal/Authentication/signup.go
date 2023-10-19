@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"backend/internal/Response"
 	validation "backend/internal/Validation"
 	"encoding/json"
 	"math/rand"
@@ -24,19 +25,12 @@ after getting JWT, we check if user exists or not and if they do exist, we retur
 return the JWT
 */
 func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool.Pool) {
-	
-	response.Header().Set("Content-Type","application/json")
-
 	var user UserData
 
 	err := json.NewDecoder(request.Body).Decode(&user)
-
 	if err != nil {
-
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Mission Json Data"))
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
-		
 	}
 	user.ID = uuid.New().String()
 	
@@ -50,9 +44,7 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 
 	hpass,err := HashPassword(user.Password)
 	if err != nil {
-
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Error hashing password"))
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 
 	}
@@ -67,9 +59,7 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 	JWT := <- genJwt
 
 	if userExist != "" {
-
-		response.WriteHeader(http.StatusConflict)
-		response.Write([]byte("User Already Exist"))
+		Response.Send(response,http.StatusConflict,"User Already Exist",nil)
 		return
 
 	} else {
@@ -90,7 +80,7 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 		}
 		http.SetCookie(response,&tokenCookie)
 		http.SetCookie(response,&name)
-		response.WriteHeader(http.StatusCreated)
+		Response.Send(response,http.StatusCreated,"User Created Successfully",nil)
 	}
 
 }

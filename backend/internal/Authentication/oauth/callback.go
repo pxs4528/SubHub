@@ -2,6 +2,7 @@ package oauth
 
 import (
 	authentication "backend/internal/Authentication"
+	"backend/internal/Response"
 	validation "backend/internal/Validation"
 	"context"
 	"encoding/json"
@@ -14,13 +15,11 @@ import (
 )
 
 func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.Pool) {
-	response.Header().Set("Content-Type","application/json")
 
 	//we are checking to see if "state" is in the query google returns
 	state := request.URL.Query().Get("state")
 	if state != os.Getenv("State") {
-		response.WriteHeader(http.StatusConflict)
-		response.Write([]byte("State doesn't exists"))
+		Response.Send(response,http.StatusConflict,"Incorrect URL",nil)
 		return
 	}
 
@@ -28,24 +27,21 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 
 	googleConfig := Config()
 	if googleConfig == nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Error with google config"))
+		Response.Send(response,http.StatusInternalServerError,"Error occured with Google OAuth",nil)
 		return
 	}
 
 	// we will get the access token from google which we will need for getting data
 	token,err := googleConfig.Exchange(context.Background(),code)
 	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Error fetching token"))
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
 	// we will be getting user profile by using access token
 	responseData,err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token="+token.AccessToken)
 	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("User Data Fetch Failed"))
+		Response.Send(response,http.StatusInternalServerError,"Error occured with Google OAuth",nil)
 		return
 	}
 
@@ -53,8 +49,8 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 	var user authentication.UserData
 	err = json.NewDecoder(responseData.Body).Decode(&user)
 	if err != nil {
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Json Parsing Failed"))
+		Response.Send(response,http.StatusInternalServerError,"Error occured with Google OAuth",nil)
+
 		return
 	}
 
@@ -90,7 +86,7 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		}
 		http.SetCookie(response,&cookie)
 		http.SetCookie(response,&name)
-		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
+		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
 		return
 
 	} else {
@@ -112,7 +108,7 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		}
 		http.SetCookie(response,&cookie)
 		http.SetCookie(response,&name)
-		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
+		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
 		return
 	}
 }

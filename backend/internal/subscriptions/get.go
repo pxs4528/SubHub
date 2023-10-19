@@ -1,10 +1,9 @@
 package subscriptions
 
 import (
+	"backend/internal/Response"
 	validation "backend/internal/Validation"
 	"context"
-	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -19,7 +18,7 @@ func GetMax(response http.ResponseWriter,request *http.Request, pool *pgxpool.Po
 	}
 	id,httpCode,err :=validation.JWT(cookie.Value)
 	if err != nil || httpCode != http.StatusAccepted{
-		response.WriteHeader(httpCode)
+		Response.Send(response,httpCode,err.Error(),nil)
 		return
 	}
 
@@ -31,32 +30,24 @@ func GetMax(response http.ResponseWriter,request *http.Request, pool *pgxpool.Po
 												ORDER BY amount DESC
 												LIMIT 4;`,id)
 	if err != nil {
-		log.Printf("Error Getting Subscription: %v",err)
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 	for row.Next() {
 		var subscription GetSubscription
 		err := row.Scan(&subscription.Name,&subscription.Amount,&subscription.Date)
 		if err != nil {
-			log.Printf("Error reading the subscription: %v",err)
+			Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 			return
 		}
 		subscriptions = append(subscriptions, subscription)
 	}
 	if err := row.Err(); err != nil {
-		log.Printf("Error with the row: %v",err)
-		return
-	}
-	
-	jsonSub, err := json.Marshal(subscriptions)
-	if err != nil {
-		log.Printf("Error encoding getMax: %v",err)
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
-	response.Header().Set("Content-Type", "application/json")
-	response.WriteHeader(http.StatusOK)
-	response.Write(jsonSub)
+	Response.Send(response,http.StatusOK,"Max Subscription List",subscriptions)
 }
 
 

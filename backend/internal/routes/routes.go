@@ -50,8 +50,6 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/validate-two-fa",func(response http.ResponseWriter, request *http.Request) {
 		validation.ValidateCode(response,request,pool)
 	})
-
-	mux.HandleFunc("/getName",validation.GetName)
 	
 
 	mux.HandleFunc("/insert-subscription",func(response http.ResponseWriter, request *http.Request) {

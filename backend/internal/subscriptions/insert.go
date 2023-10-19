@@ -1,10 +1,10 @@
 package subscriptions
 
 import (
+	"backend/internal/Response"
 	validation "backend/internal/Validation"
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/jackc/pgx/v5"
@@ -22,13 +22,13 @@ func Insert(response http.ResponseWriter, request *http.Request, pool *pgxpool.P
 	}
 	id,httpCode,err :=validation.JWT(cookie.Value)
 	if err != nil || httpCode != http.StatusAccepted{
-		response.WriteHeader(httpCode)
+		Response.Send(response,httpCode,err.Error(),nil)
 		return
 	}
 	var subscription Subscriptions
 	err = json.NewDecoder(request.Body).Decode(&subscription)
 	if err != nil {
-		log.Printf("Error decoding json: %v", err)
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 	subscription.ID = id
@@ -39,17 +39,17 @@ func Insert(response http.ResponseWriter, request *http.Request, pool *pgxpool.P
 											FROM public.subscriptions
 											WHERE name = $1;`,subscription.Name).Scan(&name)
 	if err != pgx.ErrNoRows {
-		response.WriteHeader(http.StatusConflict)
+		Response.Send(response,http.StatusConflict,"Subscription Already Exists",nil)
 		return
 	}
 
 	_,err = pool.Exec(context.Background(),`INSERT INTO public.subscriptions
 											VALUES ($1,$2,$3,$4)`,subscription.ID,subscription.Name,subscription.Amount,subscription.Date)	
 	if err != nil {
-		log.Printf("Error inserting subscription: %v",err)
+		Response.Send(response,http.StatusInternalServerError,"Error inserting subscriptions",nil)
 		return
 	}
 
-	response.WriteHeader(http.StatusAccepted)
+	Response.Send(response,http.StatusAccepted,"Subscription Added",nil)
 }
 

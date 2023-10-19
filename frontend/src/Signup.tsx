@@ -73,6 +73,7 @@ export default function Signup() {
               onChange={(e) => {
                 setName(e.target.value);
               }}
+              required
               id="name"
               type="text"
               name="name"
@@ -83,6 +84,7 @@ export default function Signup() {
           <div className="mb-8">
             {/* <label className="block mb-1" htmlFor="email">Email Address</label> */}
             <input
+              required
               id="email"
               type="text"
               name="email"
@@ -94,6 +96,7 @@ export default function Signup() {
           <div className="mb-8">
             {/* <label className="block mb-1" htmlFor="emailC">Confirm Email Address</label> */}
             <input
+              required
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
@@ -109,6 +112,7 @@ export default function Signup() {
           <div className="mb-8">
             {/* <label className="block mb-1" htmlFor="password">Password</label> */}
             <input
+              required
               id="password"
               type="password"
               name="password"
@@ -119,6 +123,7 @@ export default function Signup() {
           <div className="mb-8">
             {/* <label className="block mb-1" htmlFor="passwordC">Confirm Password</label> */}
             <input
+              required
               onChange={(e) => {
                 setPass(e.target.value);
               }}

@@ -86,7 +86,7 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		}
 		http.SetCookie(response,&cookie)
 		http.SetCookie(response,&name)
-		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
+		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
 		return
 
 	} else {
@@ -108,7 +108,7 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		}
 		http.SetCookie(response,&cookie)
 		http.SetCookie(response,&name)
-		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
+		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
 		return
 	}
 }

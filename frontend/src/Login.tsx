@@ -42,13 +42,13 @@ export default function Login() {
       )}
 
       <div className="dark:bg-stone-900 w-full min-h-screen bg-gray-50 flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-        <div className="w-full sm:max-w-md p-5 mx-auto">
+        <div className="w-full sm:max-w-md p-5 ">
           <h2 className="dark:text-white mb-4 text-center text-5xl font-extrabold">
             Welcome back to
           </h2>
           <div className="flex flex-auto items-center px-16">
             <img
-              className="mb-4 w-auto flex-col"
+              className="dark:invert mb-4 w-auto flex-col"
               src={Icon}
               alt="Icon of Electron"
             />

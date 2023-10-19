@@ -20,8 +20,9 @@ export default function Signup() {
   const Navigate = useNavigate();
 
   const redirectG = () => {
-    window.open('http://localhost:8080/auth/google/login', '_blank');
+    window.location.replace("http://localhost:8080/auth/google/login");
   };
+  
 
   const validate = () => {
     console.log("email", email, pass);
@@ -134,15 +135,16 @@ export default function Signup() {
               onClick={() => {
                 validate();
               }}
-              className="w-full box-content inline-flex items-center justify-center px-3 py-2 bg-blue-600 border border-transparent transition-transform hover:scale-105 rounded-md font-semibold capitalize text-white hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25"
+              className="w-full box-content inline-flex items-center justify-center px-3 py-2 bg-blue-600 border border-transparent transition-transform hover:scale-105 rounded-md font-semibold capitalize text-white hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25 signup-button"
             >
               Sign Up
             </a>
           </div>
           <div className="py-3 px-3.5 pt-10">
-            <button
-              className="flex items-center rounded-md shadow-xl transition-transform hover:scale-105"
+            <a
+              className="flex items-center rounded-md shadow-xl transition-transform hover:scale-105 google-button"
               onClick={() => redirectG()}
+
             >
               <svg
                 width="52"
@@ -182,7 +184,7 @@ export default function Signup() {
                 />
               </svg>{" "}
               <span className="dark:text-white ml-2">Continue with Google</span>
-            </button>
+            </a>
           </div>
           <div className="mt-6 text-center">
             <a href="/login" className="dark:text-white underline ">

@@ -6,6 +6,7 @@
 
 - [Project Overview](#project-overview)
 - [Specifications and Design](#specifications-and-design)
+- [Makefile Instructions](#makefile-instructions)
 - [Code and Tests](#code-and-tests)
 - [Two Factor Authentication](#two-factor-authentication)
 - [Performance](#performance)
@@ -22,6 +23,31 @@ SubHub is a comprehensive subscription management application designed to help u
 ## Specifications and Design
 
 Our specification and design document covers key features, data structures, and input/output details. Each subscription entry includes vital information like service name, cost, billing cycle, renewal date, and payment method.
+
+## Makefile Instructions
+
+To streamline project management, we have included a Makefile that simplifies common tasks. Please use the following Makefile instructions:
+
+- **Frontend**: Install frontend dependencies.
+  ```shell
+  make frontend
+  ```
+- **Dev Frontend Server**: Run the development server for the frontend.
+  ```shell
+  make dev-frontend
+  ```
+- **Backend**: Manage backend Go modules.
+  ```shell
+  make backend
+  ```
+- **Run backend server**: Start the backend server.
+  ```shell
+  make run-backend
+  ```
+- **Run Both Frontend and Backend**
+  ```shell
+  make run
+  ```
 
 ## Code and Tests
 
@@ -70,4 +96,4 @@ The dashboard provides a central hub for subscription management, including:
 
 ## Customers and Users
 
-We have been surveying students at UTA for feedback on SubHub:
+We have been surveying students at UTA for feedback on SubHub

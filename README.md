@@ -1,6 +1,7 @@
 # SubHub - Subscription Manager
 
 <img src="frontend/src/assets/Untitledpic.svg"/>
+
 ## Table of Contents
 
 - [Project Overview](#project-overview)

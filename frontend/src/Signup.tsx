@@ -1,9 +1,12 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-console */
 /* eslint-disable import/no-duplicates */
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "./assets/Untitledpic.svg";
 import AppBar from "./AppBar";
@@ -20,6 +23,20 @@ export default function Signup() {
     window.open('http://localhost:8080/auth/google/login', '_blank');
   };
 
+  const validate = () => {
+    console.log("email", email, pass);
+    fetch("http://localhost:8080/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({name, email, pass }),
+    }).then((res) => {
+      if (res.status === 201) {
+        Navigate("/");
+      }
+    });
+  };
 
 
   // TODO: Add Redirection to home page after registration
@@ -113,14 +130,14 @@ export default function Signup() {
             />
           </div>
           <div className="mt-6">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
+            <a
+              onClick={() => {
+                validate();
               }}
               className="w-full box-content inline-flex items-center justify-center px-3 py-2 bg-blue-600 border border-transparent transition-transform hover:scale-105 rounded-md font-semibold capitalize text-white hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25"
             >
               Sign Up
-            </button>
+            </a>
           </div>
           <div className="py-3 px-3.5 pt-10">
             <button

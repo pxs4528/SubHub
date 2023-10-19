@@ -20,14 +20,14 @@ export default function Login() {
 
   const validate = () => {
     console.log("email", email, pass);
-    fetch("http://localhost:8080/api/login", {
+    fetch("http://localhost:8080/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, pass }),
     }).then((res) => {
-      if (res.status === 201) {
+      if (res.status === 202) {
         Navigate("/");
       }
     });

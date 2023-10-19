@@ -1,7 +1,7 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable import/no-duplicates */
 /* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-duplicates
 import { useState } from 'react';

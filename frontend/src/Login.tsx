@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import React from "react";
 import AppBar from "./AppBar";
-import Icon from "./assets/Standard Collection 26.svg";
+import Icon from "./assets/Untitledpic.svg";
 import "./Login.module.css";
 
 export default function Login() {
@@ -48,13 +48,10 @@ export default function Login() {
           </h2>
           <div className="flex flex-auto items-center px-16">
             <img
-              className="mb-4 w-1/6 flex-col"
+              className="mb-4 w-auto flex-col"
               src={Icon}
               alt="Icon of Electron"
             />
-            <h2 className="text-[#9C90AC] mb-4 px-2 text-center text-5xl font-extrabold">
-              SubHub!
-            </h2>
           </div>
           <form>
             <div className="mb-4">

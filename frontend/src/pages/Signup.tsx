@@ -8,9 +8,8 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Icon from "./assets/Untitledpic.svg";
-import AppBar from "./AppBar";
-import "./Login.module.css";
+import Icon from "../assets/subhub_logo.svg";
+import AppBar from "../components/AppBar";
 
 export default function Signup() {
   console.log(window.ipcRenderer);

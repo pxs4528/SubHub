@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import AppBar from '../components/AppBar';
-import Icon from '../assets/Screenshot_2023-09-25_005311-transformed.png';
+import Icon from '../assets/subhub_logo.svg';
 import '../styles/dashboard.css';
 
 

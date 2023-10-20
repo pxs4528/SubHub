@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import React from "react";
 import AppBar from "../components/AppBar";
-import Icon from "../assets/Untitledpic.svg";
+import Icon from "../assets/subhub_logo.svg";
 
 export default function Login() {
   console.log(window.ipcRenderer);

@@ -1,6 +1,6 @@
 # SubHub - Subscription Manager
 
-<img src="frontend/src/assets/Untitledpic.svg"/>
+<img src="frontend/src/assets/subhub_logo.svg"/>
 
 ## Table of Contents
 

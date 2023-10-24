@@ -42,6 +42,9 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 
 	go validation.GenerateJWT(response,user.ID,genJwt)
 
+
+	encryptedID := validation.Encrypt([]byte(user.ID))
+
 	hpass,err := HashPassword(user.Password)
 	if err != nil {
 		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
@@ -66,21 +69,8 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 		go InsertUser(user,pool)
 		go validation.Send(user.Email,user.Name,code)
 		go validation.InsertCode(pool,code,user.ID)
-		tokenCookie := http.Cookie{
-			Name: "token",
-			Value: JWT,
-			Path: "/",
-			HttpOnly: true,
-			Secure: true,
-		}
-		name:= http.Cookie{
-			Name: "name",
-			Value: user.Name,
-			Path: "/",
-		}
-		http.SetCookie(response,&tokenCookie)
-		http.SetCookie(response,&name)
-		Response.Send(response,http.StatusCreated,"User Created Successfully",nil)
+		request.Header.Add("Authorization","Bearer"+JWT)
+		Response.Send(response,http.StatusCreated,"User Created Successfully",encryptedID)
 	}
 
 }

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/google/uuid"
@@ -66,49 +67,39 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 
 	go authentication.UserExist(user,pool,existUser)
 	
-	userExist := <- existUser
+	userID := <- existUser
 	
-	if userExist != "" {
-		go validation.GenerateJWT(response,userExist,genJwt)
+	if userID != "" {
+		redirectURL,err := url.Parse("http://localhost:3000/")
+		if err != nil {
+			Response.Send(response,http.StatusInternalServerError,"Error getting the redirect url",nil)
+			return
+		}
+		go validation.GenerateJWT(response,userID,genJwt)
+		params := url.Values{}
+		encriptedID := validation.Encrypt([]byte(userID))
+		params.Add("auth",encriptedID)
+		redirectURL.RawQuery = params.Encode()
 		JWT := <- genJwt
-
-		cookie := http.Cookie{
-			Name: "token",
-			Value: JWT,
-			Path: "/",
-			HttpOnly: true,
-			Secure: true,
-		}
-		name := http.Cookie{
-			Name: "name",
-			Value: user.Name,
-			Path: "/",
-		}
-		http.SetCookie(response,&cookie)
-		http.SetCookie(response,&name)
-		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
+		request.Header.Add("Authorization","Bearer"+JWT)
+		http.Redirect(response,request,redirectURL.String(),http.StatusSeeOther)
 		return
 
 	} else {
-
+		redirectURL,err := url.Parse("http://localhost:3000/")
+		if err != nil {
+			Response.Send(response,http.StatusInternalServerError,"Error getting the redirect url",nil)
+			return
+		}
 		go validation.GenerateJWT(response,user.ID,genJwtNewID)
 		go authentication.InsertUser(user,pool)
+		params := url.Values{}
+		encriptedID := validation.Encrypt([]byte(userID))
+		params.Add("auth",encriptedID)
+		redirectURL.RawQuery = params.Encode()
 		JWT := <- genJwtNewID
-		cookie := http.Cookie{
-			Name: "token",
-			Value: JWT,
-			Path: "/",
-			HttpOnly: true,
-			Secure: true,
-		}
-		name := http.Cookie{
-			Name: "name",
-			Value: user.Name,
-			Path: "/",
-		}
-		http.SetCookie(response,&cookie)
-		http.SetCookie(response,&name)
-		http.Redirect(response,request,"http://localhost:3000/",http.StatusSeeOther)
+		request.Header.Add("Authorization","Bearer"+JWT)
+		http.Redirect(response,request,redirectURL.String(),http.StatusSeeOther)
 		return
 	}
 }

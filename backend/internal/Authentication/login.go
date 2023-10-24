@@ -4,6 +4,7 @@ import (
 	"backend/internal/Response"
 	validation "backend/internal/Validation"
 	"encoding/json"
+	"log"
 	"math/rand"
 	"net/http"
 
@@ -11,6 +12,7 @@ import (
 )
 
 func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Pool) {
+
 
 	var login LoginData
 	err := json.NewDecoder(request.Body).Decode(&login)
@@ -22,42 +24,32 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 	code := rand.Intn(999999-100000+1) + 100000
 	
 	user := GetUser(login,pool)
-	
-	go validation.Send(user.Email,user.Name,code)
-	if user.ID == "" {
-		Response.Send(response,http.StatusNotFound,"User not found",nil)
-		return
-	}
+
+	encryptedID := validation.Encrypt([]byte(user.ID))
+
+	log.Println(encryptedID)
+
+
 	go validation.GenerateJWT(response,user.ID,getJwt)
 
-
 	matchPassword := VerifyPassword([]byte(user.Password),[]byte(login.Password))
+
 	token := <- getJwt
 	if matchPassword {
 		go validation.InsertCode(pool,code,user.ID)
 		go validation.Send(user.Email,user.Name,code)
 
-		tokenCookie := http.Cookie{
-			Name: "token",
-			Value: token,
-			Path: "/",
-			HttpOnly: true,
-			Secure: true,
-		}
-		name := http.Cookie{
-			Name: "name",
-			Value: user.Name,
-			Path: "/",
-		}
-
-		http.SetCookie(response,&tokenCookie)
-		http.SetCookie(response,&name)
+		request.Header.Add("Authorization","Bearer"+token)
+		// if authHeaderValue := request.Header.Get("Authorization"); authHeaderValue != "" {
+		// 	fmt.Printf("Authorization header is set with value: %s\n", authHeaderValue)
+		// } else {
+		// 	fmt.Println("Authorization header is not set.")
+		// }
 		
-		Response.Send(response,http.StatusAccepted,"User logged in",nil)
+		Response.Send(response,http.StatusAccepted,"User logged in",encryptedID)
 		return
 	} else {
 		Response.Send(response,http.StatusNotFound,"User not found",nil)
 		return
 	}
-	
 }

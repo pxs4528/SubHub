@@ -47,20 +47,20 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 		authentication.Login(response,request,pool)
 	})
 
-	mux.HandleFunc("/validate-two-fa",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/validate-two-fa/",func(response http.ResponseWriter, request *http.Request) {
 		validation.ValidateCode(response,request,pool)
 	})
 	
 
-	mux.HandleFunc("/insert-subscription",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/insert-subscription/",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.Insert(response,request,pool)
 	})
 
-	mux.HandleFunc("/subscriptions/getMax",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/subscriptions/getMax/",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.GetMax(response,request,pool)
 	})
 
-	mux.HandleFunc("/suscriptions/search",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/suscriptions/search/",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.Search(response,request,pool)
 	})
 

@@ -1,7 +1,6 @@
 package validation
 
 import (
-
 	"net/http"
 	"os"
 	"time"
@@ -10,9 +9,9 @@ import (
 )
 
 
-func JWT(cookieToken string) (string,int,error){
+func JWT(headerToken string) (string,int,error){
 
-	token,err := jwt.ParseWithClaims(cookieToken,&Claims{}, func(t *jwt.Token) (interface{}, error) {
+	token,err := jwt.ParseWithClaims(headerToken,&Claims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("Secret")),nil
 	})
 	if err != nil {

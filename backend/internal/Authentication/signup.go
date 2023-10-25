@@ -4,6 +4,7 @@ import (
 	"backend/internal/Response"
 	validation "backend/internal/Validation"
 	"encoding/json"
+	"log"
 	"math/rand"
 
 	"net/http"
@@ -70,6 +71,7 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 		go validation.Send(user.Email,user.Name,code)
 		go validation.InsertCode(pool,code,user.ID)
 		request.Header.Add("Authorization","Bearer"+JWT)
+		log.Println(JWT)
 		Response.Send(response,http.StatusCreated,"User Created Successfully",encryptedID)
 	}
 

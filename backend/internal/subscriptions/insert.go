@@ -15,16 +15,29 @@ import (
 
 
 func Insert(response http.ResponseWriter, request *http.Request, pool *pgxpool.Pool) {
-	cookie,err := request.Cookie("token")
-	if err != nil {
-		http.Redirect(response,request,"http://localhost:3000/login",http.StatusNotFound)
+	urlParam,ok := validation.GetUrlVal(request,"auth")
+	if ok != "" {
+		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	id,httpCode,err :=validation.JWT(cookie.Value)
+	id := string(validation.Decrypt(urlParam))
+
+	jwt,ok := validation.GetJWTHeader(request)
+	if ok != "" {
+		Response.Send(response,http.StatusUnauthorized,ok,nil)
+		return
+	}
+
+	jwtID,httpCode,err := validation.JWT(jwt)
 	if err != nil || httpCode != http.StatusAccepted{
 		Response.Send(response,httpCode,err.Error(),nil)
 		return
 	}
+	if jwtID != id {
+		Response.Send(response,http.StatusUnauthorized,"User not authorized",nil)
+		return
+	}
+	
 	var subscription Subscriptions
 	err = json.NewDecoder(request.Body).Decode(&subscription)
 	if err != nil {

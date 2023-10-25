@@ -27,7 +27,7 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 
 	encryptedID := validation.Encrypt([]byte(user.ID))
 
-	log.Println(encryptedID)
+
 
 
 	go validation.GenerateJWT(response,user.ID,getJwt)
@@ -38,14 +38,8 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 	if matchPassword {
 		go validation.InsertCode(pool,code,user.ID)
 		go validation.Send(user.Email,user.Name,code)
-
 		request.Header.Add("Authorization","Bearer"+token)
-		// if authHeaderValue := request.Header.Get("Authorization"); authHeaderValue != "" {
-		// 	fmt.Printf("Authorization header is set with value: %s\n", authHeaderValue)
-		// } else {
-		// 	fmt.Println("Authorization header is not set.")
-		// }
-		
+		log.Println(token)
 		Response.Send(response,http.StatusAccepted,"User logged in",encryptedID)
 		return
 	} else {

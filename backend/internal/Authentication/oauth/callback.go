@@ -94,7 +94,7 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		go validation.GenerateJWT(response,user.ID,genJwtNewID)
 		go authentication.InsertUser(user,pool)
 		params := url.Values{}
-		encriptedID := validation.Encrypt([]byte(userID))
+		encriptedID := validation.Encrypt([]byte(user.ID))
 		params.Add("auth",encriptedID)
 		redirectURL.RawQuery = params.Encode()
 		JWT := <- genJwtNewID

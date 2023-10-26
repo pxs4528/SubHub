@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"backend/internal/Response"
 	"net/http"
 	"os"
 	"time"
@@ -31,8 +32,7 @@ func GenerateJWT(response http.ResponseWriter,ID string,ch chan string) {
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("Secret")))
 	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Error generating JWT"))
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 

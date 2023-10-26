@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import React from "react";
-import Icon from "../assets/subhub_logo.svg";
+import Icon from "@/public/assets/subhub_logo.svg";
 import "./dashboard.css";
 
 export default function dashboard() {

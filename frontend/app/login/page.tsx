@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import React from "react";
-import Icon from "../assets/subhub_logo.svg";
+import Icon from "@/public/assets/subhub_logo.svg";
 import { redirect } from "next/navigation";
 
 export default function Login() {

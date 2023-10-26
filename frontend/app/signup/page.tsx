@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import Icon from "../assets/subhub_logo.svg";
+import Icon from "@/public/assets/subhub_logo.svg";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 

@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable import/no-duplicates */
-/* eslint-disable no-unused-vars */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-console */
-// eslint-disable-next-line import/no-duplicates
+/* eslint-disable import/no-duplicates */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import React from "react";
@@ -16,32 +17,42 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const Navigate = useNavigate();
+  
 
+
+  const redirectG = () => {
+    window.location.replace("http://localhost:8080/auth/google/login");
+  };
   const validate = () => {
-    console.log("email", email, pass);
-    fetch("http://localhost:8080/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, pass }),
-    }).then((res) => {
-      if (res.status === 202) {
-        Navigate("/");
-      }
-    });
+    if (pass && email){
+      fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email, pass }),
+      }).then((res) => {
+        if (res.status === 201) {
+          Navigate("/");
+        } 
+      });
+    }
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      {window.Main && (
-        <div className="app-bar">
-          <AppBar />
-        </div>
-      )}
 
-      <div className="dark:bg-stone-900 w-full min-h-screen bg-gray-50 flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+      <div className="flex flex-col justify-center dark:bg-stone-900 bg-gray-50">
+        <div>
+          {window.Main && (
+            <div className="app-bar bg-white">
+              <AppBar/>
+            </div>
+          )}
+        </div>
+
+      <div className="dark:bg-stone-900 w-full bg-gray-50 flex flex-col sm:justify-center items-center justify-center pt-6 sm:pt-0" >
         <div className="w-full sm:max-w-md p-5 ">
+          
           <h2 className="dark:text-white mb-4 text-center text-5xl font-extrabold">
             Welcome back to
           </h2>
@@ -61,10 +72,12 @@ export default function Login() {
                 onChange={(e) => {
                   setEmail(e.target.value);
                 }}
+                placeholder="johndoe@gmail.com"
                 id="email"
-                type="text"
+                type="email"
                 name="email"
                 className="py-2 px-3 border border-gray-300 focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
+                required
               />
             </div>
             <div className="mb-4">
@@ -75,35 +88,17 @@ export default function Login() {
                 onChange={(e) => {
                   setPass(e.target.value);
                 }}
+                placeholder="••••••••"
                 id="password"
                 type="password"
                 name="password"
                 className="py-2 px-3 border border-gray-300 focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-md shadow-sm disabled:bg-gray-100 mt-1 block w-full"
+                required
               />
             </div>
-            <div className="mt-6 flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember_me"
-                  type="checkbox"
-                  className="border border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                />
-                <label
-                  htmlFor="remember_me"
-                  className=" dark:text-white ml-2 block text-sm leading-5 text-gray-900"
-                >
-                  {" "}
-                  Remember me{" "}
-                </label>
-              </div>
-              <a href="/app" className="dark:text-white text-sm">
-                {" "}
-                Forgot your password?{" "}
-              </a>
-            </div>
-            <div className="mt-6">
               <button
-                onClick={(e) => {
+                type="submit"
+                onSubmit={(e) => {
                   e.preventDefault();
                   validate();
                 }}
@@ -111,12 +106,11 @@ export default function Login() {
               >
                 Sign In
               </button>
-            </div>
-            <div className="items-center flex py-3 ">
-              <button
-                className="flex items-center rounded-md shadow-xl transition-transform hover:scale-105"
-                onClick={(e) => e.preventDefault()}
-              >
+            <div className="py-3 px-3.5 pt-10">
+              <a
+                className="flex items-center justify-center rounded-md shadow-xl transition-transform hover:scale-105 google-button"
+                onClick={() => redirectG()}
+                >
                 <svg
                   width="52"
                   height="51"
@@ -154,14 +148,13 @@ export default function Login() {
                     fill="#EA4335"
                   />
                 </svg>{" "}
-                <span className="dark:text-white ml-2">
-                  Continue with Google
-                </span>
-              </button>
+                <span className="dark:text-white ml-2">Continue with Google</span>
+              </a>
             </div>
             <div className="mt-6 text-center">
-              <a href="/signup" className="dark:text-white underline">
-                Sign up for an account
+              <span className="dark:text-white">New to website?  </span>
+              <a href="/" className="dark:text-white underline">
+                Register Here!
               </a>
             </div>
           </form>

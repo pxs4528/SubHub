@@ -21,13 +21,12 @@ func Insert(response http.ResponseWriter, request *http.Request, pool *pgxpool.P
 		return
 	}
 	id := string(validation.Decrypt(urlParam))
-
+	print(id)
 	jwt,ok := validation.GetJWTHeader(request)
 	if ok != "" {
 		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	jwt = string(validation.Decrypt(jwt))
 	
 	jwtID,httpCode,err := validation.JWT(jwt)
 	if err != nil || httpCode != http.StatusAccepted{

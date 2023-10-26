@@ -25,7 +25,7 @@ func Search(response http.ResponseWriter,request *http.Request,pool *pgxpool.Poo
 		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-
+	jwt = string(validation.Decrypt(jwt))
 	jwtID,httpCode,err := validation.JWT(jwt)
 	if err != nil || httpCode != http.StatusAccepted{
 		Response.Send(response,httpCode,err.Error(),nil)

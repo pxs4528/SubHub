@@ -81,7 +81,8 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		params.Add("auth",encriptedID)
 		redirectURL.RawQuery = params.Encode()
 		JWT := <- genJwt
-		request.Header.Add("Authorization","Bearer"+JWT)
+		encriptedJWT := validation.Encrypt([]byte(JWT))
+		request.Header.Add("Authorization","Bearer"+encriptedJWT)
 		http.Redirect(response,request,redirectURL.String(),http.StatusSeeOther)
 		return
 
@@ -98,7 +99,8 @@ func Callback(response http.ResponseWriter,request *http.Request, pool *pgxpool.
 		params.Add("auth",encriptedID)
 		redirectURL.RawQuery = params.Encode()
 		JWT := <- genJwtNewID
-		request.Header.Add("Authorization","Bearer"+JWT)
+		encriptedJWT := validation.Encrypt([]byte(JWT))
+		request.Header.Add("Authorization","Bearer"+encriptedJWT)
 		http.Redirect(response,request,redirectURL.String(),http.StatusSeeOther)
 		return
 	}

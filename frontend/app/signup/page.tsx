@@ -4,8 +4,11 @@ import { useState } from "react";
 import Icon from "@/public/assets/subhub_logo.svg";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
+    const router = useRouter()
+
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [name, setName] = useState("");
@@ -24,7 +27,7 @@ export default function Signup() {
       body: JSON.stringify({ name, email, pass }),
     }).then((res) => {
       if (res.status === 201) {
-        redirect("/dashboard");
+        router.push("/dashboard");
       }
     });
   };

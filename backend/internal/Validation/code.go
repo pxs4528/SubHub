@@ -50,20 +50,20 @@ func ValidateCode(response http.ResponseWriter,request *http.Request,pool *pgxpo
 		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
-	
-	urlParam,ok := GetUrlVal(request,"auth")
+
+	accessToken,ok := GetAccess(request)
 	if ok != "" {
 		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	id := string(Decrypt(urlParam))
+	id := string(Decrypt(accessToken))
 
 	jwt,ok := GetJWTHeader(request)
 	if ok != "" {
 		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	jwt = string(Decrypt(jwt))
+
 	jwtID,httpCode,err := JWT(jwt)
 	if err != nil || httpCode != http.StatusAccepted{
 		Response.Send(response,httpCode,err.Error(),nil)

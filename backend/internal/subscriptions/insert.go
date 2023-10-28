@@ -15,12 +15,12 @@ import (
 
 
 func Insert(response http.ResponseWriter, request *http.Request, pool *pgxpool.Pool) {
-	urlParam,ok := validation.GetUrlVal(request,"auth")
+	accessToken,ok := validation.GetAccess(request)
 	if ok != "" {
 		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	id := string(validation.Decrypt(urlParam))
+	id := string(validation.Decrypt(accessToken))
 	print(id)
 	jwt,ok := validation.GetJWTHeader(request)
 	if ok != "" {

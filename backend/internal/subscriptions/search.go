@@ -13,35 +13,39 @@ import (
 )
 
 func Search(response http.ResponseWriter,request *http.Request,pool *pgxpool.Pool) {
-	urlParam,ok := validation.GetUrlVal(request,"auth")
+	accessToken,ok := validation.GetAccess(request)
 	if ok != "" {
 		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	id := string(validation.Decrypt(urlParam))
+	id := string(validation.Decrypt(accessToken))
 
 	jwt,ok := validation.GetJWTHeader(request)
 	if ok != "" {
 		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	jwt = string(validation.Decrypt(jwt))
+
 	jwtID,httpCode,err := validation.JWT(jwt)
 	if err != nil || httpCode != http.StatusAccepted{
 		Response.Send(response,httpCode,err.Error(),nil)
 		return
 	}
+
 	if jwtID != id {
 		Response.Send(response,http.StatusUnauthorized,"User not authorized",nil)
 		return
 	}
 
 	var name NameStruct
+
 	err = json.NewDecoder(request.Body).Decode(&name)
 	if err != nil {
 		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
+
+	
 	caser := cases.Lower(language.AmericanEnglish)
 	name.Name = caser.String(name.Name)
 

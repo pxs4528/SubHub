@@ -2,24 +2,9 @@ package validation
 
 import (
 	"net/http"
-	"net/url"
 	"strings"
 )
 
-
-func GetUrlVal(request *http.Request, getVal string) (string,string){
-	queryParam,err := url.ParseQuery(request.URL.RawQuery)
-	if err != nil {
-		return "","Error getting url pararm"
-	}
-
-	authParam := queryParam.Get("auth")
-	if authParam != "" {
-		return authParam,""
-	} else {
-		return "","User not authorized"
-	}
-}
 
 func GetJWTHeader(request *http.Request) (string,string){
 	if authHeaderValue := request.Header.Get("Authorization"); authHeaderValue != "" {
@@ -29,5 +14,13 @@ func GetJWTHeader(request *http.Request) (string,string){
 			return token,""
 		}
 	} 
+	return "","User not authorized"
+}
+
+func GetAccess(request *http.Request) (string,string) {
+	if accessToken := request.Header.Get("Access"); accessToken != "" {
+		token := accessToken[:]
+		return token, ""
+	}
 	return "","User not authorized"
 }

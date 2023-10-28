@@ -67,13 +67,14 @@ func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool
 		return
 
 	} else {
+
 		go InsertUser(user,pool)
 		go validation.Send(user.Email,user.Name,code)
-		encryptedJWT := validation.Encrypt([]byte(JWT))
 		go validation.InsertCode(pool,code,user.ID)
-		request.Header.Add("Authorization","Bearer"+encryptedJWT)
+		request.Header.Add("Authorization","Bearer"+JWT)
+		request.Header.Add("Access",encryptedID)
 		log.Println(JWT)
-		Response.Send(response,http.StatusCreated,"User Created Successfully",encryptedID)
+		Response.Send(response,http.StatusCreated,"User Created Successfully",nil)
 	}
 
 }

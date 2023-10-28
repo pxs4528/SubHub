@@ -27,19 +27,19 @@ func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Poo
 
 	encryptedID := validation.Encrypt([]byte(user.ID))
 
-
 	go validation.GenerateJWT(response,user.ID,getJwt)
 
 	matchPassword := VerifyPassword([]byte(user.Password),[]byte(login.Password))
-
+	
 	token := <- getJwt
 	if matchPassword {
 		go validation.InsertCode(pool,code,user.ID)
 		go validation.Send(user.Email,user.Name,code)
-		log.Println(token)
-
 		request.Header.Add("Authorization","Bearer"+token)
-		Response.Send(response,http.StatusAccepted,"User logged in",encryptedID)
+		request.Header.Add("Access",encryptedID)
+		log.Printf("JWT: %v",token)
+		log.Printf("Encrypted ID: %v",encryptedID)
+		Response.Send(response,http.StatusAccepted,"User logged in",nil)
 		return
 	} else {
 		Response.Send(response,http.StatusNotFound,"User not found",nil)

@@ -1,23 +1,24 @@
-'use client';
+"use client";
 
-import { CustomerField } from '@/app/lib/definitions';
-import Link from 'next/link';
+import { CustomerField } from "@/app/lib/definitions";
+import Link from "next/link";
+import { createInvoice } from "@/app/lib/actions";
 import {
   CheckIcon,
   ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
-} from '@heroicons/react/24/outline';
-import { Button } from '../button';
+} from "@heroicons/react/24/outline";
+import { Button } from "../button";
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
   return (
-    <form>
+    <form action={createInvoice}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
           <label htmlFor="customer" className="mb-2 block text-sm font-medium">
-            Choose customer
+            Choose Subscription
           </label>
           <div className="relative">
             <select
@@ -27,7 +28,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               defaultValue=""
             >
               <option value="" disabled>
-                Select a customer
+                Select a Subscription
               </option>
               {customers.map((customer) => (
                 <option key={customer.id} value={customer.id}>

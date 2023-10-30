@@ -1,11 +1,11 @@
-const { sql } = require('@vercel/postgres');
+const { sql } = require("@vercel/postgres");
 const {
   invoices,
   customers,
   revenue,
   users,
-} = require('../app/lib/placeholder-data.js');
-const bcrypt = require('bcrypt');
+} = require("../app/lib/placeholder-data.js");
+const bcrypt = require("bcrypt");
 
 async function seedUsers() {
   try {
@@ -41,7 +41,7 @@ async function seedUsers() {
       users: insertedUsers,
     };
   } catch (error) {
-    console.error('Error seeding users:', error);
+    console.error("Error seeding users:", error);
     throw error;
   }
 }
@@ -81,7 +81,7 @@ async function seedInvoices() {
       invoices: insertedInvoices,
     };
   } catch (error) {
-    console.error('Error seeding invoices:', error);
+    console.error("Error seeding invoices:", error);
     throw error;
   }
 }
@@ -120,7 +120,7 @@ async function seedCustomers() {
       customers: insertedCustomers,
     };
   } catch (error) {
-    console.error('Error seeding customers:', error);
+    console.error("Error seeding customers:", error);
     throw error;
   }
 }
@@ -155,7 +155,7 @@ async function seedRevenue() {
       revenue: insertedRevenue,
     };
   } catch (error) {
-    console.error('Error seeding revenue:', error);
+    console.error("Error seeding revenue:", error);
     throw error;
   }
 }

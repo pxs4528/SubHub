@@ -4,6 +4,7 @@ import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { client } from "@/app/lib/db/index";
 const InvoiceSchema = z.object({
   id: z.string(),
   customerId: z.string(),
@@ -16,13 +17,20 @@ const CreateInvoice = InvoiceSchema.omit({ id: true, date: true });
 const UpdateInvoice = InvoiceSchema.omit({ date: true });
 const DeleteInvoice = InvoiceSchema.pick({ id: true });
 
+const db = client();
+
 export async function createInvoice(formData: FormData) {
   const { customerId, amount, status } = CreateInvoice.parse({
     customerId: formData.get("customerId"),
     amount: formData.get("amount"),
     status: formData.get("status"),
   });
-
+  try {
+    const response = await db.query("SHOW TABLES");
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+  }
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split("T")[0];
 

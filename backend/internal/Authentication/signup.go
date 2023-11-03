@@ -70,7 +70,6 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 		ID: uh.User.ID,
 	}
 	
-	response.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	request.Header.Add("Authorization","Bearer"+JWT)
 	response.Header().Add("Access",uh.User.ID)
 

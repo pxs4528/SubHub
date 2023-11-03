@@ -80,7 +80,7 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 			Response.Send(response,http.StatusInternalServerError,"Error Generating Session",nil)
 			return
 		}
-
+		response.Header().Set("Access-Control-Allow-Origin", "*")
 		request.Header.Add("Authorization","Bearer"+JWT)
 		request.Header.Add("Access",id)
 
@@ -101,10 +101,12 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 		}
 
 		go uh.InsertUser()
-
+		
+		response.Header().Set("Access-Control-Allow-Origin", "*")
 		request.Header.Add("Authorization","Bearer"+JWT)
-		request.Header.Add("Access",uh.User.ID)
-
+		response.Header().Add("Access",uh.User.ID)
+		response.Header().Set("Cache-Control", "max-age=3600")
+		
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",uh.User.ID)
 

@@ -41,9 +41,12 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 	if matchPassword{
 		go uh.ValidateInsertCode()
 		go uh.Send()
-	
+		
+		response.Header().Set("Access-Control-Allow-Origin", "*")
 		request.Header.Add("Authorization","Bearer"+JWT)
-		request.Header.Add("Access",uh.User.ID)
+		response.Header().Add("Access",uh.User.ID)
+		response.Header().Set("Cache-Control", "max-age=3600")
+
 	
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",uh.User.ID)

@@ -128,7 +128,6 @@ func (uh *UserHandler) GetUser() error{
 												FROM public.users
 												WHERE email = $1`,uh.Login.Email).Scan(&uh.User.ID,&uh.User.Name,&uh.User.Email,&uh.User.Password,&uh.User.AuthType)
 	if err == pgx.ErrNoRows {
-		
 		return err
 	}
 	return nil

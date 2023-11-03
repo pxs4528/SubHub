@@ -70,10 +70,9 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 		ID: uh.User.ID,
 	}
 	
-	response.Header().Set("Access-Control-Allow-Origin", "*")
+	response.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	request.Header.Add("Authorization","Bearer"+JWT)
 	response.Header().Add("Access",uh.User.ID)
-	response.Header().Set("Cache-Control", "max-age=3600")
 
 
 	log.Printf("JWT: %v",JWT)

@@ -24,6 +24,7 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 		return
 	}
 
+	log.Print(uh.User)
 	
 	JWT,err := uh.GenerateJWT()
 	if err != nil {
@@ -42,10 +43,9 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 		go uh.ValidateInsertCode()
 		go uh.Send()
 		
-		response.Header().Set("Access-Control-Allow-Origin", "*")
+		response.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 		request.Header.Add("Authorization","Bearer"+JWT)
 		response.Header().Add("Access",uh.User.ID)
-		response.Header().Set("Cache-Control", "max-age=3600")
 
 	
 		log.Printf("JWT: %v",JWT)

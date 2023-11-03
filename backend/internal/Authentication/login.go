@@ -48,8 +48,12 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 	
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",uh.User.ID)
-	
-		Response.Send(response,http.StatusAccepted,"User logged in",nil)
+
+		uh.UserID = &UserID{
+			ID: uh.User.ID,
+		}
+
+		Response.Send(response,http.StatusAccepted,"User logged in",uh.UserID)
 		return
 
 	} else {

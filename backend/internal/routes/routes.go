@@ -37,6 +37,8 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	})
 
 	// all the routes
+	mux.HandleFunc("/getUserID/",userHandler.GetUserID)
+
 	mux.HandleFunc("/auth/google/login", authentication.Login)
 
 	mux.HandleFunc("/auth/google/callback", userHandler.Callback)
@@ -66,4 +68,5 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 
 	// return router
 	return handler
+	
 }

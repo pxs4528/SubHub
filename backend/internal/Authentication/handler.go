@@ -27,11 +27,16 @@ type Code struct {
 	Code int `json:"code"`
 }
 
+type UserID struct {
+	ID string `json:"id"`
+}
+
 type UserHandler struct {
 	User *UserData
 	Login *LoginData
 	JWT *JWT
 	Code *Code
+	UserID *UserID
 	DB *pgxpool.Pool
 }
 

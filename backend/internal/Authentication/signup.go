@@ -64,13 +64,17 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 
 	go uh.Send()
 
+	uh.UserID = &UserID{
+		ID: uh.User.ID,
+	}
+
 	request.Header.Add("Authorization","Bearer"+JWT)
 	request.Header.Add("Access",uh.User.ID)
 
 	log.Printf("JWT: %v",JWT)
 	log.Printf("ID: %v",uh.User.ID)
 
-	Response.Send(response,http.StatusCreated,"User Created Successfully",nil)
+	Response.Send(response,http.StatusCreated,"User Created Successfully",uh.UserID)
 
 
 }

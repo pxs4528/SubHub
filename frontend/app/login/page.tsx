@@ -20,7 +20,7 @@ export default function Login() {
       body: JSON.stringify({ email, pass }),
     }).then((res) => {
       if (res.status === 202) {
-        router.push("/Dashboard");
+        router.push("/dashboard");
       }
     });
   };

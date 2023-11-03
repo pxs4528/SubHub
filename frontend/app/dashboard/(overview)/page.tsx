@@ -7,8 +7,13 @@ import {
   fetchLatestInvoices,
   fetchCardData,
 } from "@/app/lib/data";
+import { headers } from 'next/headers';
+
 
 export default async function Page() {
+  const headerList = headers();
+  const referer = headerList.get('Access');
+  console.log(referer);
   const {
     numberOfInvoices,
     numberOfCustomers,

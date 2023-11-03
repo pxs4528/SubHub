@@ -75,6 +75,4 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 	log.Printf("ID: %v",uh.User.ID)
 
 	Response.Send(response,http.StatusCreated,"User Created Successfully",uh.UserID)
-
-
 }

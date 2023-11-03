@@ -38,7 +38,6 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 	}
 
 	matchPassword := uh.VerifyPassword()
-	
 	if matchPassword{
 		go uh.ValidateInsertCode()
 		go uh.Send()

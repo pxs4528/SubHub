@@ -25,14 +25,13 @@ func (uh *UserHandler) InsertUser(){
 
 
 
-func (uh *UserHandler) HashPassword() error{
+func (uh *UserHandler) HashPassword() (string,error){
 
 	hpass,err := bcrypt.GenerateFromPassword([]byte(uh.User.Password),bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return "",err
 	}
-	uh.User.Password = string(hpass)
-	return nil
+	return string(hpass),nil
 }
 
 func (uh *UserHandler) VerifyPassword() bool{

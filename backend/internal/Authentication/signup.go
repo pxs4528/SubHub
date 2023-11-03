@@ -46,11 +46,13 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 		return
 	}
 
-	err = uh.HashPassword()
+	userPassword,err := uh.HashPassword()
 	if err != nil {
 		Response.Send(response,http.StatusInternalServerError,"Error hashing password",nil)
 		return
 	}
+
+	uh.User.Password = userPassword
 
 	code := RandomCode()
 

@@ -51,12 +51,12 @@ func ValidateCode(response http.ResponseWriter,request *http.Request,pool *pgxpo
 		return
 	}
 
-	accessToken,ok := GetAccess(request)
+	id,ok := GetAccess(request)
 	if ok != "" {
 		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	id := string(Decrypt(accessToken))
+	
 
 	jwt,ok := GetJWTHeader(request)
 	if ok != "" {

@@ -1,16 +1,13 @@
 package authentication
 
 import (
+
 	"backend/internal/Response"
-	validation "backend/internal/Validation"
 	"encoding/json"
 	"log"
-	"math/rand"
-
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 /*
@@ -25,58 +22,55 @@ then asssign the value for existUser channel to userExist by using this `<-` and
 after getting JWT, we check if user exists or not and if they do exist, we return error 409 and if the user doesn't than we insert the user and
 return the JWT
 */
-func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool.Pool) {
-	var user UserData
 
-	err := json.NewDecoder(request.Body).Decode(&user)
+func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Request) {
+
+	err := json.NewDecoder(request.Body).Decode(&uh.User)
 	if err != nil {
-		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
+		Response.Send(response,http.StatusInternalServerError,"Error getting the request",nil)
 		return
 	}
-	user.ID = uuid.New().String()
-	
-	existUser := make(chan string)
 
-	genJwt := make(chan string)
+	id := uh.ExistUser()
+	if id != "" {
+		Response.Send(response,http.StatusConflict,"User Exist",nil)
+		return
+	}
 
-	go UserExist(user,pool,existUser)
+	uh.User.ID = uuid.New().String()
+	uh.User.AuthType = "Regular"
 
-	go validation.GenerateJWT(response,user.ID,genJwt)
-
-
-	encryptedID := validation.Encrypt([]byte(user.ID))
-
-	hpass,err := HashPassword(user.Password)
+	JWT,err := uh.GenerateJWT()
 	if err != nil {
-		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
+		Response.Send(response,http.StatusInternalServerError,"Error Generating Session",nil)
 		return
-
 	}
-	code := rand.Intn(999999-100000+1) + 100000
-	
-	user.Password = string(hpass)
 
-	user.AuthType = "Regular"
-
-	userExist := <- existUser
-
-	JWT := <- genJwt
-
-	if userExist != "" {
-		Response.Send(response,http.StatusConflict,"User Already Exist",nil)
+	err = uh.HashPassword()
+	if err != nil {
+		Response.Send(response,http.StatusInternalServerError,"Error hashing password",nil)
 		return
-
-	} else {
-
-		go InsertUser(user,pool)
-		go validation.Send(user.Email,user.Name,code)
-		go validation.InsertCode(pool,code,user.ID)
-		request.Header.Add("Authorization","Bearer"+JWT)
-		request.Header.Add("Access",encryptedID)
-		log.Println(JWT)
-		Response.Send(response,http.StatusCreated,"User Created Successfully",nil)
 	}
+
+	code := RandomCode()
+
+	uh.Code = &Code{
+		Code: code,
+	}
+
+	go uh.InsertUser()
+
+	go uh.ValidateInsertCode()
+
+	go uh.Send()
+
+	request.Header.Add("Authorization","Bearer"+JWT)
+	request.Header.Add("Access",uh.User.ID)
+
+	log.Printf("JWT: %v",JWT)
+	log.Printf("ID: %v",uh.User.ID)
+
+	Response.Send(response,http.StatusCreated,"User Created Successfully",nil)
+
 
 }
-
-

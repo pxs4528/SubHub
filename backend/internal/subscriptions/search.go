@@ -13,12 +13,11 @@ import (
 )
 
 func Search(response http.ResponseWriter,request *http.Request,pool *pgxpool.Pool) {
-	accessToken,ok := validation.GetAccess(request)
+	id,ok := validation.GetAccess(request)
 	if ok != "" {
 		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	id := string(validation.Decrypt(accessToken))
 
 	jwt,ok := validation.GetJWTHeader(request)
 	if ok != "" {

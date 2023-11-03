@@ -2,7 +2,6 @@ package routes
 
 import (
 	authentication "backend/internal/Authentication"
-	"backend/internal/Authentication/oauth"
 	validation "backend/internal/Validation"
 	"backend/internal/subscriptions"
 	"net/http"
@@ -24,6 +23,11 @@ if you have additional parameters other than response and request you will need 
 
 func NewRouter(pool *pgxpool.Pool) http.Handler {
 	
+	userHandler := &authentication.UserHandler{
+		DB: pool,
+	}
+
+
 	mux := http.NewServeMux()
 
 	c := cors.New(cors.Options{
@@ -33,34 +37,28 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	})
 
 	// all the routes
-	mux.HandleFunc("/auth/google/login", oauth.Login)
+	mux.HandleFunc("/auth/google/login", authentication.Login)
 
-	mux.HandleFunc("/auth/google/callback", func(response http.ResponseWriter, request *http.Request) {
-		oauth.Callback(response, request,pool)
-	})
+	mux.HandleFunc("/auth/google/callback", userHandler.Callback)
 
-	mux.HandleFunc("/auth/signup", func(response http.ResponseWriter, request *http.Request) {
-		authentication.NewSignUp(response, request, pool)
-	})
+	mux.HandleFunc("/auth/signup",userHandler.NewSignUp)
 
-	mux.HandleFunc("/auth/login",func(response http.ResponseWriter, request *http.Request) {
-		authentication.Login(response,request,pool)
-	})
+	mux.HandleFunc("/auth/login",userHandler.UserLogin)
 
-	mux.HandleFunc("/validate-two-fa",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/validate-two-fa/",func(response http.ResponseWriter, request *http.Request) {
 		validation.ValidateCode(response,request,pool)
 	})
 	
 
-	mux.HandleFunc("/insert-subscription",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/insert-subscription/",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.Insert(response,request,pool)
 	})
 
-	mux.HandleFunc("/subscriptions/getMax",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/subscriptions/getMax/",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.GetMax(response,request,pool)
 	})
 
-	mux.HandleFunc("/suscriptions/search",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/suscriptions/search/",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.Search(response,request,pool)
 	})
 

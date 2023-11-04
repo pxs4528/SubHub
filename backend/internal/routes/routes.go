@@ -47,6 +47,8 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 
 	mux.HandleFunc("/auth/login",userHandler.UserLogin)
 
+	mux.HandleFunc("/validate/",userHandler.ValidateJWT)
+
 	mux.HandleFunc("/validate-two-fa/",func(response http.ResponseWriter, request *http.Request) {
 		validation.ValidateCode(response,request,pool)
 	})
@@ -63,6 +65,7 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/suscriptions/search/",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.Search(response,request,pool)
 	})
+
 
 	handler := c.Handler(mux)
 

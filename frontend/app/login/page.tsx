@@ -24,7 +24,6 @@ export default function Login() {
         // Successful login (status code 200-299)
         console.log("Login successful");
         const data = await response.json(); // Assuming the response contains JSON data
-        console.log("Response data:", data.headers);
         sessionStorage.setItem('userID', JSON.stringify(data.body)); // Store the response data in sessionStorage
         router.push("/dashboard");
       } else {

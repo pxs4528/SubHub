@@ -1,6 +1,7 @@
 import Logo from "@/public/assets/subhub_logo.svg";
 import Image from "next/image";
 import { lusitana } from "@/app/ui/fonts";
+import Chart from '@/app/components/charts/index';
 
 import Link from "next/link";
 export default function Page() {
@@ -32,6 +33,9 @@ export default function Page() {
         <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
           {/* Add Hero Images Here */}
         </div>
+      </div>
+      <div>
+        <Chart />
       </div>
     </main>
   );

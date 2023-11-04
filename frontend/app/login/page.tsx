@@ -10,19 +10,32 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
 
-  const validate = () => {
-    console.log("email", email, pass);
-    fetch("http://localhost:8080/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, pass }),
-    }).then((res) => {
-      if (res.status === 202) {
+  const validate = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, pass }),
+      });
+  
+      if (response.ok) {
+        // Successful login (status code 200-299)
+        console.log("Login successful");
+        const data = await response.json(); // Assuming the response contains JSON data
+        console.log("Response data:", data.headers);
+        sessionStorage.setItem('userID', JSON.stringify(data.body)); // Store the response data in sessionStorage
         router.push("/dashboard");
+      } else {
+        // Handle other status codes
+        console.log("Login failed. Status:", response.status);
+        // You can add additional handling based on different response status codes if needed
       }
-    });
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle network errors or exceptions
+    }
   };
 
   return (

@@ -13,7 +13,7 @@ import { headers } from 'next/headers';
 export default async function Page() {
   const headerList = headers();
   const referer = headerList.get('Access');
-  console.log(referer);
+  // console.log(referer);
   const {
     numberOfInvoices,
     numberOfCustomers,

@@ -7,25 +7,51 @@ import { useRouter } from "next/navigation";
 
 export default function Login() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [pass, setPass] = useState("");
+  const [Email, setEmail] = useState("");
+  const [Password, setPass] = useState("");
 
   const validate = async () => {
+    console.log(JSON.stringify({ Email, Password }));
     try {
       const response = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, pass }),
+        body: JSON.stringify({ Email, Password }),
       });
-  
+      console.log(response.body);
+
       if (response.ok) {
+        let Code = prompt("Enter 2FA Code Here Please");
         // Successful login (status code 200-299)
-        console.log("Login successful");
-        const data = await response.json(); // Assuming the response contains JSON data
-        sessionStorage.setItem('userID', JSON.stringify(data.body)); // Store the response data in sessionStorage
-        router.push("/dashboard");
+        // console.log("Login successful");
+        // const data = await response.json(); // Assuming the response contains JSON data
+        // sessionStorage.setItem('userID', JSON.stringify(data.body)); // Store the response data in sessionStorage
+        // router.push("/dashboard");
+        console.log("testing 2fa");
+        console.log(JSON.stringify({ Code : Number(Code) }));
+        try {
+          const code_response = await fetch(
+            "http://localhost:8080/validate-twofa",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ Code : Number(Code) }),
+            }
+          );
+          const responseData = await code_response.json();
+
+          console.log(responseData);
+
+          if (code_response.ok) {
+            console.log("2fa successful");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
       } else {
         // Handle other status codes
         console.log("Login failed. Status:", response.status);

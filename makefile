@@ -1,5 +1,7 @@
 # Makefile for SubHub project
 
+next:
+	cd frontend && rm -rf .next && npm run dev
 # Frontend commands
 frontend:
 	cd frontend && npm install
@@ -13,6 +15,5 @@ backend:
 
 run-backend:
 	cd backend/cmd/main && go run .
-
 # Combined command to run both frontend and backend
 run: frontend backend run-backend

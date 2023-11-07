@@ -1,10 +1,10 @@
 package subscriptions
 
 import (
+	"backend/internal/Response"
 	validation "backend/internal/Validation"
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/jackc/pgx/v5"
@@ -15,20 +15,32 @@ import (
 
 
 func Insert(response http.ResponseWriter, request *http.Request, pool *pgxpool.Pool) {
-	cookie,err := request.Cookie("token")
-	if err != nil {
-		http.Redirect(response,request,"http://localhost:3000/login",http.StatusNotFound)
+	id,ok := validation.GetAccess(request)
+	if ok != "" {
+		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	id,httpCode,err :=validation.JWT(cookie.Value)
+	print(id)
+	jwt,ok := validation.GetJWTHeader(request)
+	if ok != "" {
+		Response.Send(response,http.StatusUnauthorized,ok,nil)
+		return
+	}
+	
+	jwtID,httpCode,err := validation.JWT(jwt)
 	if err != nil || httpCode != http.StatusAccepted{
-		response.WriteHeader(httpCode)
+		Response.Send(response,httpCode,err.Error(),nil)
 		return
 	}
+	if jwtID != id {
+		Response.Send(response,http.StatusUnauthorized,"User not authorized",nil)
+		return
+	}
+	
 	var subscription Subscriptions
 	err = json.NewDecoder(request.Body).Decode(&subscription)
 	if err != nil {
-		log.Printf("Error decoding json: %v", err)
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 	subscription.ID = id
@@ -39,17 +51,17 @@ func Insert(response http.ResponseWriter, request *http.Request, pool *pgxpool.P
 											FROM public.subscriptions
 											WHERE name = $1;`,subscription.Name).Scan(&name)
 	if err != pgx.ErrNoRows {
-		response.WriteHeader(http.StatusConflict)
+		Response.Send(response,http.StatusConflict,"Subscription Already Exists",nil)
 		return
 	}
 
 	_,err = pool.Exec(context.Background(),`INSERT INTO public.subscriptions
 											VALUES ($1,$2,$3,$4)`,subscription.ID,subscription.Name,subscription.Amount,subscription.Date)	
 	if err != nil {
-		log.Printf("Error inserting subscription: %v",err)
+		Response.Send(response,http.StatusInternalServerError,"Error inserting subscriptions",nil)
 		return
 	}
 
-	response.WriteHeader(http.StatusAccepted)
+	Response.Send(response,http.StatusAccepted,"Subscription Added",nil)
 }
 

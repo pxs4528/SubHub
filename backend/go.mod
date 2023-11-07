@@ -1,6 +1,6 @@
 module backend
 
-go 1.21
+go 1.20
 
 require golang.org/x/oauth2 v0.12.0
 

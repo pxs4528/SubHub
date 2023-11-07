@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"backend/internal/Response"
 	"context"
 	"encoding/json"
 	"log"
@@ -46,18 +47,30 @@ func ValidateCode(response http.ResponseWriter,request *http.Request,pool *pgxpo
 	var reqBody TokenCode
 	err := json.NewDecoder(request.Body).Decode(&reqBody)
 	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	cookie,err := request.Cookie("token")
-	if err != nil {
-		http.Redirect(response,request,"http://localhost:3000/login",http.StatusNotFound)
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
-	id,httpCode,err := JWT(cookie.Value)
+	id,ok := GetAccess(request)
+	if ok != "" {
+		Response.Send(response,http.StatusUnauthorized,ok,nil)
+		return
+	}
+	
+
+	jwt,ok := GetJWTHeader(request)
+	if ok != "" {
+		Response.Send(response,http.StatusUnauthorized,ok,nil)
+		return
+	}
+
+	jwtID,httpCode,err := JWT(jwt)
 	if err != nil || httpCode != http.StatusAccepted{
-		response.WriteHeader(httpCode)
+		Response.Send(response,httpCode,err.Error(),nil)
+		return
+	}
+	if jwtID != id {
+		Response.Send(response,http.StatusUnauthorized,"User not authorized",nil)
 		return
 	}
 
@@ -67,14 +80,15 @@ func ValidateCode(response http.ResponseWriter,request *http.Request,pool *pgxpo
 											WHERE id = $1;`,id).Scan(&code)
 
 	if err == pgx.ErrNoRows {
+		Response.Send(response,http.StatusUnauthorized,"Code Invalid",nil)
 		response.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	if code == reqBody.Code {
-		response.WriteHeader(http.StatusAccepted)
+		Response.Send(response,http.StatusAccepted,"Code Accepted",nil)
 		return
 	} else if code != reqBody.Code {
-		response.WriteHeader(http.StatusUnauthorized)
+		Response.Send(response,http.StatusUnauthorized,"Code Invalid",nil)
 		return
 	}
 

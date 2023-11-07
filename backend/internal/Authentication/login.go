@@ -1,64 +1,65 @@
 package authentication
 
 import (
-	validation "backend/internal/Validation"
+	"backend/internal/Response"
 	"encoding/json"
-	"math/rand"
+	"log"
 	"net/http"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func Login(response http.ResponseWriter, request *http.Request,pool *pgxpool.Pool) {
-	response.Header().Set("Content-Type","application/json")
-	var login LoginData
-	err := json.NewDecoder(request.Body).Decode(&login)
+
+func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Request) {
+
+	uh.User = &UserData{}
+
+	err := json.NewDecoder(request.Body).Decode(&uh.Login)
 	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Error Decoding Json"))
+		Response.Send(response,http.StatusInternalServerError,"Error getting the request",nil)
 		return
 	}
-	getJwt := make(chan string)
 
-	code := rand.Intn(999999-100000+1) + 100000
-	
-	user := GetUser(login,pool)
-	
-	go validation.Send(user.Email,user.Name,code)
-	if user.ID == "" {
-		response.WriteHeader(http.StatusNotFound)
+	err = uh.GetUser()
+	if err != nil {
+		Response.Send(response,http.StatusUnauthorized,"User doesn't exist",nil)
 		return
 	}
-	go validation.GenerateJWT(response,user.ID,getJwt)
 
+	log.Print(uh.User)
+	
+	JWT,err := uh.GenerateJWT()
+	if err != nil {
+		Response.Send(response,http.StatusInternalServerError,"Error Generating Session",nil)
+		return
+	}
 
-	matchPassword := VerifyPassword([]byte(user.Password),[]byte(login.Password))
-	token := <- getJwt
-	if matchPassword {
-		go validation.InsertCode(pool,code,user.ID)
-		go validation.Send(user.Email,user.Name,code)
+	code := RandomCode()
 
-		tokenCookie := http.Cookie{
-			Name: "token",
-			Value: token,
-			Path: "/",
-			HttpOnly: true,
-			Secure: true,
-		}
-		name := http.Cookie{
-			Name: "name",
-			Value: user.Name,
-			Path: "/",
-		}
+	uh.Code = &Code{
+		Code: code,
+	}
 
-		http.SetCookie(response,&tokenCookie)
-		http.SetCookie(response,&name)
+	matchPassword := uh.VerifyPassword()
+	if matchPassword{
+		go uh.ValidateInsertCode()
+		go uh.Send()
 		
-		response.WriteHeader(http.StatusAccepted)
-		return
-	} else {
-		response.WriteHeader(http.StatusNotFound)
-		return
-	}
+		request.Header.Add("Authorization","Bearer"+JWT)
+		response.Header().Add("Access",uh.User.ID)
+
 	
+		log.Printf("JWT: %v",JWT)
+		log.Printf("ID: %v",uh.User.ID)
+
+		uh.UserID = &UserID{
+			ID: uh.User.ID,
+		}
+
+		Response.Send(response,http.StatusAccepted,"User logged in",uh.UserID)
+		return
+
+	} else {
+		Response.Send(response,http.StatusUnauthorized,"Password doesn't match",nil)
+	}
+
+
 }

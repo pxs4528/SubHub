@@ -1,62 +1,68 @@
 package subscriptions
 
 import (
+	"backend/internal/Response"
 	validation "backend/internal/Validation"
 	"context"
-	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 
 func GetMax(response http.ResponseWriter,request *http.Request, pool *pgxpool.Pool){
-	cookie,err := request.Cookie("token")
-	if err != nil {
-		http.Redirect(response,request,"http://localhost:3000/login",http.StatusNotFound)
+	
+	id,ok := validation.GetAccess(request)
+	if ok != "" {
+		Response.Send(response,http.StatusUnauthorized,ok,nil)
 		return
 	}
-	id,httpCode,err :=validation.JWT(cookie.Value)
+
+	jwt,ok := validation.GetJWTHeader(request)
+	if ok != "" {
+		Response.Send(response,http.StatusUnauthorized,ok,nil)
+		return
+	}
+
+	jwtID,httpCode,err := validation.JWT(jwt)
 	if err != nil || httpCode != http.StatusAccepted{
-		response.WriteHeader(httpCode)
+		Response.Send(response,httpCode,err.Error(),nil)
+		return
+	}
+	if jwtID != id {
+		Response.Send(response,http.StatusUnauthorized,"User not authorized",nil)
 		return
 	}
 
 	var subscriptions []GetSubscription
-
+	caser := cases.Title(language.AmericanEnglish)
 	row,err := pool.Query(context.Background(),`SELECT name,amount,date
 												FROM public.subscriptions
 												WHERE id = $1
 												ORDER BY amount DESC
 												LIMIT 4;`,id)
 	if err != nil {
-		log.Printf("Error Getting Subscription: %v",err)
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 	for row.Next() {
 		var subscription GetSubscription
 		err := row.Scan(&subscription.Name,&subscription.Amount,&subscription.Date)
 		if err != nil {
-			log.Printf("Error reading the subscription: %v",err)
+			Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 			return
 		}
+		subscription.Name = caser.String(subscription.Name)
 		subscriptions = append(subscriptions, subscription)
 	}
 	if err := row.Err(); err != nil {
-		log.Printf("Error with the row: %v",err)
-		return
-	}
-	
-	jsonSub, err := json.Marshal(subscriptions)
-	if err != nil {
-		log.Printf("Error encoding getMax: %v",err)
+		Response.Send(response,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
-	response.Header().Set("Content-Type", "application/json")
-	response.WriteHeader(http.StatusOK)
-	response.Write(jsonSub)
+	Response.Send(response,http.StatusOK,"Max Subscription List",subscriptions)
 }
 
 

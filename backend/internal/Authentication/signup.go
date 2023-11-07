@@ -1,14 +1,13 @@
 package authentication
 
 import (
-	validation "backend/internal/Validation"
-	"encoding/json"
-	"math/rand"
 
+	"backend/internal/Response"
+	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 /*
@@ -23,76 +22,60 @@ then asssign the value for existUser channel to userExist by using this `<-` and
 after getting JWT, we check if user exists or not and if they do exist, we return error 409 and if the user doesn't than we insert the user and
 return the JWT
 */
-func NewSignUp(response http.ResponseWriter,request *http.Request, pool *pgxpool.Pool) {
-	
-	response.Header().Set("Content-Type","application/json")
 
-	var user UserData
+func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Request) {
 
-	err := json.NewDecoder(request.Body).Decode(&user)
-
+	err := json.NewDecoder(request.Body).Decode(&uh.User)
 	if err != nil {
-
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Mission Json Data"))
+		Response.Send(response,http.StatusInternalServerError,"Error getting the request",nil)
 		return
-		
 	}
-	user.ID = uuid.New().String()
-	
-	existUser := make(chan string)
 
-	genJwt := make(chan string)
+	id := uh.ExistUser()
+	if id != "" {
+		Response.Send(response,http.StatusConflict,"User Exist",nil)
+		return
+	}
 
-	go UserExist(user,pool,existUser)
+	uh.User.ID = uuid.New().String()
+	uh.User.AuthType = "Regular"
 
-	go validation.GenerateJWT(response,user.ID,genJwt)
-
-	hpass,err := HashPassword(user.Password)
+	JWT,err := uh.GenerateJWT()
 	if err != nil {
-
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Error hashing password"))
+		Response.Send(response,http.StatusInternalServerError,"Error Generating Session",nil)
 		return
-
 	}
-	code := rand.Intn(999999-100000+1) + 100000
+
+	userPassword,err := uh.HashPassword()
+	if err != nil {
+		Response.Send(response,http.StatusInternalServerError,"Error hashing password",nil)
+		return
+	}
+
+	uh.User.Password = userPassword
+
+	code := RandomCode()
+
+	uh.Code = &Code{
+		Code: code,
+	}
+
+	go uh.InsertUser()
+
+	go uh.ValidateInsertCode()
+
+	go uh.Send()
+
+	uh.UserID = &UserID{
+		ID: uh.User.ID,
+	}
 	
-	user.Password = string(hpass)
+	request.Header.Add("Authorization","Bearer"+JWT)
+	response.Header().Add("Access",uh.User.ID)
 
-	user.AuthType = "Regular"
 
-	userExist := <- existUser
+	log.Printf("JWT: %v",JWT)
+	log.Printf("ID: %v",uh.User.ID)
 
-	JWT := <- genJwt
-
-	if userExist != "" {
-
-		response.WriteHeader(http.StatusConflict)
-		response.Write([]byte("User Already Exist"))
-		return
-
-	} else {
-		go InsertUser(user,pool)
-		go validation.Send(user.Email,user.Name,code)
-		go validation.InsertCode(pool,code,user.ID)
-		tokenCookie := http.Cookie{
-			Name: "token",
-			Value: JWT,
-			Path: "/",
-			HttpOnly: true,
-			Secure: true,
-		}
-		name:= http.Cookie{
-			Name: "name",
-			Value: user.Name,
-			Path: "/",
-		}
-		http.SetCookie(response,&tokenCookie)
-		http.SetCookie(response,&name)
-		response.WriteHeader(http.StatusCreated)
-	}
-
+	Response.Send(response,http.StatusCreated,"User Created Successfully",uh.UserID)
 }
-
-

@@ -54,6 +54,8 @@ export default function Login() {
         }
       } else {
         // Handle other status codes
+        const data = await response.json(); // Assuming the response contains JSON data
+        console.log(data)
         console.log("Login failed. Status:", response.status);
         // You can add additional handling based on different response status codes if needed
       }

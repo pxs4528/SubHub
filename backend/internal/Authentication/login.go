@@ -44,17 +44,16 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 		go uh.Send()
 		
 		request.Header.Add("Authorization","Bearer"+JWT)
+		request.Header.Add("Validated","False")
 		response.Header().Add("Access",uh.User.ID)
 
 	
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",uh.User.ID)
 
-		uh.UserID = &UserID{
-			ID: uh.User.ID,
-		}
+		
 
-		Response.Send(response,http.StatusAccepted,"User logged in",uh.UserID)
+		Response.Send(response,http.StatusAccepted,"User logged in",nil)
 		return
 
 	} else {

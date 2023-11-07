@@ -16,10 +16,10 @@ const InvoiceSchema = z.object({
 const CreateInvoice = InvoiceSchema.omit({ id: true, date: true });
 const UpdateInvoice = InvoiceSchema.omit({ date: true });
 const DeleteInvoice = InvoiceSchema.pick({ id: true });
-
 const db = client();
 
 export async function createInvoice(formData: FormData) {
+  
   const { customerId, amount, status } = CreateInvoice.parse({
     customerId: formData.get("customerId"),
     amount: formData.get("amount"),

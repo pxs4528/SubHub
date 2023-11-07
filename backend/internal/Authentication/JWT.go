@@ -31,57 +31,51 @@ func (uh *UserHandler) GenerateJWT() (string,error){
 
 
 
-func (uh *UserHandler) ValidateJWT(response http.ResponseWriter,request *http.Request) {
+func ValidateJWT(response http.ResponseWriter,request *http.Request) {
+	jwt := GetJWT(response,request)
+	if jwt != "" {
+		Response.Send(response,http.StatusOK,"User Validated",nil)
+	}
+}
 
+func GetJWT(response http.ResponseWriter,request *http.Request) string {
 	headerToken,headerError := GetJWTHeader(request)
 	if headerError != "" {
 		Response.Send(response,http.StatusUnauthorized,"User Not Authorized",nil)
-		return
+		return ""
 	}
 
 	token,err := jwt.ParseWithClaims(headerToken,&JWT{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("Secret")),nil
 	})
 	if err != nil {
-		Response.Send(response,http.StatusUnauthorized,"JWT Token Parsing Error",nil)
-		return
+		Response.Send(response,http.StatusUnauthorized,`Session expired / Invalid token`,nil)
+		return ""
 	}
 
 	if !token.Valid {
 		Response.Send(response,http.StatusUnauthorized,"Unvalid User Token",nil)
-		return
+		return ""
 	}
 
 	claims,ok := token.Claims.(*JWT)
 	if !ok {
 		Response.Send(response,http.StatusUnauthorized,"Error getting claims from JWT",nil)
-		return
+		return ""
 	}
 
 	expTime, err := token.Claims.GetExpirationTime()
 	if err != nil {
 		Response.Send(response,http.StatusInternalServerError,"Error getting JWT expiration",nil)
-		return
+		return ""
 	}
 
 	if expTime.Unix() < time.Now().Unix() {
 		Response.Send(response,http.StatusUnauthorized,"JWT Token Expired",nil)
-		return
+		return ""
 	}
-
-	id,headerError := GetAccess(response)
-	if headerError != "" {
-		Response.Send(response,http.StatusUnauthorized,"User not authorized",nil)
-		return
-	}
-
-	if id != claims.ID {
-		Response.Send(response,http.StatusUnauthorized,"ID doesn't match",nil)
-		return
-	}
-
-	Response.Send(response,http.StatusOK,"User Validated",nil)
-
+	return claims.ID
+	// Response.Send(response,http.StatusOK,"User Validated",nil)
 }
 
 func GetJWTHeader(request *http.Request) (string,string){
@@ -95,18 +89,18 @@ func GetJWTHeader(request *http.Request) (string,string){
 	return "","User not authorized"
 }
 
-func GetAccess(response http.ResponseWriter) (string,string) {
-	if accessToken :=  response.Header().Get("Access"); accessToken != "" {
-		token := accessToken[:]
-		return token,""
-	}
-	return "","User not authorized"
-}
-
-// func GetAccess(request *http.Request) (string,string) {
-// 	if accessToken := request.Header.Get("Access"); accessToken != "" {
+// func GetAccess(response http.ResponseWriter) (string,string) {
+// 	if accessToken :=  response.Header().Get("Access"); accessToken != "" {
 // 		token := accessToken[:]
-// 		return token, ""
+// 		return token,""
 // 	}
 // 	return "","User not authorized"
 // }
+
+func GetHeader(request *http.Request,value string) (string,string) {
+	if accessToken := request.Header.Get(value); accessToken != "" {
+		token := accessToken[:]
+		return token, ""
+	}
+	return "","User not authorized"
+}

@@ -65,17 +65,15 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 	go uh.ValidateInsertCode()
 
 	go uh.Send()
-
-	uh.UserID = &UserID{
-		ID: uh.User.ID,
-	}
 	
 	request.Header.Add("Authorization","Bearer"+JWT)
 	response.Header().Add("Access",uh.User.ID)
+	request.Header.Add("Validated","False")
+
 
 
 	log.Printf("JWT: %v",JWT)
 	log.Printf("ID: %v",uh.User.ID)
 
-	Response.Send(response,http.StatusCreated,"User Created Successfully",uh.UserID)
+	Response.Send(response,http.StatusCreated,"User Created Successfully",nil)
 }

@@ -37,7 +37,7 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	})
 
 	// all the routes
-	mux.HandleFunc("/getUserID/",userHandler.GetUserID)
+	mux.HandleFunc("/getUserID",userHandler.GetUserID)
 
 	mux.HandleFunc("/auth/google/login", authentication.Login)
 
@@ -47,22 +47,24 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 
 	mux.HandleFunc("/auth/login",userHandler.UserLogin)
 
-	mux.HandleFunc("/validate/",userHandler.ValidateJWT)
+	mux.HandleFunc("/validate-jwt",authentication.ValidateJWT)
 
-	mux.HandleFunc("/validate-two-fa/",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/validate-twofa",userHandler.Validate)
+
+	mux.HandleFunc("/validate-two-fa",func(response http.ResponseWriter, request *http.Request) {
 		validation.ValidateCode(response,request,pool)
 	})
 	
 
-	mux.HandleFunc("/insert-subscription/",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/insert-subscription",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.Insert(response,request,pool)
 	})
 
-	mux.HandleFunc("/subscriptions/getMax/",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/subscriptions/getMax",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.GetMax(response,request,pool)
 	})
 
-	mux.HandleFunc("/suscriptions/search/",func(response http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/suscriptions/search",func(response http.ResponseWriter, request *http.Request) {
 		subscriptions.Search(response,request,pool)
 	})
 

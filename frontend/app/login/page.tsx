@@ -24,36 +24,37 @@ export default function Login() {
       console.log(response.body);
 
       if (response.ok) {
-      
-        // let Code = prompt("Enter 2FA Code Here Please");
+        let Code = prompt("Enter 2FA Code Here Please");
         // Successful login (status code 200-299)
-        console.log("Login successful");
-        const data = await response.json(); // Assuming the response contains JSON data
-        sessionStorage.setItem('userID', JSON.stringify(data.body)); // Store the response data in sessionStorage
-        router.push("/dashboard");
-        // console.log("testing 2fa");
-        // console.log(JSON.stringify({ Code : Number(Code) }));
-        // try {
-        //   const code_response = await fetch(
-        //     "http://localhost:8080/validate-twofa",
-        //     {
-        //       method: "POST",
-        //       headers: {
-        //         "Content-Type": "application/json",
-        //       },
-        //       body: JSON.stringify({ Code : Number(Code) }),
-        //     }
-        //   );
-        //   const responseData = await code_response.json();
+        // console.log("Login successful");
+        // const data = await response.json(); // Assuming the response contains JSON data
+        // sessionStorage.setItem('userID', JSON.stringify(data.body)); // Store the response data in sessionStorage
+        // router.push("/dashboard");
+        console.log("testing 2fa");
+        console.log(JSON.stringify({ Code : Number(Code) }));
+        try {
+          const code_response = await fetch(
+            "http://localhost:8080/validate-twofa",
+            {
+              method: "POST",
+              credentials:"include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ Code : Number(Code) }),
+            }
+          );
+          const responseData = await code_response.json();
 
-        //   console.log(responseData);
+          console.log(responseData);
 
-        //   if (code_response.ok) {
-        //     console.log("2fa successful");
-        //   }
-        // } catch (error) {
-        //   console.error("Error:", error);
-        // }
+          if (code_response.ok) {
+            console.log("2fa successful");
+            router.push("/dashboard");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
       } else {
         // Handle other status codes
         const data = await response.json(); // Assuming the response contains JSON data

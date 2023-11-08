@@ -25,11 +25,6 @@ export default function Login() {
 
       if (response.ok) {
         let Code = prompt("Enter 2FA Code Here Please");
-        // Successful login (status code 200-299)
-        // console.log("Login successful");
-        // const data = await response.json(); // Assuming the response contains JSON data
-        // sessionStorage.setItem('userID', JSON.stringify(data.body)); // Store the response data in sessionStorage
-        // router.push("/dashboard");
         console.log("testing 2fa");
         console.log(JSON.stringify({ Code : Number(Code) }));
         try {
@@ -49,7 +44,6 @@ export default function Login() {
           console.log(responseData);
 
           if (code_response.ok) {
-            console.log("2fa successful");
             router.push("/dashboard");
           }
         } catch (error) {

@@ -83,7 +83,7 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 		}
 		
 		http.SetCookie(response,&http.Cookie{
-			Name: "token",
+			Name: "Token",
 			Value: JWT,
 			Expires: time.Now().Add(1*time.Hour),
 			HttpOnly: true,
@@ -97,6 +97,16 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 			Value: uh.User.ID,
 			Expires: time.Now().Add(1*time.Hour),
 			HttpOnly: false,
+			Path: "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure: true,
+		})
+
+		http.SetCookie(response, &http.Cookie{
+			Name: "Validated",
+			Value: "False",
+			Expires: time.Now().Add(1*time.Hour),
+			HttpOnly: true,
 			Path: "/",
 			SameSite: http.SameSiteNoneMode,
 			Secure: true,
@@ -121,7 +131,7 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 		go uh.InsertUser()
 		
 		http.SetCookie(response,&http.Cookie{
-			Name: "token",
+			Name: "Token",
 			Value: JWT,
 			Expires: time.Now().Add(1*time.Hour),
 			HttpOnly: true,
@@ -135,6 +145,16 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 			Value: uh.User.ID,
 			Expires: time.Now().Add(1*time.Hour),
 			HttpOnly: false,
+			Path: "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure: true,
+		})
+
+		http.SetCookie(response, &http.Cookie{
+			Name: "Validated",
+			Value: "False",
+			Expires: time.Now().Add(1*time.Hour),
+			HttpOnly: true,
 			Path: "/",
 			SameSite: http.SameSiteNoneMode,
 			Secure: true,

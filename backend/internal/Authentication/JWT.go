@@ -4,7 +4,6 @@ import (
 	"backend/internal/Response"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -34,14 +33,19 @@ func (uh *UserHandler) GenerateJWT() (string,error){
 func ValidateJWT(response http.ResponseWriter,request *http.Request) {
 	jwt := GetJWT(response,request)
 	if jwt != "" {
-		Response.Send(response,http.StatusOK,"User Validated",nil)
+		Response.Send(response,http.StatusOK,"User Validated",jwt)
 	}
 }
 
+
+
 func GetJWT(response http.ResponseWriter,request *http.Request) string {
 	headerToken,headerError := GetJWTHeader(request)
-	if headerError != "" {
+	if headerError == http.ErrNoCookie{
 		Response.Send(response,http.StatusUnauthorized,"User Not Authorized",nil)
+		return ""
+	} else if headerError != nil {
+		Response.Send(response,http.StatusInternalServerError,"Error getting cookie",nil)
 		return ""
 	}
 
@@ -78,24 +82,15 @@ func GetJWT(response http.ResponseWriter,request *http.Request) string {
 	// Response.Send(response,http.StatusOK,"User Validated",nil)
 }
 
-func GetJWTHeader(request *http.Request) (string,string){
-	if authHeaderValue := request.Header.Get("Authorization"); authHeaderValue != "" {
-		if strings.HasPrefix(authHeaderValue, "Bearer ") {
-			// Remove the "Bearer " prefix
-			token := authHeaderValue[len("Bearer "):]	
-			return token,""
-		}
+func GetJWTHeader(request *http.Request) (string,error){
+	cookie, err := request.Cookie("Token")
+	if err != nil {
+		return "", err
 	}
-	return "","User not authorized"
+	return cookie.Value,nil
 }
 
-// func GetAccess(response http.ResponseWriter) (string,string) {
-// 	if accessToken :=  response.Header().Get("Access"); accessToken != "" {
-// 		token := accessToken[:]
-// 		return token,""
-// 	}
-// 	return "","User not authorized"
-// }
+
 
 func GetHeader(request *http.Request,value string) (string,string) {
 	if accessToken := request.Header.Get(value); accessToken != "" {

@@ -2,8 +2,6 @@ package routes
 
 import (
 	authentication "backend/internal/Authentication"
-	validation "backend/internal/Validation"
-	"backend/internal/subscriptions"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -24,18 +22,8 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	userHandler := &authentication.UserHandler{
 		DB: pool,
 	}
-
-
-	mux := http.NewServeMux()
-
-	// c := cors.New(cors.Options{
-	// 	AllowedOrigins: []string{"http://localhost:3000"}, // Replace with your React frontend's URL
-	// 	AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-	// 	AllowedHeaders: []string{"Content-Type"},
-	// })
 	
-
-
+	mux := http.NewServeMux()
 
 	mux.HandleFunc("/auth/google/login", authentication.Login)
 
@@ -46,25 +34,6 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/auth/login",userHandler.UserLogin)
 
 	mux.HandleFunc("/validate-twofa",userHandler.Validate)
-
-	mux.HandleFunc("/validate-two-fa",func(response http.ResponseWriter, request *http.Request) {
-		validation.ValidateCode(response,request,pool)
-	})
-	
-
-	mux.HandleFunc("/insert-subscription",func(response http.ResponseWriter, request *http.Request) {
-		subscriptions.Insert(response,request,pool)
-	})
-
-	mux.HandleFunc("/subscriptions/getMax",func(response http.ResponseWriter, request *http.Request) {
-		subscriptions.GetMax(response,request,pool)
-	})
-
-	mux.HandleFunc("/suscriptions/search",func(response http.ResponseWriter, request *http.Request) {
-		subscriptions.Search(response,request,pool)
-	})
-
-	
 	return mux
 	
 }

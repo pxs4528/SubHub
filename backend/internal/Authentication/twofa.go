@@ -2,9 +2,9 @@ package authentication
 
 import (
 	"backend/internal/Response"
-	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 func (uh *UserHandler) Validate(response http.ResponseWriter,request *http.Request) {
@@ -29,29 +29,28 @@ func (uh *UserHandler) Validate(response http.ResponseWriter,request *http.Reque
 		return
 	}
 
-	var code int
-
-	err = uh.DB.QueryRow(context.Background(),`SELECT code
-												FROM public.twofa
-												WHERE id = $1`,id).Scan(&code)
-
+	sameCode,err := uh.GetCode(id)
 	if err != nil {
 		Response.Send(response,http.StatusInternalServerError,"Error getting the 2FA code",nil)
 		return
 	}
+	
 
-	if code != uh.Code.Code {
+	if !sameCode {
 		Response.Send(response,http.StatusUnauthorized,"Invalid Code",nil)
 		return
 	}
-	
+
 	validate.Value = "True"
+	validate.Expires = time.Now().Add(1*time.Hour)
+	validate.HttpOnly = true
+	validate.Path = "/"
+	validate.SameSite = http.SameSiteNoneMode
+	validate.Secure = true
 
 	http.SetCookie(response,validate)
 
 	Response.Send(response,http.StatusOK,"User Validated",nil)
-
-
 
 
 }

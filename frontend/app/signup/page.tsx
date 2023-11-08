@@ -16,20 +16,56 @@ export default function Signup() {
     window.location.replace("http://localhost:8080/auth/google/login");
   };
 
-  const validate = () => {
-    console.log("email", email, pass);
-    fetch("http://localhost:8080/auth/signup", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, pass }),
-    }).then((res) => {
-      if (res.status === 201) {
-        router.push("/dashboard");
+  const validate = async () => {
+    console.log(JSON.stringify({ name, email, pass }));
+    try {
+      const response = await fetch("http://localhost:8080/auth/signup", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({name ,email, pass }),
+      });
+      console.log(response.body);
+
+      if (response.ok) {
+        let Code = prompt("Enter 2FA Code Here Please");
+        console.log("testing 2fa");
+        console.log(JSON.stringify({ Code : Number(Code) }));
+        try {
+          const code_response = await fetch(
+            "http://localhost:8080/validate-twofa",
+            {
+              method: "POST",
+              credentials:"include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ Code : Number(Code) }),
+            }
+          );
+          const responseData = await code_response.json();
+
+          console.log(responseData);
+
+          if (code_response.ok) {
+            router.push("/dashboard");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      } else {
+        // Handle other status codes
+        const data = await response.json(); // Assuming the response contains JSON data
+        console.log(data)
+        console.log("Login failed. Status:", response.status);
+        // You can add additional handling based on different response status codes if needed
       }
-    });
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle network errors or exceptions
+    }
   };
 
   // TODO: Add Redirection to home page after registration

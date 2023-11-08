@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -65,36 +64,10 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 	go uh.ValidateInsertCode()
 
 	go uh.Send()
-	
-	http.SetCookie(response,&http.Cookie{
-		Name: "Token",
-		Value: JWT,
-		Expires: time.Now().Add(1*time.Hour),
-		HttpOnly: true,
-		Path: "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure: true,
-	})
 
-	http.SetCookie(response, &http.Cookie{
-		Name: "Access",
-		Value: uh.User.ID,
-		Expires: time.Now().Add(1*time.Hour),
-		HttpOnly: false,
-		Path: "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure: true,
-	})
-
-	http.SetCookie(response, &http.Cookie{
-		Name: "Validated",
-		Value: "False",
-		Expires: time.Now().Add(1*time.Hour),
-		HttpOnly: true,
-		Path: "/",
-		SameSite: http.SameSiteNoneMode,
-		Secure: true,
-	})
+	http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
+	http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
+	http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
 
 
 

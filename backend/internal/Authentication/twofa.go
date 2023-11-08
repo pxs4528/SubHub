@@ -15,14 +15,17 @@ func (uh *UserHandler) Validate(response http.ResponseWriter,request *http.Reque
 		return
 	}
 
-	id := GetJWT(response,request)
+	id := ValidateJWT(response,request)
 	if id == "" {
 		return
 	}
 
-	_,headerError := GetHeader(request,"Validated")
-	if headerError != "" {
+	validate,err := getCookie(request,"Validated")
+	if err == http.ErrNoCookie {
 		Response.Send(response,http.StatusUnauthorized,"User not logged in",nil)
+		return
+	} else if err != nil {
+		Response.Send(response,http.StatusInternalServerError,"Error fetching the cookie",nil)
 		return
 	}
 
@@ -30,21 +33,25 @@ func (uh *UserHandler) Validate(response http.ResponseWriter,request *http.Reque
 
 	err = uh.DB.QueryRow(context.Background(),`SELECT code
 												FROM public.twofa
-												WHERE id = $1;`,id).Scan(&code)
+												WHERE id = $1`,id).Scan(&code)
+
 	if err != nil {
 		Response.Send(response,http.StatusInternalServerError,"Error getting the 2FA code",nil)
 		return
 	}
 
 	if code != uh.Code.Code {
-		Response.Send(response,http.StatusUnauthorized,"Invalid 2FA Code",nil)
+		Response.Send(response,http.StatusUnauthorized,"Invalid Code",nil)
 		return
 	}
+	
+	validate.Value = "True"
 
-	request.Header.Del("Validated")
-	request.Header.Add("Validated","True")
+	http.SetCookie(response,validate)
+
+	Response.Send(response,http.StatusOK,"User Validated",nil)
 
 
-	Response.Send(response,http.StatusOK,"User Logged in ",nil)
+
 
 }

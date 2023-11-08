@@ -36,8 +36,6 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	
 
 
-	// all the routes
-	mux.HandleFunc("/getUserID",userHandler.GetUserID)
 
 	mux.HandleFunc("/auth/google/login", authentication.Login)
 
@@ -46,8 +44,6 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/auth/signup",userHandler.NewSignUp)
 
 	mux.HandleFunc("/auth/login",userHandler.UserLogin)
-
-	mux.HandleFunc("/validate-jwt",authentication.ValidateJWT)
 
 	mux.HandleFunc("/validate-twofa",userHandler.Validate)
 
@@ -68,10 +64,7 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 		subscriptions.Search(response,request,pool)
 	})
 
-
-	// handler := c.Handler(mux)
-
-	// return router
+	
 	return mux
 	
 }

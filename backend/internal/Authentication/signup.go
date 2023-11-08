@@ -1,11 +1,11 @@
 package authentication
 
 import (
-
 	"backend/internal/Response"
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -66,9 +66,25 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 
 	go uh.Send()
 	
-	request.Header.Add("Authorization","Bearer"+JWT)
-	response.Header().Add("Access",uh.User.ID)
-	request.Header.Add("Validated","False")
+	http.SetCookie(response,&http.Cookie{
+		Name: "token",
+		Value: JWT,
+		Expires: time.Now().Add(1*time.Hour),
+		HttpOnly: true,
+		Path: "/",
+		SameSite: http.SameSiteNoneMode,
+		Secure: true,
+	})
+
+	http.SetCookie(response, &http.Cookie{
+		Name: "Access",
+		Value: uh.User.ID,
+		Expires: time.Now().Add(1*time.Hour),
+		HttpOnly: false,
+		Path: "/",
+		SameSite: http.SameSiteNoneMode,
+		Secure: true,
+	})
 
 
 

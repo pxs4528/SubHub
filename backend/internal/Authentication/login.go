@@ -62,6 +62,16 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 			Secure: true,
 		})
 
+		http.SetCookie(response, &http.Cookie{
+			Name: "Access",
+			Value: uh.User.ID,
+			Expires: time.Now().Add(1*time.Hour),
+			HttpOnly: false,
+			Path: "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure: true,
+		})	
+
 		
 
 		Response.Send(response,http.StatusAccepted,"User logged in",nil)

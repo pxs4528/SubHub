@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/oauth2"
@@ -74,17 +75,32 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 
 	id := uh.ExistUser()
 	if id != "" {
-
+		uh.User.ID = id
 		JWT,err := uh.GenerateJWT()
 		if err != nil {
 			Response.Send(response,http.StatusInternalServerError,"Error Generating Session",nil)
 			return
 		}
 		
-		response.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		request.Header.Add("Validated","False")
-		request.Header.Add("Authorization","Bearer"+JWT)
-		response.Header().Add("Access",uh.User.ID)
+		http.SetCookie(response,&http.Cookie{
+			Name: "token",
+			Value: JWT,
+			Expires: time.Now().Add(1*time.Hour),
+			HttpOnly: true,
+			Path: "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure: true,
+		})
+
+		http.SetCookie(response, &http.Cookie{
+			Name: "Access",
+			Value: uh.User.ID,
+			Expires: time.Now().Add(1*time.Hour),
+			HttpOnly: false,
+			Path: "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure: true,
+		})
 
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",id)
@@ -104,10 +120,25 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 
 		go uh.InsertUser()
 		
-		response.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		request.Header.Add("Validated","False")
-		request.Header.Add("Authorization","Bearer"+JWT)
-		response.Header().Add("Access",uh.User.ID)
+		http.SetCookie(response,&http.Cookie{
+			Name: "token",
+			Value: JWT,
+			Expires: time.Now().Add(1*time.Hour),
+			HttpOnly: true,
+			Path: "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure: true,
+		})
+
+		http.SetCookie(response, &http.Cookie{
+			Name: "Access",
+			Value: uh.User.ID,
+			Expires: time.Now().Add(1*time.Hour),
+			HttpOnly: false,
+			Path: "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure: true,
+		})
 		
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",uh.User.ID)

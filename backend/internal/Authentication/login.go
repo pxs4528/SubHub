@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 
@@ -43,13 +44,23 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 		go uh.ValidateInsertCode()
 		go uh.Send()
 		
-		request.Header.Add("Authorization","Bearer"+JWT)
-		request.Header.Add("Validated","False")
-		response.Header().Add("Access",uh.User.ID)
+		// request.Header.Add("Authorization","Bearer"+JWT)
+		// request.Header.Add("Validated","False")
+		// response.Header().Add("Access",uh.User.ID)
 
 	
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",uh.User.ID)
+
+		http.SetCookie(response,&http.Cookie{
+			Name: "token",
+			Value: JWT,
+			Expires: time.Now().Add(1*time.Hour),
+			HttpOnly: true,
+			Path: "/",
+			SameSite: http.SameSiteNoneMode,
+			Secure: true,
+		})
 
 		
 

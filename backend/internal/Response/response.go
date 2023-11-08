@@ -12,8 +12,6 @@ type Body struct {
 }
 
 func Send(response http.ResponseWriter, statuscode int,message string,body interface{}) {
-	response.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	response.Header().Set("Content-Type","application/json")
 	responseBody := Body{
 		Message: message,
 		Body: body,

@@ -7,9 +7,7 @@ import (
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/rs/cors"
 )
-
 /*
 NewRouter making mux which is a router library that go has
 we are passing connection pool as a parameter which is called in main
@@ -30,11 +28,13 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 
 	mux := http.NewServeMux()
 
-	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"}, // Replace with your React frontend's URL
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders: []string{"Content-Type"},
-	})
+	// c := cors.New(cors.Options{
+	// 	AllowedOrigins: []string{"http://localhost:3000"}, // Replace with your React frontend's URL
+	// 	AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	// 	AllowedHeaders: []string{"Content-Type"},
+	// })
+	
+
 
 	// all the routes
 	mux.HandleFunc("/getUserID",userHandler.GetUserID)
@@ -69,9 +69,9 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	})
 
 
-	handler := c.Handler(mux)
+	// handler := c.Handler(mux)
 
 	// return router
-	return handler
+	return mux
 	
 }

@@ -1,11 +1,12 @@
 // Import required modules
 import fs from 'fs';
 import pdf from 'pdf-parse';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req, res) {
-  if (req.method === 'GET') {
+export default async function handler(req:NextApiRequest, res:NextApiResponse) {
+  if (req.method === 'POST') {
     try {
-      const dataBuffer = fs.readFileSync('./sample.pdf');
+      // const dataBuffer = fs.readFileSync('');
       const data = await pdf(dataBuffer);
       const text = data.text;
 

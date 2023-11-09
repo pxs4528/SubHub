@@ -11,7 +11,7 @@ func (uh *UserHandler) ValidateUser(response http.ResponseWriter,request *http.R
 		return
 	}
 
-	validateCookie,err := getCookie(request,"Validated")
+	validateCookie,err := GetCookie(request,"Validated")
 	if err == http.ErrNoCookie {
 		Response.Send(response,http.StatusUnauthorized,"User not logged in",nil)
 		return

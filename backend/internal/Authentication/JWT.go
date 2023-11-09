@@ -28,7 +28,7 @@ func (uh *UserHandler) GenerateJWT() (string,error){
 }
 
 func ValidateJWT(response http.ResponseWriter,request *http.Request) string{
-	tokenCookie,err := getCookie(request,"Token")
+	tokenCookie,err := GetCookie(request,"Token")
 	if err == http.ErrNoCookie {
 		Response.Send(response,http.StatusUnauthorized,"User not logged in",nil)
 		return ""

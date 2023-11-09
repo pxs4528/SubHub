@@ -20,7 +20,7 @@ func (uh *UserHandler) Validate(response http.ResponseWriter,request *http.Reque
 		return
 	}
 
-	validate,err := getCookie(request,"Validated")
+	validate,err := GetCookie(request,"Validated")
 	if err == http.ErrNoCookie {
 		Response.Send(response,http.StatusUnauthorized,"User not logged in",nil)
 		return

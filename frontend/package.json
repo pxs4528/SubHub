@@ -21,6 +21,7 @@
     "fast-geoip": "^1.1.88",
     "next": "^14.0.0",
     "next-pwa": "^5.6.0",
+    "pdf-parse": "^1.1.1",
     "pdf2json": "^3.0.5",
     "pg-promise": "^11.5.4",
     "postcss": "8.4.31",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.1",
+    "@types/pdf-parse": "^1.1.4",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.14",
     "@types/uuid": "^9.0.7",

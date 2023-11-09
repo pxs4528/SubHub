@@ -2,9 +2,9 @@ package authentication
 
 import (
 	"backend/internal/Response"
-	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 func (uh *UserHandler) Validate(response http.ResponseWriter,request *http.Request) {
@@ -15,36 +15,42 @@ func (uh *UserHandler) Validate(response http.ResponseWriter,request *http.Reque
 		return
 	}
 
-	id := GetJWT(response,request)
+	id := ValidateJWT(response,request)
 	if id == "" {
 		return
 	}
 
-	_,headerError := GetHeader(request,"Validated")
-	if headerError != "" {
+	validate,err := getCookie(request,"Validated")
+	if err == http.ErrNoCookie {
 		Response.Send(response,http.StatusUnauthorized,"User not logged in",nil)
+		return
+	} else if err != nil {
+		Response.Send(response,http.StatusInternalServerError,"Error fetching the cookie",nil)
 		return
 	}
 
-	var code int
-
-	err = uh.DB.QueryRow(context.Background(),`SELECT code
-												FROM public.twofa
-												WHERE id = $1;`,id).Scan(&code)
+	sameCode,err := uh.GetCode(id)
 	if err != nil {
 		Response.Send(response,http.StatusInternalServerError,"Error getting the 2FA code",nil)
 		return
 	}
+	
 
-	if code != uh.Code.Code {
-		Response.Send(response,http.StatusUnauthorized,"Invalid 2FA Code",nil)
+	if !sameCode {
+		Response.Send(response,http.StatusUnauthorized,"Invalid Code",nil)
 		return
 	}
 
-	request.Header.Del("Validated")
-	request.Header.Add("Validated","True")
+	validate.Value = "True"
+	validate.Expires = time.Now().Add(1*time.Hour)
+	validate.HttpOnly = true
+	validate.Path = "/"
+	validate.SameSite = http.SameSiteNoneMode
+	validate.Secure = true
 
+	http.SetCookie(response,validate)
 
-	Response.Send(response,http.StatusOK,"User Logged in ",nil)
+	Response.Send(response,http.StatusOK,"User Validated",nil)
+
 
 }

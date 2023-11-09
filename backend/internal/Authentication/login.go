@@ -43,13 +43,14 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 		go uh.ValidateInsertCode()
 		go uh.Send()
 		
-		request.Header.Add("Authorization","Bearer"+JWT)
-		request.Header.Add("Validated","False")
-		response.Header().Add("Access",uh.User.ID)
 
 	
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",uh.User.ID)
+
+		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
+		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
+		http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
 
 		
 

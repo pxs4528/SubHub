@@ -74,17 +74,16 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 
 	id := uh.ExistUser()
 	if id != "" {
-
+		uh.User.ID = id
 		JWT,err := uh.GenerateJWT()
 		if err != nil {
 			Response.Send(response,http.StatusInternalServerError,"Error Generating Session",nil)
 			return
 		}
-		
-		response.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		request.Header.Add("Validated","False")
-		request.Header.Add("Authorization","Bearer"+JWT)
-		response.Header().Add("Access",uh.User.ID)
+
+		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
+		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
+		http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
 
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",id)
@@ -103,11 +102,10 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 		}
 
 		go uh.InsertUser()
-		
-		response.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		request.Header.Add("Validated","False")
-		request.Header.Add("Authorization","Bearer"+JWT)
-		response.Header().Add("Access",uh.User.ID)
+
+		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
+		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
+		http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
 		
 		log.Printf("JWT: %v",JWT)
 		log.Printf("ID: %v",uh.User.ID)

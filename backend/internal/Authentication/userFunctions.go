@@ -133,4 +133,15 @@ func (uh *UserHandler) GetUser() error{
 	return nil
 }
 
+func (uh *UserHandler) GetCode(id string) (bool,error) {
+	var code int
+
+	err := uh.DB.QueryRow(context.Background(),`SELECT code
+												FROM public.twofa
+												WHERE id = $1`,id).Scan(&code)
+	if err != nil {
+		return false,err
+	}
+	return code == uh.Code.Code,nil
+}
 

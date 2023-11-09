@@ -13,22 +13,59 @@ export default function Signup() {
   const [name, setName] = useState("");
 
   const redirectG = () => {
-    window.open("http://localhost:8080/auth/google/login", "_blank");
+    window.location.replace("http://localhost:8080/auth/google/login");
   };
 
-  const validate = () => {
-    console.log("email", email, pass);
-    fetch("http://localhost:8080/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email, pass }),
-    }).then((res) => {
-      if (res.status === 201) {
-        router.push("/dashboard");
+  const validate = async () => {
+    console.log(JSON.stringify({ name, email, pass }));
+    try {
+      const response = await fetch("http://localhost:8080/auth/signup", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({name ,email, pass }),
+      });
+      console.log(response.body);
+
+      if (response.ok) {
+        let Code = prompt("Enter 2FA Code Here Please");
+        console.log("testing 2fa");
+        console.log(JSON.stringify({ Code : Number(Code) }));
+        try {
+          const code_response = await fetch(
+            "http://localhost:8080/validate-twofa",
+            {
+              method: "POST",
+              credentials:"include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ Code : Number(Code) }),
+            }
+          );
+          const responseData = await code_response.json();
+
+          console.log(responseData);
+
+          if (code_response.ok) {
+            router.push("/dashboard");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      } else {
+        // Handle other status codes
+        const data = await response.json(); // Assuming the response contains JSON data
+        console.log(data)
+        console.log("Login failed. Status:", response.status);
+        // You can add additional handling based on different response status codes if needed
       }
-    });
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle network errors or exceptions
+    }
   };
 
   // TODO: Add Redirection to home page after registration
@@ -116,14 +153,14 @@ export default function Signup() {
               onClick={() => {
                 validate();
               }}
-              className="w-full box-content inline-flex items-center justify-center px-3 py-2 bg-blue-600 border border-transparent transition-transform hover:scale-105 rounded-md font-semibold capitalize text-white hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25"
+              className="w-full box-content inline-flex items-center justify-center px-3 py-2 bg-blue-600 border border-transparent transition-transform hover:scale-105 rounded-md font-semibold capitalize text-white hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25 cursor-pointer"
             >
               Sign Up
             </a>
           </div>
           <div className="py-3 px-3.5 pt-10">
-            <button
-              className="flex items-center rounded-md shadow-xl transition-transform hover:scale-105"
+            <a
+              className="flex items-center rounded-md shadow-xl transition-transform hover:scale-105 cursor-pointer"
               onClick={() => redirectG()}
             >
               <svg
@@ -164,7 +201,7 @@ export default function Signup() {
                 />
               </svg>{" "}
               <span className="dark:text-white ml-2">Continue with Google</span>
-            </button>
+            </a>
           </div>
           <div className="mt-6 text-center">
             <a href="/login" className="dark:text-white underline ">

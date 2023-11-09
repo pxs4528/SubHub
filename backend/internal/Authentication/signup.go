@@ -1,7 +1,6 @@
 package authentication
 
 import (
-
 	"backend/internal/Response"
 	"encoding/json"
 	"log"
@@ -65,10 +64,10 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 	go uh.ValidateInsertCode()
 
 	go uh.Send()
-	
-	request.Header.Add("Authorization","Bearer"+JWT)
-	response.Header().Add("Access",uh.User.ID)
-	request.Header.Add("Validated","False")
+
+	http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
+	http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
+	http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
 
 
 

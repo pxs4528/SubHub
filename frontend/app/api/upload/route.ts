@@ -1,44 +1,47 @@
 // Import required modules
-import fs from 'fs';
-import pdf from 'pdf-parse';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from "next/server";
+// @ts-expect-error: https://gitlab.com/autokent/pdf-parse/-/issues/30
+import pdf from "pdf-parse/lib/pdf-parse";
 
-export default async function handler(req:NextApiRequest, res:NextApiResponse) {
-  if (req.method === 'POST') {
-    try {
-      // const dataBuffer = fs.readFileSync('');
-      const data = await pdf(dataBuffer);
-      const text = data.text;
-
-      // Define an array of subscription names
-      const subscriptionNames = ['Kansas', 'Netflix', 'Prime', 'HBO']; // Add more subscription names as needed
-
-      // Create a regular expression to match the price (in dollars and cents format)
-      const priceRegex = /\$\d+\.\d{2}/i;
-
-      // Prepare an object to store subscription details
-      const subscriptions = {};
-
-      // Loop through each subscription name
-      for (const subscriptionName of subscriptionNames) {
-        const searchRegex = new RegExp(`${subscriptionName}[^$]*(${priceRegex.source})`, 'i');
-        const priceMatches = text.match(searchRegex);
-
-        if (priceMatches) {
-          // If multiple matches are found for the subscription, store them all in an array
-          //@ts-ignore}
-          subscriptions[subscriptionName] = priceMatches.map((match) => ({
-            Subscription: subscriptionName,
-            Price: match[1]
-          }));
-        }
-      }
-
-      res.status(200).json(subscriptions);
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred while processing the PDF' });
+export async function POST(req: NextRequest) {
+  try {
+    const file = (await req.formData()).get("file");
+    if (!file || typeof file === "string") {
+      throw new Error("Wrong file");
     }
-  } else {
-    res.status(405).json({ error: 'Method Not Allowed' });
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const { text } = (await pdf(buffer)) as { text: string };
+
+    // Define an array of subscription names
+    const subscriptionNames = ["Kansas", "Netflix", "Prime", "HBO"]; // Add more subscription names as needed
+
+    // Create a regular expression to match the price (in dollars and cents format)
+    const priceRegex = /\$(?:\d{,3},)*\d+\.\d{2}/i;
+
+    // Prepare an object to store subscription details
+    const subscriptions: Record<string, number> = {};
+
+    // Loop through each subscription name
+    for (const subscriptionName of subscriptionNames) {
+      const searchRegex = new RegExp(
+        `${subscriptionName}[^\$\n]*(${priceRegex.source})`,
+        "i"
+      );
+      const priceMatch = text.match(searchRegex);
+
+      if (priceMatch) {
+        // If multiple matches are found for the subscription, store them all in an array
+        const price = priceMatch[1].replace(/[\$,]/g, "");
+        subscriptions[subscriptionName] = parseFloat(price);
+      }
+    }
+
+    return NextResponse.json(subscriptions);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "An error occurred while processing the PDF: " },
+      { status: 500 }
+    );
   }
 }

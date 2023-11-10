@@ -4,16 +4,12 @@ import (
 	authentication "backend/internal/Authentication"
 	"backend/internal/Response"
 	"encoding/json"
-
 	"net/http"
-
 	"time"
-
-	"github.com/google/uuid"
 )
 
-func (sh *SubscriptionHandler) InsertSubscription(response http.ResponseWriter,request *http.Request) {
 
+func (sh *SubscriptionHandler) UpdateSubscription(response http.ResponseWriter,request *http.Request) {
 	err := json.NewDecoder(request.Body).Decode(&sh.Subscription_list)
 	if err != nil {
 		Response.Send(response,http.StatusInternalServerError,"Error decoding subscription data",nil)
@@ -43,27 +39,24 @@ func (sh *SubscriptionHandler) InsertSubscription(response http.ResponseWriter,r
 	duration := time.Now()
 	newDuration := duration.AddDate(0,-(sh.Subscription_list.Months),0)
 	sh.Subscription_list.Date = newDuration
-	
 
 	sh.Subscription_list.Subscription_id = sh.GetSubId(response,request)
 	if sh.Subscription_list.Subscription_id == "" {
 		return
 	}
 
-
-	_,queryError := sh.GetExpenseId(response,request)
-	if queryError == "" {
-		Response.Send(response,http.StatusConflict,"Subscription Exists",nil)
+	expense_id,queryError := sh.GetExpenseId(response,request)
+	if queryError == "No subscription" {
+		Response.Send(response,http.StatusConflict,"Subscription doesn't Exists",nil)
 		return
 	} else if queryError == "Error getting expense subscription" {
 		Response.Send(response,http.StatusInternalServerError,"Error getting the expense subscription",nil)
 		return
 	}
-	sh.Subscription_list.Expense_id = uuid.New().String()
-	
-	go sh.Insert()
 
-	Response.Send(response,http.StatusOK,"Subscription Inserted",sh.Subscription_list)
+	sh.Subscription_list.Expense_id = expense_id
+
+	go sh.Update()
+
+	Response.Send(response,http.StatusOK,"Subscription Updated",nil)
 }
-
-

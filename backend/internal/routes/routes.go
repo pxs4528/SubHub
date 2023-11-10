@@ -43,6 +43,11 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 
 	mux.HandleFunc("/insert-subscription",subscriptionHandler.InsertSubscription)
 
+	mux.HandleFunc("/update-subscription",subscriptionHandler.UpdateSubscription)
+
+	mux.HandleFunc("/delete-subscription",subscriptionHandler.DeleteSubscription)
+
+	mux.HandleFunc("/validate-user",authentication.ValidateUser)
 	return mux
 	
 }

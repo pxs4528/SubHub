@@ -18,18 +18,27 @@ func (sh *SubscriptionHandler) Insert(){
 		status,
 		date
 		) 
-		VALUES (
-			$1,
-			$2,
-			$3,
-			$4,
-			$5,
-			$6
-		);
+		VALUES ($1,$2,$3,$4,$5,$6);
 		`,sh.Subscription_list.Expense_id,sh.Subscription_list.Subscription_id,sh.Subscription_list.User_id,sh.Subscription_list.Amount,sh.Subscription_list.Status,sh.Subscription_list.Date)
 	if err != nil {
 
 		log.Printf("Error occured adding subscription %v",err.Error())
+		return
+	}
+}
+
+func (sh *SubscriptionHandler) Update() {
+	_,err := sh.DB.Exec(context.Background(),`UPDATE public.user_expenses SET
+												expense_id = $1,
+												subscription_id = $2,
+												user_id = $3,
+												amount = $4,
+												status = $5,
+												date = $6
+												WHERE subscription_id = $2 AND user_id = $3;
+											`,sh.Subscription_list.Expense_id,sh.Subscription_list.Subscription_id,sh.Subscription_list.User_id,sh.Subscription_list.Amount,sh.Subscription_list.Status,sh.Subscription_list.Date)
+	if err != nil {
+		log.Printf("Error occured updating subscription %v",err.Error())
 		return
 	}
 }
@@ -40,7 +49,7 @@ func (sh *SubscriptionHandler) GetSubId(response http.ResponseWriter,request *ht
 												FROM public.subscription_list
 												WHERE subscription_name LIKE $1`,sh.Subscription_list.Name).Scan(&subscription_id)
 	if err == pgx.ErrNoRows {
-		Response.Send(response,http.StatusInternalServerError,"Subscription not found",nil)
+		Response.Send(response,http.StatusNotFound,"Subscription not found",nil)
 		return ""
 	} else if err != nil {
 		Response.Send(response,http.StatusInternalServerError,"Error getting the subscription",nil)
@@ -50,18 +59,27 @@ func (sh *SubscriptionHandler) GetSubId(response http.ResponseWriter,request *ht
 }
 
 
-func (sh *SubscriptionHandler) GetExpenseId(response http.ResponseWriter,request *http.Request) string{
+func (sh *SubscriptionHandler) GetExpenseId(response http.ResponseWriter,request *http.Request) (string,string){
 	var expense_id string
 	err := sh.DB.QueryRow(context.Background(),`SELECT expense_id
 												FROM public.user_expenses
 												WHERE subscription_id = $1 AND user_id = $2`,sh.Subscription_list.Subscription_id,sh.Subscription_list.User_id).Scan(&expense_id)
-	
 	if err == pgx.ErrNoRows {
-		return ""
+		return "","No subscription"
 	} else if err != nil {
-		Response.Send(response,http.StatusInternalServerError,"Error getting expense subscription",nil)
-		return "breaks"
+		return "","Error getting expense subscription"
 	}
-	Response.Send(response,http.StatusConflict,"Subscription already exists",nil)
-	return "BRUH"
+	return expense_id,""
+}
+
+func (sh *SubscriptionHandler) DeleteSub() {
+	_,err:= sh.DB.Exec(context.Background(),`DELETE
+											FROM public.user_expenses
+											WHERE subscription_id =	$1 AND user_id = $2`,sh.Subscription_list.Subscription_id,sh.Subscription_list.User_id)
+
+	if err != nil {
+		log.Printf("Error with delete query %v",err.Error())
+		return
+	}
+
 }

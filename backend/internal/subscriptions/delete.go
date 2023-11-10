@@ -40,6 +40,15 @@ func (sh *SubscriptionHandler) DeleteSubscription (response http.ResponseWriter,
 		return
 	}
 
+	_,queryError := sh.GetExpenseId(response,request)
+	if queryError == "No subscription" {
+		Response.Send(response,http.StatusConflict,"Subscription doesn't Exists",nil)
+		return
+	} else if queryError == "Error getting expense subscription" {
+		Response.Send(response,http.StatusInternalServerError,"Error getting the expense subscription",nil)
+		return
+	}
+
 	go sh.DeleteSub()
 
 	Response.Send(response,http.StatusOK,"Subscription Deleted",nil)

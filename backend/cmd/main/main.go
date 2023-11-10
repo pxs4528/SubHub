@@ -32,7 +32,7 @@ func main() {
 
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
-    originsOk := handlers.AllowedOrigins([]string{"http://localhost:3000"}) // Replace with your frontend's actual origin
+    originsOk := handlers.AllowedOrigins([]string{"http://localhost:3000","https://nextjs-dashboard-brown-two.vercel.app"}) // Replace with your frontend's actual origin
     methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
     credentialsOk := handlers.AllowCredentials()
 

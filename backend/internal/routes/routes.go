@@ -2,10 +2,12 @@ package routes
 
 import (
 	authentication "backend/internal/Authentication"
+	"backend/internal/subscriptions"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
 /*
 NewRouter making mux which is a router library that go has
 we are passing connection pool as a parameter which is called in main
@@ -22,6 +24,10 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	userHandler := &authentication.UserHandler{
 		DB: pool,
 	}
+
+	subscriptionHandler := &subscriptions.SubscriptionHandler{
+		DB: pool,
+	}
 	
 	mux := http.NewServeMux()
 
@@ -34,6 +40,9 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/auth/login",userHandler.UserLogin)
 
 	mux.HandleFunc("/validate-twofa",userHandler.Validate)
+
+	mux.HandleFunc("/insert-subscription",subscriptionHandler.InsertSubscription)
+
 	return mux
 	
 }

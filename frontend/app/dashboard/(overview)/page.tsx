@@ -18,6 +18,7 @@ export default async function Page() {
     try {
       const response = await fetch("http://localhost:8080/validate/", {
         method: "POST",
+        credentials:"include",
         headers: {
           "Content-Type": "application/json",
         },

@@ -35,7 +35,7 @@ func SetRegularCookie(key string, value string) *http.Cookie {
 }
 
 
-func getCookie(request *http.Request,key string) (*http.Cookie,error){
+func GetCookie(request *http.Request,key string) (*http.Cookie,error){
 	cookie,err := request.Cookie(key)
 	if err != nil {
 		return nil,err

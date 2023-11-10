@@ -9,7 +9,7 @@ export default function Signup() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
-  const [pass, setPass] = useState("");
+  const [password, setPass] = useState("");
   const [name, setName] = useState("");
 
   const redirectG = () => {
@@ -17,7 +17,7 @@ export default function Signup() {
   };
 
   const validate = async () => {
-    console.log(JSON.stringify({ name, email, pass }));
+    console.log(JSON.stringify({ name, email, password }));
     try {
       const response = await fetch("http://localhost:8080/auth/signup", {
         method: "POST",
@@ -25,7 +25,7 @@ export default function Signup() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({name ,email, pass }),
+        body: JSON.stringify({name ,email, password }),
       });
       console.log(response.body);
 

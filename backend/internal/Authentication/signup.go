@@ -23,13 +23,11 @@ return the JWT
 */
 
 func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Request) {
-
 	err := json.NewDecoder(request.Body).Decode(&uh.User)
 	if err != nil {
 		Response.Send(response,http.StatusInternalServerError,"Error getting the request",nil)
 		return
 	}
-
 	id := uh.ExistUser()
 	if id != "" {
 		Response.Send(response,http.StatusConflict,"User Exist",nil)

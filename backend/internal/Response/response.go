@@ -3,6 +3,10 @@ package Response
 import (
 	"encoding/json"
 	"net/http"
+	"os"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 
@@ -12,6 +16,9 @@ type Body struct {
 }
 
 func Send(response http.ResponseWriter, statuscode int,message string,body interface{}) {
+
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
 	responseBody := Body{
 		Message: message,
 		Body: body,

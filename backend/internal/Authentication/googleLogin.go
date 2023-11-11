@@ -4,11 +4,12 @@ import (
 	"backend/internal/Response"
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -31,14 +32,20 @@ func Config() *oauth2.Config{
 }
 
 func Login(response http.ResponseWriter, request *http.Request) {
+	
+	
 	googleConfig := Config()
 
 	url := googleConfig.AuthCodeURL(os.Getenv("State"))
+
 
 	http.Redirect(response,request,url,http.StatusSeeOther)
 }
 
 func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Request){
+
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
 	state := request.URL.Query().Get("state")
 	if state != os.Getenv("State") {
 		Response.Send(response,http.StatusConflict,"Incorrect URL",nil)
@@ -83,10 +90,9 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 
 		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
 		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
-		http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
+		http.SetCookie(response,SetHttpOnlyCookie("Validated","True"))
 
-		log.Printf("JWT: %v",JWT)
-		log.Printf("ID: %v",id)
+		log.Info().Msg(uh.User.ID+": Logged in using Google")
 
 		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
 
@@ -105,10 +111,9 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 
 		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
 		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
-		http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
+		http.SetCookie(response,SetHttpOnlyCookie("Validated","True"))
 		
-		log.Printf("JWT: %v",JWT)
-		log.Printf("ID: %v",uh.User.ID)
+		log.Info().Msg(uh.User.ID+": Logged in using Google")
 
 		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
 

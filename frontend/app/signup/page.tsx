@@ -12,11 +12,10 @@ export default function Signup() {
   const [password, setPass] = useState("");
   const [name, setName] = useState("");
 
-  const redirectG = () => {
-    window.location.replace("http://localhost:8080/auth/google/login");
-  };
 
-  const validate = async () => {
+
+  const validate = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     console.log(JSON.stringify({ name, email, password }));
     try {
       const response = await fetch("http://localhost:8080/auth/signup", {
@@ -25,31 +24,30 @@ export default function Signup() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({name ,email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
       console.log(response.body);
 
-      if (response.ok) {
+      if (response.status == 201) {
         let Code = prompt("Enter 2FA Code Here Please");
-        console.log("testing 2fa");
-        console.log(JSON.stringify({ Code : Number(Code) }));
+        console.log(JSON.stringify({ Code: Number(Code) }));
         try {
           const code_response = await fetch(
             "http://localhost:8080/validate-twofa",
             {
               method: "POST",
-              credentials:"include",
+              credentials: "include",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ Code : Number(Code) }),
+              body: JSON.stringify({ Code: Number(Code) }),
             }
           );
           const responseData = await code_response.json();
 
           console.log(responseData);
 
-          if (code_response.ok) {
+          if (code_response.status == 200) {
             router.push("/dashboard");
           }
         } catch (error) {
@@ -72,6 +70,109 @@ export default function Signup() {
   // Perhaps, figure whats going on.
   return (
     <div className="flex flex-col h-screen">
+      <div className="dark:bg-gray-900 min-h-screen bg-gray-50 flex sm:justify-center items-center pt-6 sm:pt-0">
+        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+          <div className="sm:mx-auto sm:w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
+            <div className="dark:invert flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+              <Image
+                className="mx-auto h-10 w-auto"
+                src={Icon}
+                alt="SubHub Logo"
+              />
+            </div>
+            <div className="w-full rounded-lg shadow-lg dark:border dark:bg-gray-800 dark:border-gray-700 shadow-gray-500/50">
+              <h2 className="mt-10 text-center text-2xl font-bold leading-1 tracking-tight text-white">
+                Sign up for your account
+              </h2>
+              <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+                <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                  <form className="space-y-4 md:space-y-6" onSubmit={(e) => validate(e)}>
+                    <div>
+                      <label htmlFor="name" className="block text-lg font-medium leading-6 tracking-tight text-white">
+                        Name
+                      </label>
+                      <div className="mt-2">
+                        <input
+                          onChange={(e) => {
+                            setName(e.target.value);
+                          }}
+                          id="name"
+                          name="name"
+                          type="text"
+                          required={true}
+                          placeholder="John Doe"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="block text-lg font-medium leading-6 tracking-tight text-white">
+                        Email
+                      </label>
+                      <div className="mt-2">
+                        <input
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                          }}
+                          id="email"
+                          name="email"
+                          type="email"
+                          required={true}
+                          placeholder="johndoe@gmail.com"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="password" className="block text-lg font-medium leading-6 tracking-tight text-white">
+                        Password
+                      </label>
+                      <div className="mt-2">
+                        <input
+                          onChange={(e) => {
+                            setPass(e.target.value);
+                          }}
+                          id="password"
+                          name="password"
+                          type="password"
+                          placeholder="•••••••••"
+                          minLength={8}
+                          maxLength={15}
+                          required={true}
+                          className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-2">
+                      <button
+                        type="submit"
+                        className="w-full text-white bg-blue-600 hover:bg-blue-400 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                      >
+                        Sign Up
+                      </button>
+                    </div>
+                    <div className="mt-6 text-center dark:text-white">
+                      Have an account? {' '}
+                      <a href="/login" className="dark:text-white underline ">
+                        Sign in!
+                      </a>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+/*
+<div className="flex flex-col h-screen">
       <div className="dark:bg-stone-900 min-h-screen bg-gray-50 flex  sm:justify-center items-center pt-6 sm:pt-0">
         <div className="w-full sm:max-w-md p-5">
           <h2 className="dark:text-white mb-4 text-center md:text-5xl text-lg font-extrabold">
@@ -85,11 +186,11 @@ export default function Signup() {
             />
           </div>
         </div>
-        {/* <hr className="-mt-12 mb-12 border-t-2 border-gray-300"></hr> */}
+        { <hr className="-mt-12 mb-12 border-t-2 border-gray-300"></hr> }
 
         <form>
           <div className="mb-8">
-            {/* <label className="block mb-1" htmlFor="name">Name</label> */}
+            {/* <label className="block mb-1" htmlFor="name">Name</label> }
             <input
               onChange={(e) => {
                 setName(e.target.value);
@@ -102,7 +203,7 @@ export default function Signup() {
             />
           </div>
           <div className="mb-8">
-            {/* <label className="block mb-1" htmlFor="email">Email Address</label> */}
+            {/* <label className="block mb-1" htmlFor="email">Email Address</label> }
             <input
               id="email"
               type="text"
@@ -112,7 +213,7 @@ export default function Signup() {
             />
           </div>
           <div className="mb-8">
-            {/* <label className="block mb-1" htmlFor="emailC">Confirm Email Address</label> */}
+            {/* <label className="block mb-1" htmlFor="emailC">Confirm Email Address</label> }
             <input
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -126,7 +227,7 @@ export default function Signup() {
           </div>
 
           <div className="mb-8">
-            {/* <label className="block mb-1" htmlFor="password">Password</label> */}
+            {/* <label className="block mb-1" htmlFor="password">Password</label> }
             <input
               id="password"
               type="password"
@@ -136,7 +237,7 @@ export default function Signup() {
             />
           </div>
           <div className="mb-8">
-            {/* <label className="block mb-1" htmlFor="passwordC">Confirm Password</label> */}
+            {/* <label className="block mb-1" htmlFor="passwordC">Confirm Password</label> }
             <input
               onChange={(e) => {
                 setPass(e.target.value);
@@ -211,5 +312,4 @@ export default function Signup() {
         </form>
       </div>
     </div>
-  );
-}
+*/

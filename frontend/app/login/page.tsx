@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import Icon from "@/public/assets/subhub_logo.svg";
 import { useRouter } from "next/navigation";
 
@@ -10,6 +10,60 @@ export default function Login() {
   const [Email, setEmail] = useState("");
   const [Password, setPass] = useState("");
 
+
+  async function ValidateLogin() {
+    try {
+        const response = await fetch("http://localhost:8080/validate-user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+    // if(!response.ok)
+        // router.push("/login");
+     }
+    catch
+    {
+    }
+  }
+
+  useEffect( ()=> {
+    ValidateLogin()
+}, [])
+
+  function ResendCode() {
+
+    // wait for dhru to carry me
+
+  }
+
+
+  async function ValidateCode(e: any) {
+    let Code = document.getElementById("twofainput")
+    console.log(Code)
+    try {
+        const response = await fetch(
+              "http://localhost:8080/validate-twofa",
+              {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ Code: Number(Code) }),
+              }
+            );
+      
+      if(response.ok)
+        router.push("/dashboard")
+      
+    }
+    catch
+    {
+      // add some error handling omegalul
+    }
+  }
+  
   const redirectG = () => {
     window.location.replace("http://localhost:8080/auth/google/login");
   };
@@ -29,31 +83,13 @@ export default function Login() {
       console.log(response.body);
 
       if (response.status == 202) {
-        let Code = prompt("Enter 2FA Code Here Please");
-        console.log("testing 2fa");
-        console.log(JSON.stringify({ Code: Number(Code) }));
-        try {
-          const code_response = await fetch(
-            "http://localhost:8080/validate-twofa",
-            {
-              method: "POST",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ Code: Number(Code) }),
-            }
-          );
-          const responseData = await code_response.json();
-
-          console.log(responseData);
-
-          if (code_response.status == 200) {
-            router.push("/dashboard");
-          }
-        } catch (error) {
-          console.error("Error:", error);
-        }
+          const loginBox = document.getElementById("loginBox")
+          loginBox!.style.filter = "blur(20px)"
+          loginBox!.style.pointerEvents = "none"
+          const twofabox = document.getElementById("2fabox")
+          twofabox!.style.filter = "blur(0px)" // handles blurring background
+          twofabox!.style.zIndex = "1"
+          twofabox!.style.display = 'inline'
       } else {
         // Handle other status codes
         const data = await response.json(); // Assuming the response contains JSON data
@@ -70,7 +106,31 @@ export default function Login() {
   return (
     <div className="flex flex-col h-screen">
       <div className="dark:bg-gray-900 min-h-screen bg-gray-50 flex sm:justify-center items-center pt-6 sm:pt-0">
-        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div id="2fabox" className="max-w-md mx-auto bg-gray-800 dark:border-gray-700 rounded-xl overflow-hidden p-6 shadow-md hover:shadow-lg w-1/2 absolute hidden">
+      <label htmlFor="textbox" className="block text-sm font-medium text-white">
+        Enter 2FA Code here:
+      </label>
+      <input
+        type="text"
+        id="twofainput"
+        className=" w-3/4 mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200"
+      />
+      <div className="mt-4">
+      <button
+          className="bg-blue-600 shadow-gray-500/50 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
+          onClick={e => e}
+        >
+          Resend
+        </button>
+        <button
+          className="bg-blue-600 shadow-gray-500/50 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
+          onClick={e => ValidateCode(e)}
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+        <div id="loginBox" className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
             <div className="dark:invert flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
               <Image

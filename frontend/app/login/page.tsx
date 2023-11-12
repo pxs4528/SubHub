@@ -11,26 +11,6 @@ export default function Login() {
   const [Password, setPass] = useState("");
 
 
-  async function ValidateLogin() {
-    try {
-        const response = await fetch("http://localhost:8080/validate-user", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-    // if(!response.ok)
-        // router.push("/login");
-     }
-    catch
-    {
-    }
-  }
-
-  useEffect( ()=> {
-    ValidateLogin()
-}, [])
-
   function ResendCode() {
 
     // wait for dhru to carry me
@@ -39,8 +19,9 @@ export default function Login() {
 
 
   async function ValidateCode(e: any) {
-    let Code = document.getElementById("twofainput")
-    console.log(Code)
+    let inputbox = document.getElementById("twofainput") as HTMLInputElement
+    let Code: string = inputbox.value
+    console.log(JSON.stringify({ Code: Number(Code) }))
     try {
         const response = await fetch(
               "http://localhost:8080/validate-twofa",
@@ -53,7 +34,7 @@ export default function Login() {
                 body: JSON.stringify({ Code: Number(Code) }),
               }
             );
-      
+      console.log(response)
       if(response.ok)
         router.push("/dashboard")
       

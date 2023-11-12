@@ -1,3 +1,4 @@
+"use server";
 import { headers } from 'next/headers';
 import { Card } from "@/app/ui/dashboard/cards";
 import RevenueChart from "@/app/ui/dashboard/revenue-chart";
@@ -11,15 +12,32 @@ import {
 } from "@/app/lib/data";
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers'
-
+import { getCookie, getCookies, setCookie } from 'cookies-next';
+import { NextPageContext } from 'next';
 
 
 
 export default async function Page() {
-    const Cookie = cookies().get("Validated")?.value
-    if(Cookie !== 'True')
+
+    
+    
+    const JWTToken = cookies().get("Token")?.value
+    const Validation = cookies().get("Validated")?.value
+    if(Validation !== 'True')
       redirect("/login")
-      
+    
+       
+    const response = await fetch("http://localhost:8080/validate-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 'Token': JWTToken }),
+    });
+    
+
+    // console.log(response.status)
+        
 
 
   const headerList = headers();

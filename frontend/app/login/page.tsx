@@ -4,13 +4,31 @@ import Image from "next/image";
 import React, { useEffect } from "react";
 import Icon from "@/public/assets/subhub_logo.svg";
 import { useRouter } from "next/navigation";
+import { useCookies } from 'next-client-cookies';
+import { deleteCookie, getCookie, getCookies, setCookie } from "cookies-next"
 
 export default function Login() {
   const router = useRouter();
   const [Email, setEmail] = useState("");
   const [Password, setPass] = useState("");
 
+  const arr = ["Token", "Validation", "Access"]
+  useEffect(() => {
+    
+    arr.forEach(element => {
+      if (getCookie(element))
+        deleteCookie(element)
+    });
+  });
+ 
+  
+  // for i  in cookies.get()
+  // if (cookies.get("Vaildated"))
 
+  // cookies.remove("Token")
+  // cookies.remove("Access")
+  
+  
   function ResendCode() {
 
     // wait for dhru to carry me

@@ -22,8 +22,9 @@ export default async function Page() {
     
     
     const JWTToken = cookies().get("Token")?.value
+    const Access = cookies().get("Access")?.value
     const Validation = cookies().get("Validated")?.value
-    if(Validation !== 'True')
+    if(Validation !== 'True' || JWTToken == undefined || Access == undefined)
       redirect("/login")
     
        

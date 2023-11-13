@@ -14,34 +14,34 @@ export default function Login() {
 
   const arr = ["Token", "Validation", "Access"]
   useEffect(() => {
-    
+
     arr.forEach(element => {
       if (getCookie(element))
         deleteCookie(element)
     });
   });
- 
-  
+
+
   // for i  in cookies.get()
   // if (cookies.get("Vaildated"))
 
   // cookies.remove("Token")
   // cookies.remove("Access")
-  
-  
+
+
   async function ResendCode() {
 
     const response = await fetch(
-              "http://localhost:8080/resend-code",
-              {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-    if(!response.ok)
+      "http://localhost:8080/resend-code",
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok)
       console.log("error with new code")
   }
 
@@ -51,28 +51,28 @@ export default function Login() {
     let Code: string = inputbox.value
     console.log(JSON.stringify({ Code: Number(Code) }))
     try {
-        const response = await fetch(
-              "http://localhost:8080/validate-twofa",
-              {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ Code: Number(Code) }),
-              }
-            );
+      const response = await fetch(
+        "http://localhost:8080/validate-twofa",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ Code: Number(Code) }),
+        }
+      );
       console.log(response)
-      if(response.ok)
+      if (response.ok)
         router.push("/dashboard")
-      
+
     }
     catch
     {
       // add some error handling omegalul
     }
   }
-  
+
   const redirectG = () => {
     window.location.replace("http://localhost:8080/auth/google/login");
   };
@@ -91,14 +91,14 @@ export default function Login() {
       });
       console.log(response.body);
 
-      if (response.status == 202) {
-          const loginBox = document.getElementById("loginBox")
-          loginBox!.style.filter = "blur(20px)"
-          loginBox!.style.pointerEvents = "none"
-          const twofabox = document.getElementById("2fabox")
-          twofabox!.style.filter = "blur(0px)" // handles blurring background
-          twofabox!.style.zIndex = "1"
-          twofabox!.style.display = 'inline'
+      if (response.ok) {
+        const loginBox = document.getElementById("loginBox")
+        loginBox!.style.filter = "blur(20px)"
+        loginBox!.style.pointerEvents = "none"
+        const twofabox = document.getElementById("2fabox")
+        twofabox!.style.filter = "blur(0px)" // handles blurring background
+        twofabox!.style.zIndex = "1"
+        twofabox!.style.display = 'inline'
       } else {
         // Handle other status codes
         const data = await response.json(); // Assuming the response contains JSON data
@@ -115,30 +115,30 @@ export default function Login() {
   return (
     <div className="flex flex-col h-screen">
       <div className="dark:bg-gray-900 min-h-screen bg-gray-50 flex sm:justify-center items-center pt-6 sm:pt-0">
-      <div id="2fabox" className="max-w-md mx-auto bg-gray-800 dark:border-gray-700 rounded-xl overflow-hidden p-6 shadow-md hover:shadow-lg w-1/2 absolute hidden">
-      <label htmlFor="textbox" className="block text-sm font-medium text-white">
-        Enter 2FA Code here:
-      </label>
-      <input
-        type="text"
-        id="twofainput"
-        className=" w-3/4 mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200"
-      />
-      <div className="mt-4">
-      <button
-          className="bg-blue-600 shadow-gray-500/50 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
-          onClick={() => ResendCode()}
-        >
-          Resend
-        </button>
-        <button
-          className="bg-blue-600 shadow-gray-500/50 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
-          onClick={e => ValidateCode(e)}
-        >
-          Submit
-        </button>
-      </div>
-    </div>
+        <div id="2fabox" className="max-w-md mx-auto bg-gray-800 dark:border-gray-700 rounded-xl overflow-hidden p-6 shadow-md hover:shadow-lg w-1/2 absolute hidden">
+          <label htmlFor="textbox" className="block text-sm font-medium text-white">
+            Enter 2FA Code here:
+          </label>
+          <input
+            type="text"
+            id="twofainput"
+            className=" w-3/4 mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200"
+          />
+          <div className="mt-4">
+            <button
+              className="bg-blue-600 shadow-gray-500/50 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
+              onClick={() => ResendCode()}
+            >
+              Resend
+            </button>
+            <button
+              className="bg-blue-600 shadow-gray-500/50 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
+              onClick={e => ValidateCode(e)}
+            >
+              Submit
+            </button>
+          </div>
+        </div>
         <div id="loginBox" className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
             <div className="dark:invert flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">

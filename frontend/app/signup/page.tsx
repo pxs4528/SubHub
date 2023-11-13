@@ -28,7 +28,7 @@ export default function Signup() {
       });
       console.log(response.body);
 
-      if (response.status == 201) {
+      if (response.ok) {
         let Code = prompt("Enter 2FA Code Here Please");
         console.log(JSON.stringify({ Code: Number(Code) }));
         try {
@@ -47,7 +47,7 @@ export default function Signup() {
 
           console.log(responseData);
 
-          if (code_response.status == 200) {
+          if (code_response.ok) {
             router.push("/dashboard");
           }
         } catch (error) {

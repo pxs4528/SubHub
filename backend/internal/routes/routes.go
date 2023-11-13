@@ -50,6 +50,7 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/resend-code", userHandler.ResendCode)
 
 	mux.HandleFunc("/validate-user",authentication.ValidateUser)
+	
 	return mux
 	
 }

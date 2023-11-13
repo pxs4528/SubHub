@@ -6,6 +6,27 @@ import (
 	"net/http"
 )
 
+func (uh *UserHandler) ResendCode(response http.ResponseWriter,request *http.Request){
+	uh.User = &UserData{}
+	
+	code := RandomCode()
+
+	uh.Code = &Code{
+		Code: code,
+	}
+
+	validateCookie,err := GetCookie(request,"Access")
+	if err != nil {
+		Response.Send(response, http.StatusUnauthorized, "No Access Token", nil)
+	}
+
+	uh.User.ID = validateCookie.Value
+	
+	go uh.ValidateInsertCode()
+	Response.Send(response,http.StatusOK, "Code Regenerated", nil)
+
+}
+
 
 func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Request) {
 

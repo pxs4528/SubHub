@@ -18,7 +18,6 @@ type TokenCode struct {
 }
 
 
-
 func InsertCode(pool *pgxpool.Pool,code int,id string){
 	var res int
 	err := pool.QueryRow(context.Background(),`SELECT code

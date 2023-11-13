@@ -29,10 +29,20 @@ export default function Login() {
   // cookies.remove("Access")
   
   
-  function ResendCode() {
+  async function ResendCode() {
 
-    // wait for dhru to carry me
-
+    const response = await fetch(
+              "http://localhost:8080/resend-code",
+              {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+    if(!response.ok)
+      console.log("error with new code")
   }
 
 
@@ -117,7 +127,7 @@ export default function Login() {
       <div className="mt-4">
       <button
           className="bg-blue-600 shadow-gray-500/50 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
-          onClick={e => e}
+          onClick={() => ResendCode()}
         >
           Resend
         </button>

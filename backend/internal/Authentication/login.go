@@ -23,6 +23,9 @@ func (uh *UserHandler) ResendCode(response http.ResponseWriter,request *http.Req
 	uh.User.ID = validateCookie.Value
 	
 	go uh.ValidateInsertCode()
+	err = uh.GetUserFromID()
+
+	go uh.Send()
 	Response.Send(response,http.StatusOK, "Code Regenerated", nil)
 
 }

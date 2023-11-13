@@ -134,8 +134,8 @@ func (uh *UserHandler) GetUser() error{
 
 func (uh *UserHandler) GetUserFromID() error{
 	err := uh.DB.QueryRow(context.Background(), `SELECT email,name
-												 FROM public.users
-												 WHERE id = $1`,uh.User.ID).Scan(&uh.User.Email, &uh.User.Name)
+												FROM public.users
+												WHERE id = $1`,uh.User.ID).Scan(&uh.User.Email, &uh.User.Name)
 	if err == pgx.ErrNoRows {
 		return err
 	}

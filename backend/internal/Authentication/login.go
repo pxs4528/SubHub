@@ -24,6 +24,10 @@ func (uh *UserHandler) ResendCode(response http.ResponseWriter,request *http.Req
 	
 	go uh.ValidateInsertCode()
 	err = uh.GetUserFromID()
+	if err != nil {
+		Response.Send(response,http.StatusUnauthorized,"User doesn't exist",nil)
+		return
+	}
 
 	go uh.Send()
 	Response.Send(response,http.StatusOK, "Code Regenerated", nil)

@@ -8,8 +8,6 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -44,7 +42,7 @@ func Login(response http.ResponseWriter, request *http.Request) {
 
 func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Request){
 
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	
 
 	state := request.URL.Query().Get("state")
 	if state != os.Getenv("State") {
@@ -92,8 +90,6 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
 		http.SetCookie(response,SetHttpOnlyCookie("Validated","True"))
 
-		log.Info().Msg(uh.User.ID+": Logged in using Google")
-
 		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
 
 		return
@@ -112,8 +108,6 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
 		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
 		http.SetCookie(response,SetHttpOnlyCookie("Validated","True"))
-		
-		log.Info().Msg(uh.User.ID+": Logged in using Google")
 
 		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
 

@@ -18,27 +18,41 @@ const UpdateInvoice = InvoiceSchema.omit({ date: true });
 const DeleteInvoice = InvoiceSchema.pick({ id: true });
 const db = client();
 
-export async function createInvoice(formData: FormData) {
-  
+export async function createInvoice(subscriptionId: string, subscriptionName: string, Amount: number, Status: string, isOtherSelected : boolean) {
+  console.log("actionsts", subscriptionId, subscriptionName, Amount, Status)
   const { customerId, amount, status } = CreateInvoice.parse({
-    customerId: formData.get("customerId"),
-    amount: formData.get("amount"),
-    status: formData.get("status"),
+    customerId: subscriptionId,
+    amount: Amount,
+    status: Status,
   });
-  try {
-    const response = await db.query("SHOW TABLES");
-    console.log(response);
-  } catch (error) {
-    console.error(error);
-  }
+  // try {
+  //   const response = await db.query("SHOW TABLES");
+  //   console.log(response);
+  // } catch (error) {
+  //   console.error(error);
+  // }
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split("T")[0];
+  const email = "test LOL"
+  const image_url = "/customers/netflix.png"
 
   try {
-    await sql`
+    if (isOtherSelected) {
+      await sql`
         INSERT INTO invoices (customer_id, amount, status, date)
-        VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+        VALUES (${subscriptionId}, ${amountInCents}, ${status}, ${date})
       `;
+      await sql`
+        INSERT INTO customers (id, name, email, image_url)
+        VALUES (${subscriptionId}, ${subscriptionName}, ${email}, ${image_url})
+      `;
+    }
+    else {
+      await sql`
+        INSERT INTO invoices (customer_id, amount, status, date)
+        VALUES (${subscriptionId}, ${amountInCents}, ${status}, ${date})
+      `;
+    }
   } catch (error) {
     return {
       message: "Database Error: Failed to Create Invoice.",

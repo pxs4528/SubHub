@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (uh *UserHandler) ValidateUser(response http.ResponseWriter,request *http.Request) {
+func ValidateUser(response http.ResponseWriter,request *http.Request) {
 	id := ValidateJWT(response,request)
 	if id == "" {
 		return

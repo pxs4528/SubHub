@@ -4,7 +4,6 @@ import (
 	"backend/internal/Response"
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"os"
 
@@ -31,14 +30,20 @@ func Config() *oauth2.Config{
 }
 
 func Login(response http.ResponseWriter, request *http.Request) {
+	
+	
 	googleConfig := Config()
 
 	url := googleConfig.AuthCodeURL(os.Getenv("State"))
+
 
 	http.Redirect(response,request,url,http.StatusSeeOther)
 }
 
 func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Request){
+
+	
+
 	state := request.URL.Query().Get("state")
 	if state != os.Getenv("State") {
 		Response.Send(response,http.StatusConflict,"Incorrect URL",nil)
@@ -83,10 +88,7 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 
 		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
 		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
-		http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
-
-		log.Printf("JWT: %v",JWT)
-		log.Printf("ID: %v",id)
+		http.SetCookie(response,SetHttpOnlyCookie("Validated","True"))
 
 		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
 
@@ -105,10 +107,7 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 
 		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
 		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
-		http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
-		
-		log.Printf("JWT: %v",JWT)
-		log.Printf("ID: %v",uh.User.ID)
+		http.SetCookie(response,SetHttpOnlyCookie("Validated","True"))
 
 		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
 

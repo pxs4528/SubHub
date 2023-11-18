@@ -16,7 +16,7 @@ func (uh *UserHandler) Validate(response http.ResponseWriter,request *http.Reque
 	}
 
 	id := ValidateJWT(response,request)
-	if id == "" {
+	if id == ""{
 		return
 	}
 

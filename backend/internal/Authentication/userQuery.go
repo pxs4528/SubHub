@@ -132,6 +132,16 @@ func (uh *UserHandler) GetUser() error{
 	return nil
 }
 
+func (uh *UserHandler) GetUserFromID() error{
+	err := uh.DB.QueryRow(context.Background(), `SELECT email,name
+												FROM public.users
+												WHERE id = $1`,uh.User.ID).Scan(&uh.User.Email, &uh.User.Name)
+	if err == pgx.ErrNoRows {
+		return err
+	}
+	return nil											
+}
+
 func (uh *UserHandler) GetCode(id string) (bool,error) {
 	var code int
 

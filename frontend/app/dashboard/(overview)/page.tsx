@@ -1,3 +1,5 @@
+"use server";
+import { headers } from 'next/headers';
 import { Card } from "@/app/ui/dashboard/cards";
 import RevenueChart from "@/app/ui/dashboard/revenue-chart";
 import LatestInvoices from "@/app/ui/dashboard/latest-invoices";
@@ -8,43 +10,36 @@ import {
   fetchLatestInvoices,
   fetchCardData,
 } from "@/app/lib/data";
-import { headers } from 'next/headers';
-import router from "next/router";
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers'
+import { getCookie, getCookies, setCookie } from 'cookies-next';
+import { NextPageContext } from 'next';
+
 
 
 export default async function Page() {
 
-  const validate = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/validate/", {
-        method: "POST",
-        credentials:"include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
-      if (response.ok) {
-        // Successful login (status code 200-299)
-        console.log("JWT Validated");
+    
+    
+    const JWTToken = cookies().get("Token")?.value
+    const Access = cookies().get("Access")?.value
+    const Validation = cookies().get("Validated")?.value
+    if(Validation !== 'True' || JWTToken == undefined || Access == undefined)
+      redirect("/login")
+    
+       
+    const response = await fetch("http://localhost:8080/validate-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 'Token': JWTToken }),
+    });
+    
 
-        const data = await response.json(); // Assuming the response contains JSON data
-        console.log(data)
-        // sessionStorage.setItem('userID', JSON.stringify(data.body)); // Store the response data in sessionStorage
-        // router.push("/dashboard");
-      } else {
-        // Handle other status codes
-        const data = await response.json(); // Assuming the response contains JSON data
-        console.log(data)
-        console.log("JWT not found:", response.status);
-        // router.push("/login");
-        // You can add additional handling based on different response status codes if needed
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle network errors or exceptions
-    }
-  };
+    // console.log(response.status)
+        
+
 
   const headerList = headers();
   const referer = headerList.get('Access');

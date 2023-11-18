@@ -18,10 +18,11 @@ export async function POST(req: NextRequest) {
     // Create a regular expression to match the price (in dollars and cents format)
     const priceRegex = /(?:\$\d+\.\d{2})|(?:-(\d+\.\d{2}))/i;
     const dateRegex = /\b(\d{2}\/\d{2})\b/;
+    const year = new Date().getFullYear(); 
 
 
     // Prepare an object to store subscription details
-    const subscriptions: Record<string, { date: string; price: number }> = {};
+    const subscriptions: Record<string, { formattedDate: string; price: number }> = {};
     // Loop through each subscription name
     for (const subscriptionName of subscriptionNames) {
       const searchRegex = new RegExp(`${dateRegex.source}[^-]*${subscriptionName}[^-]*(${priceRegex.source})`, 'i');
@@ -29,10 +30,12 @@ export async function POST(req: NextRequest) {
       const match = text.match(searchRegex);
 
       if (match) {
-        const date = match[1];
-        // If multiple matches are found for the subscription, store them all in an array
+        let date = match[1];
+        date = date.replace(/\//g, '-');
+        date = date + '-' + year;
+        const formattedDate = new Date(date).toISOString().split("T")[0];
         const price = match[2] || match[3];
-        subscriptions[subscriptionName] = { date, price: parseFloat(price) * -1 };
+        subscriptions[subscriptionName] = { formattedDate , price: parseFloat(price) * -1 };
       }
     }
 

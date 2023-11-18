@@ -13,26 +13,26 @@ export async function POST(req: NextRequest) {
     const { text } = (await pdf(buffer)) as { text: string };
 
     // Define an array of subscription names
-    const subscriptionNames = ["Kansas", "Netflix", "Prime", "HBO"]; // Add more subscription names as needed
+    const subscriptionNames = ['Kansas', 'Panda', 'Braums', 'Netflix', 'Prime', 'HBO']; // Add more subscription names as needed
 
     // Create a regular expression to match the price (in dollars and cents format)
-    const priceRegex = /\$(?:\d{,3},)*\d+\.\d{2}/i;
+    const priceRegex = /(?:\$\d+\.\d{2})|(?:-(\d+\.\d{2}))/i;
+    const dateRegex = /\b(\d{2}\/\d{2})\b/;
+
 
     // Prepare an object to store subscription details
-    const subscriptions: Record<string, number> = {};
-
+    const subscriptions: Record<string, { date: string; price: number }> = {};
     // Loop through each subscription name
     for (const subscriptionName of subscriptionNames) {
-      const searchRegex = new RegExp(
-        `${subscriptionName}[^\$\n]*(${priceRegex.source})`,
-        "i"
-      );
-      const priceMatch = text.match(searchRegex);
+      const searchRegex = new RegExp(`${dateRegex.source}[^-]*${subscriptionName}[^-]*(${priceRegex.source})`, 'i');
 
-      if (priceMatch) {
+      const match = text.match(searchRegex);
+
+      if (match) {
+        const date = match[1];
         // If multiple matches are found for the subscription, store them all in an array
-        const price = priceMatch[1].replace(/[\$,]/g, "");
-        subscriptions[subscriptionName] = parseFloat(price);
+        const price = match[2] || match[3];
+        subscriptions[subscriptionName] = { date, price: parseFloat(price) * -1 };
       }
     }
 

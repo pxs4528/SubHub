@@ -40,3 +40,4 @@ next-env.d.ts
 __pycache__/
 /scripts/qr_codes/
 /scripts/qr_codes.zip
+sample-2.pdf

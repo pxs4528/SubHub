@@ -27,10 +27,11 @@ type Subscription_Count struct {
 	Count int `json:"count"`
 	PaidTotal float32 `json:"paidtotal"`
 	PendingTotal float32 `json:"pendingtotal"`
+	TotalAmount float32 `json:"totalamount"`
 }
 
 type Montly_Cost struct {
-	MonthlyExpenses float32 `json:"monthly-expenses"`
+	MonthlyExpenses float32 `json:"monthlyexpenses"`
 	Month time.Month `json:"month"`
 }
 

@@ -42,9 +42,11 @@ func (sh *SubscriptionHandler) InsertSubscription(response http.ResponseWriter,r
 	}
 
 	duration := time.Now()
-	newDuration := duration.AddDate(0,-(sh.Subscription_list.Months),0)
+
+	newDuration := duration.AddDate(0,-(sh.Subscription_list.Month),0)
 	sh.Subscription_list.Date = newDuration
-	
+	log.Info(newDuration.String())
+	log.Info(sh.Subscription_list.Date.String())
 
 	sh.Subscription_list.Subscription_id = sh.GetSubId(response,request)
 	if sh.Subscription_list.Subscription_id == "" {

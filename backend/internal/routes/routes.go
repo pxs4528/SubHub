@@ -56,6 +56,8 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/get-latest-subscription",subscriptionHandler.GetLatestSubscription)
 
 	mux.HandleFunc("/get-subscription-count",subscriptionHandler.GetUserSubscriptionCount)
+
+	mux.HandleFunc("/get-monthly-cost",subscriptionHandler.GetUserMontlyExpenses)
 	
 	return mux
 	

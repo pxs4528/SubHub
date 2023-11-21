@@ -37,7 +37,7 @@ func (sh *SubscriptionHandler) UpdateSubscription(response http.ResponseWriter,r
 	}
 
 	duration := time.Now()
-	newDuration := duration.AddDate(0,-(sh.Subscription_list.Months),0)
+	newDuration := duration.AddDate(0,-(sh.Subscription_list.Month),0)
 	sh.Subscription_list.Date = newDuration
 
 	sh.Subscription_list.Subscription_id = sh.GetSubId(response,request)

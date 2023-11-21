@@ -1,25 +1,10 @@
-'use client'
-import React, { useEffect, useRef } from "react";
+"use client";
+import React, { useEffect, useRef, useState } from "react";
 import Chart, { ChartConfiguration } from "chart.js/auto";
-import { fetchRevenue } from "@/app/lib/data";
 
-export default function chart() {
-  const rev_data: number[] = [];
-
-async function fetchData() {
-    try {
-        const data = await fetchRevenue();
-        data.forEach((item) => {
-            rev_data.push(item.revenue);
-        });
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-fetchData();
-
-  const canvasEl = useRef(null);
+export default function ChartComponent() {
+  const [monthlyExpenses, setMonthlyExpenses] = useState([]);
+  const canvasEl = useRef<HTMLCanvasElement | null>(null);
 
   const colors = {
     purple: {
@@ -35,59 +20,63 @@ fetchData();
   };
 
   useEffect(() => {
-    const ctx = canvasEl.current.getContext("2d");
-    // const ctx = document.getElementById("myChart");
-
-    const gradient = ctx.createLinearGradient(0, 16, 0, 600);
-    gradient.addColorStop(0, colors.purple.half);
-    gradient.addColorStop(0.65, colors.purple.quarter);
-    gradient.addColorStop(1, colors.purple.zero);
-
-    const weight = [2000.0, 1800.0, 2800.0,
-      4800.0, 3200.0, 3500.0,
-      3700.0, 2500.0, 2300.0,
-      2200.0, 2500.0, 3000.0];
-
-    const labels = [
-      "Jan",
-      "Feb",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "Aug",
-      "Sept",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
-    const data = {
-      labels: labels,
-      datasets: [
-        {
-          backgroundColor: gradient,
-          label: "Expenses",
-          data: weight,
-          fill: true,
-          borderWidth: 2,
-          borderColor: colors.purple.default,
-          lineTension: 0.2,
-          pointBackgroundColor: colors.purple.default,
-          pointRadius: 3
-        }
-      ]
+    const getMonthlyCost = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/get-monthly-cost", {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await response.json();
+        setMonthlyExpenses(data.body.monthlyexpenses);
+      } catch (error) {
+        console.error("Error:", error);
+      }
     };
-    const config: ChartConfiguration<'line', number[], string> = {
-      type: 'line',
-      data: data
-    };
-    const myLineChart = new Chart(ctx, config);
 
-    return function cleanup() {
-      myLineChart.destroy();
-    };
-  });
+    getMonthlyCost();
+
+  }, []); // Empty dependency array to run only once after component mounts
+
+  useEffect(() => {
+    const ctx = canvasEl.current?.getContext('2d');
+
+    if (ctx && monthlyExpenses && monthlyExpenses.length > 0) {
+      const gradient = ctx.createLinearGradient(0, 16, 0, 600);
+      gradient.addColorStop(0, colors.purple.half);
+      gradient.addColorStop(0.65, colors.purple.quarter);
+      gradient.addColorStop(1, colors.purple.zero);
+
+      const labels = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            backgroundColor: gradient,
+            label: "Expenses",
+            data: monthlyExpenses,
+            fill: true,
+            borderWidth: 2,
+            borderColor: colors.purple.default,
+            lineTension: 0.2,
+            pointBackgroundColor: colors.purple.default,
+            pointRadius: 3
+          }
+        ]
+      };
+
+      const config: ChartConfiguration<'line', number[], string> = {
+        type: 'line',
+        data: data
+      };
+
+      const myLineChart = new Chart(ctx, config);
+
+      return () => {
+        myLineChart.destroy();
+      };
+    }
+  }, [monthlyExpenses, colors.purple, colors.indigo]); // Dependency array includes monthlyExpenses and colors
 
   return (
     <div className="App">

@@ -15,7 +15,7 @@ type User_Subscription_List struct {
 	Amount float32 `json:"amount"`
 	Status string `json:"status"`
 	Date time.Time `json:"date"`
-	Months int `json:"months"`
+	Month int `json:"month"`
 }
 
 type Subscriptions struct {
@@ -29,9 +29,10 @@ type Subscription_Count struct {
 	PendingTotal float32 `json:"pendingtotal"`
 }
 
-
-
-
+type Montly_Cost struct {
+	MonthlyExpenses float32 `json:"monthly-expenses"`
+	Month time.Month `json:"month"`
+}
 
 
 type SubscriptionHandler struct {

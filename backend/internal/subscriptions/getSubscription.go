@@ -65,7 +65,7 @@ func (sh *SubscriptionHandler) GetLatestSubscription(response http.ResponseWrite
 
 	var user_subscriptions []User_Subscription_List
 
-	row,err := sh.DB.Query(context.Background(),`SELECT ue.expense_id,ue.subscription_id,sl.subscription_name,ue.amount,ue.date,ue.status
+	row,err := sh.DB.Query(context.Background(),`SELECT ue.expense_id,ue.subscription_id,sl.subscription_name,ROUND(ue.amount,2),ue.date,ue.status
 												FROM public.user_expenses AS ue
 												JOIN public.subscription_list AS sl ON sl.id = ue.subscription_id
 												WHERE ue.user_id = $1
@@ -174,7 +174,7 @@ func (sh *SubscriptionHandler) GetUserMontlyExpenses(response http.ResponseWrite
 	)
 	SELECT 
 		Month,
-		SUM(TotalAmount) OVER (ORDER BY Month) AS CumulativeTotal
+		ROUND(SUM(TotalAmount) OVER (ORDER BY Month),2) AS CumulativeTotal
 	FROM 
 		MonthlyTotals
 	ORDER BY 

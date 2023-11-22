@@ -1,11 +1,14 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Chart, { ChartConfiguration } from "chart.js/auto";
+import { lusitana } from "@/app/ui/fonts";
+
+
+
 
 export default function ChartComponent() {
-  const [monthlyExpenses, setMonthlyExpenses] = useState([]);
   const canvasEl = useRef<HTMLCanvasElement | null>(null);
-
+  const [monthlyData, setMonthlyData] = useState<number[]>([]);
   const colors = {
     purple: {
       default: "rgba(149, 76, 233, 1)",
@@ -14,47 +17,42 @@ export default function ChartComponent() {
       zero: "rgba(149, 76, 233, 0)"
     },
     indigo: {
-      default: "rgba(80, 102, 120, 1)",
+      default: "rgba(100,100,100, 1)",
       quarter: "rgba(80, 102, 120, 0.25)"
     }
   };
-
   useEffect(() => {
-    const getMonthlyCost = async () => {
+    const monthlyExpenses = async () => {
       try {
         const response = await fetch("http://localhost:8080/get-monthly-cost", {
           method: "GET",
           credentials: "include",
         });
         const data = await response.json();
-        setMonthlyExpenses(data.body.monthlyexpenses);
-      } catch (error) {
-        console.error("Error:", error);
+        const expensesData = data.body.map((item: any) => item.monthlyexpenses);
+        setMonthlyData(expensesData); // Update state with fetched data
+      } catch (err) {
+        console.log("Error: ", err);
       }
-    };
+    }
 
-    getMonthlyCost();
-
-  }, []); // Empty dependency array to run only once after component mounts
-
+    monthlyExpenses();
+  }, []);
   useEffect(() => {
     const ctx = canvasEl.current?.getContext('2d');
-
-    if (ctx && monthlyExpenses && monthlyExpenses.length > 0) {
+    if (ctx) {
       const gradient = ctx.createLinearGradient(0, 16, 0, 600);
       gradient.addColorStop(0, colors.purple.half);
       gradient.addColorStop(0.65, colors.purple.quarter);
       gradient.addColorStop(1, colors.purple.zero);
-
       const labels = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
-
       const data = {
         labels: labels,
         datasets: [
           {
             backgroundColor: gradient,
             label: "Expenses",
-            data: monthlyExpenses,
+            data: monthlyData,
             fill: true,
             borderWidth: 2,
             borderColor: colors.purple.default,
@@ -67,7 +65,15 @@ export default function ChartComponent() {
 
       const config: ChartConfiguration<'line', number[], string> = {
         type: 'line',
-        data: data
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          animation: {
+            duration: window.innerWidth > 600 ? 1000 : 0,
+          },
+        }
+
       };
 
       const myLineChart = new Chart(ctx, config);
@@ -76,10 +82,14 @@ export default function ChartComponent() {
         myLineChart.destroy();
       };
     }
-  }, [monthlyExpenses, colors.purple, colors.indigo]); // Dependency array includes monthlyExpenses and colors
+  }, [monthlyData, colors.purple, colors.indigo]); // Dependency array includes monthlyExpenses and colors
 
   return (
-    <div className="App">
+
+    <div className="App py-5">
+      <h2 className={`${lusitana.className} dark:invert mb-4 text-xl md:text-2xl`}>
+        Yearly Spending
+      </h2>
       <canvas id="myChart" ref={canvasEl} height="50" />
     </div>
   );

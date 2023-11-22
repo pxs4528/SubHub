@@ -1,7 +1,7 @@
 import Logo from "@/public/assets/subhub_logo.svg";
 import Image from "next/image";
 import { lusitana } from "@/app/ui/fonts";
-import Chart from '@/app/components/charts/index';
+import ChartComponent from '@/app/components/charts/index';
 
 import Link from "next/link";
 export default function Page() {
@@ -30,18 +30,13 @@ export default function Page() {
             <span>Log in →</span>
           </Link>
           <Link
-            href="/dashboard"
+            href="/signup"
             className="flex items-center gap-5 self-start rounded-lg bg-green-700 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-green-400 md:text-base"
           >
-            <span>Go to Dashboard →</span>
+            <span>Signup →</span>
           </Link>
+
         </div>
-        <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
-          {/* Add Hero Images Here */}
-        </div>
-      </div>
-      <div>
-        <Chart />
       </div>
     </main>
   );

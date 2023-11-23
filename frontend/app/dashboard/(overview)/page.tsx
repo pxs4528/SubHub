@@ -26,8 +26,14 @@ export default async function Page() {
           method: "GET",
           credentials: "include",
         });
-        const data = await response.json();
-        setSubscription(data.body);
+        if (response.ok) {
+
+          const data = await response.json();
+          setSubscription(data.body);
+        }
+        else {
+          window.location.href = "/login";
+        }
       } catch (err) {
         console.error("Error fetching subscription data: ", err);
       }
@@ -39,8 +45,14 @@ export default async function Page() {
           method: "GET",
           credentials: "include",
         });
-        const data = await response.json();
-        setLatestSubscription(data.body);
+        if (response.ok) {
+
+          const data = await response.json();
+          setLatestSubscription(data.body);
+        }
+        else {
+          window.location.href = "/login";
+        }
       } catch (err) {
         console.error("Error fetching latest subscription: ", err);
       }
@@ -62,10 +74,11 @@ export default async function Page() {
       </div>
       <div>
         <div>
+          <ChartComponent />
+        </div>
+        <div>
           <LatestInvoices latestInvoices={latestSubsctiption} />
         </div>
-
-        <ChartComponent />
       </div>
     </main >
   );

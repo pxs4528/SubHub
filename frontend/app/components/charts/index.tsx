@@ -11,15 +11,16 @@ export default function ChartComponent() {
   const [monthlyData, setMonthlyData] = useState<number[]>([]);
   const colors = {
     purple: {
-      default: "rgba(149, 76, 233, 1)",
-      half: "rgba(149, 76, 233, 0.5)",
-      quarter: "rgba(149, 76, 233, 0.25)",
-      zero: "rgba(149, 76, 233, 0)"
+      default: "rgba(221, 160, 221, 1)",
+      half: "rgba(221, 160, 221, 0.5)",
+      quarter: "rgba(221, 160, 221, 0.25)",
+      zero: "rgba(221, 160, 221, 0)"
     },
     indigo: {
-      default: "rgba(100,100,100, 1)",
-      quarter: "rgba(80, 102, 120, 0.25)"
-    }
+      default: "rgba(173, 216, 230, 1)",
+      quarter: "rgba(173, 216, 230, 0.25)"
+    },
+    text: "#FFF"
   };
   useEffect(() => {
     const monthlyExpenses = async () => {
@@ -72,6 +73,27 @@ export default function ChartComponent() {
           animation: {
             duration: window.innerWidth > 600 ? 1000 : 0,
           },
+          scales: {
+
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.2)',
+              },
+              ticks: { color: colors.text },
+            },
+            y: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.2)',
+              },
+              ticks: { color: colors.text },
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: colors.text }
+            }
+          }
+
         }
 
       };
@@ -82,7 +104,7 @@ export default function ChartComponent() {
         myLineChart.destroy();
       };
     }
-  }, [monthlyData, colors.purple, colors.indigo]); // Dependency array includes monthlyExpenses and colors
+  }, [monthlyData, colors]); // Dependency array includes monthlyExpenses and colors
 
   return (
 

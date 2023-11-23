@@ -1,124 +1,98 @@
+"use client";
+
+import { SubscriptionsTable } from "@/app/lib/definitions";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { UpdateInvoice, DeleteInvoice } from "@/app/ui/invoices/buttons";
-import InvoiceStatus from "@/app/ui/invoices/status";
-import { formatDateToLocal, formatCurrency } from "@/app/lib/utils";
-import { fetchFilteredInvoices } from "@/app/lib/data";
+import EditIcon from "@/public/assets/PencilSquare.svg";
+import DeleteIcon from "@/public/assets/Trash.svg";
 
-export default async function InvoicesTable({
-  query,
-  currentPage,
-}: {
-  query: string;
-  currentPage: number;
-}) {
-  const invoices = await fetchFilteredInvoices(query, currentPage);
 
+function addLeadingZero(number: number) {
+  return number < 10 ? '0' + number : number.toString();
+
+}
+
+export default function UserSubscriptions() {
+  const [allSubscriptions, setAllUserSubscription] = useState<SubscriptionsTable[] | null>(null);
+  useEffect(() => {
+    const getAllUsersubscriptionData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/get-user-subscriptions", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (response.ok) {
+
+          const data = await response.json();
+          setAllUserSubscription(data.body);
+        }
+        else {
+          window.location.href = "/login";
+        }
+      } catch (err) {
+        console.error("Error fetching subscription data: ", err);
+      }
+    };
+    getAllUsersubscriptionData();
+  }, []);
+
+  console.log(allSubscriptions);
   return (
-    <div className="mt-6 flow-root">
-      <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-          <div className="md:hidden">
-            {invoices?.map((invoice) => (
-              <div
-                key={invoice.id}
-                className="mb-2 w-full rounded-md bg-white p-4"
-              >
-                <div className="flex items-center justify-between border-b pb-4">
-                  <div>
-                    <div className="mb-2 flex items-center">
-                      <Image
-                        src={invoice.image_url}
-                        className="mr-2 rounded-full"
-                        width={28}
-                        height={28}
-                        alt={`${invoice.name}'s profile picture`}
-                      />
-                      <p>{invoice.name}</p>
-                    </div>
-                    <p className="text-sm text-gray-500">{invoice.email}</p>
+    <div className="py-10">
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table className="w-full text-sm text-left rtl:text-right">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="text-white px-6 py-3">
+                Subscription name
+              </th>
+              <th scope="col" className="text-white px-6 py-3">
+                Duration
+              </th>
+              <th scope="col" className="text-white px-6 py-3">
+                Amount
+              </th>
+              <th scope="col" className="text-white px-6 py-3">
+                Status
+              </th>
+              <th scope="col" className="text-white px-6 py-3">
+                {""}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {allSubscriptions && allSubscriptions.map((subscription) => (
+              <tr key={subscription.subscription_id} className="odd:bg-white odd:dark:bg-gray-900  even:dark:bg-gray-600 border-b dark:border-gray-700">
+                <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap dark:invert">
+                  {subscription.name}
+                </th>
+                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap dark:invert">
+                  <div className="mx-5">
+                    {addLeadingZero(subscription.month)}
                   </div>
-                  <InvoiceStatus status={invoice.status} />
-                </div>
-                <div className="flex w-full items-center justify-between pt-4">
-                  <div>
-                    <p className="text-xl font-medium">
-                      {formatCurrency(invoice.amount)}
-                    </p>
-                    <p>{formatDateToLocal(invoice.date)}</p>
+                </td>
+                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap dark:invert">
+                  {subscription.amount.toFixed(2)}
+                </td>
+                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap dark:invert">
+                  {subscription.status}
+                </td>
+                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap dark:invert">
+                  <div className="cursor-pointer">
+                    <Image
+                      className="mx-auto h-5 w-auto"
+                      src={EditIcon}
+                      alt="Edit Icon"
+                    />
                   </div>
-                  <div className="flex justify-end gap-2">
-                    <UpdateInvoice id={invoice.id} />
-                    <DeleteInvoice id={invoice.id} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <table className="hidden min-w-full text-gray-900 md:table">
-            <thead className="rounded-lg text-left text-sm font-normal">
-              <tr>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Customer
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Email
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Amount
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Date
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Status
-                </th>
-                <th scope="col" className="relative py-3 pl-6 pr-3">
-                  <span className="sr-only">Edit</span>
-                </th>
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-white">
-              {invoices?.map((invoice) => (
-                <tr
-                  key={invoice.id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
-                >
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={invoice.image_url}
-                        className="rounded-full"
-                        width={28}
-                        height={28}
-                        alt={`${invoice.name}'s profile picture`}
-                      />
-                      <p>{invoice.name}</p>
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {invoice.email}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {formatCurrency(invoice.amount)}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {formatDateToLocal(invoice.date)}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    <InvoiceStatus status={invoice.status} />
-                  </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex justify-end gap-3">
-                      <UpdateInvoice id={invoice.id} />
-                      <DeleteInvoice id={invoice.id} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
-  );
+
+  )
 }
+

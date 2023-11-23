@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { CustomerField } from "@/app/lib/definitions";
+import { CustomerField, SubscriptionsField } from "@/app/lib/definitions";
 import Link from "next/link";
 import { createInvoice } from "@/app/lib/actions";
 import {
@@ -13,12 +13,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { Button } from "../button";
 
-export default function Form({ customers }: { customers: CustomerField[] }) {
+export default function Form({ customers }: { customers: SubscriptionsField[] | null }) {
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [subscriptionName, setSubscriptionName] = useState("");
   const [subscriptionId, setSubscriptionId] = useState("");
   const [amount, setAmount] = useState(0);
-  const [status, setStatus] = useState("pending");
+  const [status, setStatus] = useState("Pending");
 
 
   const handleSubscriptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -29,9 +29,9 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
       setSubscriptionName("");
       setSubscriptionId(uuidv4());
     } else {
-      const selectedCustomer = customers.find((customer) => customer.id === selectedValue);
+      const selectedCustomer = customers?.find((customer) => customer.id === selectedValue);
       if (selectedCustomer) {
-        setSubscriptionName(selectedCustomer.name);
+        setSubscriptionName(selectedCustomer.subscription_name);
         setSubscriptionId(selectedCustomer.id);
       }
     }
@@ -72,36 +72,15 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               <option value="" disabled>
                 Select a Subscription
               </option>
-              {customers.map((customer) => (
+              {customers?.map((customer) => (
                 <option key={customer.id} value={customer.id}>
-                  {customer.name}
+                  {customer.subscription_name}
                 </option>
               ))}
-                <option>
-                  Other
-                </option>
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
         </div>
-
-           {/* Other Subscription Name */}
-           {isOtherSelected && (
-          <div className="mb-4">
-            <label htmlFor="otherSubscription" className="mb-2 block text-sm font-medium">
-              Enter Subscription Name
-            </label>
-            <input
-              id="otherSubscription"
-              name="otherSubscription"
-              type="text"
-              placeholder="Enter subscription name"
-              value={subscriptionName}
-              onChange={handleSubscriptionNameChange}
-              className="block w-full rounded-md border border-gray-200 py-2 px-4 text-sm outline-2 placeholder:text-gray-500"
-            />
-          </div>
-        )}
 
         {/* Invoice Amount */}
         <div className="mb-4">
@@ -127,21 +106,21 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
         {/* Invoice Status */}
         <div>
           <label htmlFor="status" className="mb-2 block text-sm font-medium">
-            Set the invoice status
+            Set the subscription status
           </label>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
             <div className="flex gap-4">
               <div className="flex items-center">
                 <input
-                  id="pending"
+                  id="Pending"
                   name="status"
                   type="radio"
-                  value="pending"
+                  value="Pending"
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
-                  onChange={handleStatusChange("pending")}
+                  onChange={handleStatusChange("Pending")}
                 />
                 <label
-                  htmlFor="pending"
+                  htmlFor="Pending"
                   className="ml-2 flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300"
                 >
                   Pending <ClockIcon className="h-4 w-4" />
@@ -149,15 +128,15 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               </div>
               <div className="flex items-center">
                 <input
-                  id="paid"
+                  id="Paid"
                   name="status"
                   type="radio"
-                  value="paid"
+                  value="Paid"
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
-                  onChange={handleStatusChange("paid")}
+                  onChange={handleStatusChange("Paid")}
                 />
                 <label
-                  htmlFor="paid"
+                  htmlFor="Paid"
                   className="ml-2 flex items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white dark:text-gray-300"
                 >
                   Paid <CheckIcon className="h-4 w-4" />

@@ -35,9 +35,15 @@ type Montly_Cost struct {
 	Month time.Month `json:"month"`
 }
 
+type Search_Subscription struct {
+	Search string `json:"search"`
+	Date time.Time `json:"date"`
+}
+
 
 type SubscriptionHandler struct {
 	DB *pgxpool.Pool
 	Subscription_list *User_Subscription_List
 	Subscription_Count *Subscription_Count
+	Search *Search_Subscription
 }

@@ -1,17 +1,13 @@
 "use client";
 
 import { SubscriptionsTable } from "@/app/lib/definitions";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import Image from "next/image";
 import EditIcon from "@/public/assets/PencilSquare.svg";
 import DeleteIcon from "@/public/assets/Trash.svg";
 import RightArrowIcon from "@/public/assets/RightArrow.svg";
 import LeftArrowIcon from "@/public/assets/LeftArrow.svg";
-
-
-
-
-
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 
 function addLeadingZero(number: number) {
@@ -19,17 +15,33 @@ function addLeadingZero(number: number) {
 
 }
 
+
 export default function UserSubscriptions() {
   const [allSubscriptions, setAllUserSubscription] = useState<SubscriptionsTable[] | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [searchParam, setSearchParam] = useState('');
   const rowsPerPage = 5;
+
+  function debounce<T extends (...args: any[]) => any>(func: T, delay: number): (...args: Parameters<T>) => void {
+    let debounceTimer: NodeJS.Timeout | null = null;
+
+    return (...args: Parameters<T>) => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  }
+
+
 
   useEffect(() => {
     const getAllUsersubscriptionData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/get-user-subscriptions", {
-          method: "GET",
+        const response = await fetch("http://localhost:8080/search-subscription", {
+          method: "Post",
           credentials: "include",
+          body: JSON.stringify({ search: searchParam }),
         });
         if (response.ok) {
 
@@ -44,7 +56,8 @@ export default function UserSubscriptions() {
       }
     };
     getAllUsersubscriptionData();
-  }, []);
+  }, [searchParam]);
+
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -58,7 +71,20 @@ export default function UserSubscriptions() {
 
 
   return (
-    <div className="py-10">
+    <div >
+      <div className="relative flex flex-1 flex-shrink-0 pb-10">
+        <label htmlFor="search" className="sr-only">
+          Search
+        </label>
+        <input
+          className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+          placeholder={'Search Subscription'}
+          onChange={debounce((e: { target: { value: SetStateAction<string>; }; }) => {
+            setSearchParam(e.target.value);
+          }, 100)}
+        />
+        <MagnifyingGlassIcon className="absolute left-2.5 top-[14%] h-[20px] w-[20px] text-gray-500 peer-focus:text-gray-900" />
+      </div>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left rtl:text-right">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

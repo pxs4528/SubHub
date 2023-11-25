@@ -10,8 +10,27 @@ import {
   ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
+  CakeIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "../button";
+import { number } from "zod";
+
+const MonthsValues = {
+  'January': 1,
+  'February': 2, 
+  'March': 3,
+  'April': 4,
+  'May': 5,
+  'June': 6,
+  'July': 7,
+  'August': 8,
+  'September': 9,
+  'October': 10,
+  'November': 11,
+  'December': 12,
+}
+
+
 
 export default function Form({ customers }: { customers: SubscriptionsField[] | null }) {
   const [isOtherSelected, setIsOtherSelected] = useState(false);
@@ -19,6 +38,15 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
   const [subscriptionId, setSubscriptionId] = useState("");
   const [amount, setAmount] = useState(0);
   const [status, setStatus] = useState("Pending");
+  const [month, setMonth] = useState(0)
+
+
+
+  
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value;
+    setMonth((MonthsValues as any)[selectedValue]) 
+  }
 
 
   const handleSubscriptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -46,12 +74,59 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
     setSubscriptionName(e.target.value);
   };
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  function getDate(month: number)
+  {
+      const current_date = new Date()
+      let format = String(current_date.getFullYear());
+
+      
+      if(month < 10)
+        format += '-' + '0' + month
+      else
+        format+=  '-' + month
+
+      if(current_date.getDate() < 10)
+        format += '-' + '0' + current_date.getDate()
+      else
+        format += '-' + current_date.getDate()
+
+      return format
+
+  }
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(subscriptionId, subscriptionName, amount, status);
+    console.log(subscriptionId, subscriptionName, amount, status, month);
+    const date = getDate(month)
+    console.log(date)
     // Use subscriptionId and subscriptionName as needed, e.g., pass them to createInvoice function
-    createInvoice(subscriptionId, subscriptionName, amount, status, isOtherSelected);
-  };
+    // createInvoice(subscriptionId, subscriptionName, amount, status, isOtherSelected);
+    // TODO: Add async fetch request to create endpoint
+
+    try
+    {
+      const response = await fetch(
+        "http://localhost:8080/insert-subscription",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({Name: subscriptionName, Amount: amount, Status: status, Month: month})
+        }
+      );
+      if (!response.ok)
+        console.log("error with insert")
+      else
+        console.log(response.json())
+    }
+    catch
+    {
+      window.location.href = 'https://www.google.com/search?q=how+to+not+be+a+bozo&rlz=1C1UEAD_enUS1017US1020&oq=how+to+not+be+a+bozo&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDYyOThqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8'
+    }
+  }
+  
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -62,6 +137,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
             Choose Subscription
           </label>
           <div className="relative">
+            
             <select
               id="customer"
               name="customerId"
@@ -69,15 +145,19 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
               defaultValue=""
               onChange={handleSubscriptionChange}
             >
+
               <option value="" disabled>
                 Select a Subscription
               </option>
+              
               {customers?.map((customer) => (
                 <option key={customer.id} value={customer.id}>
                   {customer.subscription_name}
                 </option>
               ))}
+              
             </select>
+            
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
         </div>
@@ -115,9 +195,9 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
                   id="Pending"
                   name="status"
                   type="radio"
-                  value="Pending"
+                  value="pending"
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
-                  onChange={handleStatusChange("Pending")}
+                  onChange={handleStatusChange("pending")}
                 />
                 <label
                   htmlFor="Pending"
@@ -131,9 +211,9 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
                   id="Paid"
                   name="status"
                   type="radio"
-                  value="Paid"
+                  value="paid"
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
-                  onChange={handleStatusChange("Paid")}
+                  onChange={handleStatusChange("paid")}
                 />
                 <label
                   htmlFor="Paid"
@@ -143,6 +223,36 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
                 </label>
               </div>
             </div>
+          </div>
+        </div>
+        {/* start code for months omegalul */}
+        <div className="mb-4 mt-2">
+          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
+            Select Month
+          </label>
+          <div className="relative">
+            
+            <select
+              id="customer"
+              name="customerId"
+              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue=""
+              onChange={handleMonthChange}
+            >
+
+              <option value="" disabled>
+                Select a Month
+              </option>
+              
+              {Object.keys(MonthsValues)?.map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+              
+            </select>
+            
+            <CakeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
         </div>
       </div>

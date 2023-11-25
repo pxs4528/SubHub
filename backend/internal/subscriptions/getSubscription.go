@@ -123,7 +123,7 @@ func (sh*SubscriptionHandler) GetUserSubscriptionCount(response http.ResponseWri
 												FROM public.user_expenses
 												WHERE user_id = $1;`,id).Scan(&sh.Subscription_Count.Count,&sh.Subscription_Count.PaidTotal,&sh.Subscription_Count.PendingTotal,&sh.Subscription_Count.TotalAmount)
 	if err != nil {
-		Response.Send(response,http.StatusInternalServerError,"Error getting the count of total user subscriptions",err.Error())
+		Response.Send(response,http.StatusOK,"User has no subscriptions D:",err.Error()) // Not sure if we need to include err.Error(), but this err is set whenever nothing is found from the query
 		return
 	}
 

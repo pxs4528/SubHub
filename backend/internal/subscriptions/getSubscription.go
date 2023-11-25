@@ -119,11 +119,11 @@ func (sh*SubscriptionHandler) GetUserSubscriptionCount(response http.ResponseWri
 	err = sh.DB.QueryRow(context.Background(),`SELECT COUNT(*),
 												COALESCE(SUM(CASE WHEN status = 'Paid' THEN amount ELSE 0 END), 0) AS "paid",
 												COALESCE(SUM(CASE WHEN status = 'Pending' THEN amount ELSE 0 END), 0) AS "pending",
-												ROUND(SUM(amount),2)
+												COALESCE(ROUND(SUM(amount),2), 0) AS total
 												FROM public.user_expenses
 												WHERE user_id = $1;`,id).Scan(&sh.Subscription_Count.Count,&sh.Subscription_Count.PaidTotal,&sh.Subscription_Count.PendingTotal,&sh.Subscription_Count.TotalAmount)
 	if err != nil {
-		Response.Send(response,http.StatusOK,"User has no subscriptions D:",err.Error()) // Not sure if we need to include err.Error(), but this err is set whenever nothing is found from the query
+		Response.Send(response,http.StatusInternalServerError,"Error occured getting the user subscripition count",nil)
 		return
 	}
 

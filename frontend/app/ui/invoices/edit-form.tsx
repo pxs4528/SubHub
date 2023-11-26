@@ -7,6 +7,7 @@ import {
   ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
+  CakeIcon
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Button } from "@/app/ui/button";
@@ -23,21 +24,19 @@ export default function EditInvoiceForm({
 }) {
 
   const [subscriptionName, setSubscriptionName] = useState("");
-  const [subscriptionId, setSubscriptionId] = useState("");
   const [amount, setAmount] = useState(0);
   const [status, setStatus] = useState("");
+  const [months, setMonths] = useState(0)
 
-  const handleSubscriptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleSubscriptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedValue = e.target.value;
-      console.log(selectedValue)
-      const selectedCustomer = subscriptions?.find((customer) => customer.name === selectedValue);
+      const selectedCustomer = subscriptions?.find((customer) => customer.subscription_id === selectedValue);
       if(selectedCustomer)
-      {
         setSubscriptionName(selectedCustomer.name);
-        setSubscriptionId(selectedCustomer.subscription_id);
-      }
-      else
-        console.log("BOXO")
+    }
+
+    const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setMonths(Number(e.target.value));
     }
 
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,11 +45,35 @@ export default function EditInvoiceForm({
     const handleStatusChange = (status: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
       setStatus(status);
     };
-    console.log(subscriptions)
+
+    const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      console.log( subscriptionName, amount, status)
+      try
+      {
+        const response = await fetch(
+          "http://localhost:8080/insert-subscription",
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({Name: subscriptionName, Amount: amount, Status: status})
+          }
+        );
+        if (!response.ok)
+          console.log("error with update")
+      }
+      catch
+      {
+      
+      }
+    }
 
     // TODO: Handle Form submit, will add maybe tomorrow, or whenever, will need to change action on 53 to be this instead of the braces
   return (
-    <form action={e => {console.log("submitted update :D"); console.log(subscriptionId, subscriptionName, amount, status)}}>
+    <form action={e => {console.log("submitted update :D"); console.log( subscriptionName, amount, status, months)}}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Invoice ID */}
         {/* <input type="hidden" name="id" value={invoice.id} /> */}
@@ -68,7 +91,7 @@ export default function EditInvoiceForm({
               onChange={handleSubscriptionChange}
             >
               <option value="" disabled>
-                Select a customer
+                Select a subscription
               </option>
               {subscriptions?.map((customer) => (
                 <option key={customer.subscription_id} value={customer.subscription_id}>
@@ -104,7 +127,7 @@ export default function EditInvoiceForm({
         {/* Invoice Status */}
         <div>
           <label htmlFor="status" className="mb-2 block text-sm font-medium">
-            Set the invoice status
+            Set the subscription status
           </label>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
             <div className="flex gap-4">
@@ -140,6 +163,25 @@ export default function EditInvoiceForm({
                   Paid <CheckIcon className="h-4 w-4" />
                 </label>
               </div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4">
+          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
+            Enter number of months
+          </label>
+          <div className="relative mt-2 rounded-md">
+            <div className="relative">
+              <input
+                id="amount"
+                name="amount"
+                type="number"
+                step="1"
+                placeholder="Enter amount of months"
+                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                onChange={handleMonthChange}
+              />
+              <CakeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
           </div>
         </div>

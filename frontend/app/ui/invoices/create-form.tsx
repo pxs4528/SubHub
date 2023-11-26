@@ -15,20 +15,7 @@ import {
 import { Button } from "../button";
 import { number } from "zod";
 
-const MonthsValues = {
-  'January': 1,
-  'February': 2, 
-  'March': 3,
-  'April': 4,
-  'May': 5,
-  'June': 6,
-  'July': 7,
-  'August': 8,
-  'September': 9,
-  'October': 10,
-  'November': 11,
-  'December': 12,
-}
+
 
 
 
@@ -38,15 +25,12 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
   const [subscriptionId, setSubscriptionId] = useState("");
   const [amount, setAmount] = useState(0);
   const [status, setStatus] = useState("Pending");
-  const [month, setMonth] = useState(0)
+  const [month, setMonth] = useState(0);
 
 
 
   
-  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = e.target.value;
-    setMonth((MonthsValues as any)[selectedValue]) 
-  }
+  
 
 
   const handleSubscriptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -64,6 +48,11 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
       }
     }
   };
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMonth(Number(e.target.value)) ;
+  }
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(parseFloat(e.target.value));
   }
@@ -74,35 +63,13 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
     setSubscriptionName(e.target.value);
   };
 
-  function getDate(month: number)
-  {
-      const current_date = new Date()
-      let format = String(current_date.getFullYear());
-
-      
-      if(month < 10)
-        format += '-' + '0' + month
-      else
-        format+=  '-' + month
-
-      if(current_date.getDate() < 10)
-        format += '-' + '0' + current_date.getDate()
-      else
-        format += '-' + current_date.getDate()
-
-      return format
-
-  }
+  
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(subscriptionId, subscriptionName, amount, status, month);
-    const date = getDate(month)
-    console.log(date)
     // Use subscriptionId and subscriptionName as needed, e.g., pass them to createInvoice function
     // createInvoice(subscriptionId, subscriptionName, amount, status, isOtherSelected);
-    // TODO: Add async fetch request to create endpoint
-
     try
     {
       const response = await fetch(
@@ -118,8 +85,6 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
       );
       if (!response.ok)
         console.log("error with insert")
-      else
-        console.log(response.json())
     }
     catch
     {
@@ -226,33 +191,23 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
           </div>
         </div>
         {/* start code for months omegalul */}
-        <div className="mb-4 mt-2">
-          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
-            Select Month
+        <div className="mt-4">
+          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
+            Enter number of months
           </label>
-          <div className="relative">
-            
-            <select
-              id="customer"
-              name="customerId"
-              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue=""
-              onChange={handleMonthChange}
-            >
-
-              <option value="" disabled>
-                Select a Month
-              </option>
-              
-              {Object.keys(MonthsValues)?.map((i) => (
-                <option key={i} value={i}>
-                  {i}
-                </option>
-              ))}
-              
-            </select>
-            
-            <CakeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          <div className="relative mt-2 rounded-md">
+            <div className="relative">
+              <input
+                id="amount"
+                name="amount"
+                type="number"
+                step="1"
+                placeholder="Enter amount of months"
+                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                onChange={handleMonthChange}
+              />
+              <CakeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
           </div>
         </div>
       </div>

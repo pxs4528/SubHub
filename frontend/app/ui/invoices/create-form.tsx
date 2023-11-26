@@ -84,7 +84,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
         }
       );
       if (!response.ok)
-        console.log("error with insert")
+        console.log(response)
     }
     catch
     {
@@ -116,9 +116,14 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
               </option>
               
               {customers?.map((customer) => (
+                <>
                 <option key={customer.id} value={customer.id}>
                   {customer.subscription_name}
                 </option>
+                <option key="Other" value="Other">
+                  Other
+                </option>
+                </>
               ))}
               
             </select>
@@ -126,6 +131,23 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
         </div>
+         {/* Other Subscription Name */}
+         {isOtherSelected && (
+          <div className="mb-4">
+            <label htmlFor="otherSubscription" className="mb-2 block text-sm font-medium">
+              Enter Subscription Name
+            </label>
+            <input
+              id="otherSubscription"
+              name="otherSubscription"
+              type="text"
+              placeholder="Enter subscription name"
+              value={subscriptionName}
+              onChange={handleSubscriptionNameChange}
+              className="block w-full rounded-md border border-gray-200 py-2 px-4 text-sm outline-2 placeholder:text-gray-500"
+            />
+          </div>
+        )}
 
         {/* Invoice Amount */}
         <div className="mb-4">

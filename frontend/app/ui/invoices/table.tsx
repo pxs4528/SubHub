@@ -8,6 +8,7 @@ import DeleteIcon from "@/public/assets/Trash.svg";
 import RightArrowIcon from "@/public/assets/RightArrow.svg";
 import LeftArrowIcon from "@/public/assets/LeftArrow.svg";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { CreateInvoice } from "./buttons";
 
 
 function addLeadingZero(number: number) {
@@ -72,18 +73,21 @@ export default function UserSubscriptions() {
 
   return (
     <div >
-      <div className="relative flex flex-1 flex-shrink-0 pb-10">
-        <label htmlFor="search" className="sr-only">
-          Search
-        </label>
-        <input
-          className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-          placeholder={'Search Subscription'}
-          onChange={debounce((e: { target: { value: SetStateAction<string>; }; }) => {
-            setSearchParam(e.target.value);
-          }, 100)}
-        />
-        <MagnifyingGlassIcon className="absolute left-2.5 top-[14%] h-[20px] w-[20px] text-gray-500 peer-focus:text-gray-900" />
+      <div className="flex">
+        <div className="relative flex flex-1 flex-shrink-0 pb-10 pr-5">
+          <label htmlFor="search" className="sr-only">
+            Search
+          </label>
+          <input
+            className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+            placeholder={'Search Subscription'}
+            onChange={debounce((e: { target: { value: SetStateAction<string>; }; }) => {
+              setSearchParam(e.target.value);
+            }, 100)}
+          />
+          <MagnifyingGlassIcon className="absolute left-2.5 top-[14%] h-[20px] w-[20px] text-gray-500 peer-focus:text-gray-900" />
+        </div>
+        <CreateInvoice />
       </div>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table className="w-full text-sm text-left rtl:text-right">

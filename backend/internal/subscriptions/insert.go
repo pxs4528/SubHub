@@ -60,6 +60,7 @@ func (sh *SubscriptionHandler) InsertSubscription(response http.ResponseWriter,r
 		log.Warning("This subscription exist: "+queryError)
 		return
 	} else if queryError == "Error getting expense subscription" {
+		// This happens if user adds custom subscription
 		Response.Send(response,http.StatusInternalServerError,"Error getting the expense subscription",nil)
 		log.Warning("Error getting the expense subscription")
 		return

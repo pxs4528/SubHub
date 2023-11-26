@@ -85,6 +85,8 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
       );
       if (!response.ok)
         console.log(response)
+      else
+        window.location.href = 'http://localhost:3000/dashboard/invoices'
     }
     catch
     {
@@ -120,11 +122,12 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
                 <option key={customer.id} value={customer.id}>
                   {customer.subscription_name}
                 </option>
-                <option key="Other" value="Other">
-                  Other
-                </option>
+                
                 </>
               ))}
+              <option key="Other" value="Other">
+                  Other
+                </option>
               
             </select>
             

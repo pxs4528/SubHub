@@ -187,7 +187,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
                   type="radio"
                   value="pending"
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
-                  onChange={handleStatusChange("pending")}
+                  onChange={handleStatusChange("Pending")}
                 />
                 <label
                   htmlFor="Pending"
@@ -203,7 +203,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
                   type="radio"
                   value="paid"
                   className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
-                  onChange={handleStatusChange("paid")}
+                  onChange={handleStatusChange("Paid")}
                 />
                 <label
                   htmlFor="Paid"

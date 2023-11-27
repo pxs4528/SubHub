@@ -5,6 +5,26 @@ import { FormEventHandler, JSXElementConstructor, PromiseLikeOfReactNode, ReactE
 import { lusitana } from "../ui/fonts";
 import { set } from "zod";
 export default function Home() {
+  const [keywords, setKeywords] = useState<string[]>([]);
+  const [currentKeyword, setCurrentKeyword] = useState<string>('');
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && currentKeyword.trim() !== '') {
+      setKeywords([...keywords, currentKeyword.trim()]);
+      setCurrentKeyword('');
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentKeyword(event.target.value);
+  };
+
+  const handleRemoveKeyword = (index: number) => {
+    const updatedKeywords = [...keywords];
+    updatedKeywords.splice(index, 1);
+    setKeywords(updatedKeywords);
+  };
+
 
   const handleFormSubmission: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
@@ -40,7 +60,7 @@ export default function Home() {
       Status: status,
       Month: month,
     }));
-    Object.keys(formattedData).forEach(async (key :any) => {
+    Object.keys(formattedData).forEach(async (key: any) => {
       console.log(JSON.stringify(formattedData[key]));
       const response = await fetch('http://localhost:8080/insert-subscription', {
         method: 'POST',
@@ -57,7 +77,7 @@ export default function Home() {
       }
     });
   }
-  
+
 
   const setAmazingData = (data: Record<string, { formattedDate: string; price: number }> | null) => {
     console.log("amazing", data);
@@ -97,6 +117,10 @@ export default function Home() {
       const formData = new FormData();
       formData.append('file', file);
 
+      keywords.forEach((keyword, index) => {
+        formData.append(`keywords[${index}]`, keyword);
+      });
+      console.log(formData);
       try {
         const response = await fetch('/api/upload', {
           method: 'POST',
@@ -168,7 +192,7 @@ export default function Home() {
                       id={`amount-${key}`}
                       name={`amount-${key}`}
                       type="number"
-                      step="any"                      defaultValue={value.price}
+                      step="any" defaultValue={value.price}
                       placeholder="Enter USD amount"
                       // onSubmit={(e) => setAmount(Number(e.target.value))}
                       className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
@@ -190,6 +214,26 @@ export default function Home() {
 
     : (
       <main className='flex min-h-screen flex-col items-center justify-between p-24'>
+         <div>
+          <h2>You can enter keywords here to search for in your PDF:</h2>
+          <ul>
+            {keywords.map((keyword, index) => (
+              <li key={index}>
+                {keyword}
+                <button className='m-3' onClick={() => handleRemoveKeyword(index)}>❌</button>
+              </li>
+            ))}
+          </ul>
+
+          <input
+            type="text"
+            placeholder="Keyword"
+            value={currentKeyword}
+            onKeyPress={handleKeyPress}
+            onChange={handleChange}
+          />
+        </div>
+
         <div className='w-96'>
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-center w-full">
@@ -231,7 +275,6 @@ export default function Home() {
             </div>
             <script src="https://unpkg.com/flowbite@1.4.0/dist/flowbite.js"></script>
           </div>      </div>
-
       </main>
     );
 }

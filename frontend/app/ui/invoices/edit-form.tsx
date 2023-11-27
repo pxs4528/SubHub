@@ -52,28 +52,30 @@ export default function EditInvoiceForm({
       try
       {
         const response = await fetch(
-          "http://localhost:8080/insert-subscription",
+          "http://localhost:8080/update-subscription",
           {
             method: "POST",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({Name: subscriptionName, Amount: amount, Status: status})
+            body: JSON.stringify({Name: subscriptionName, Amount: amount, Status: status, Months: months})
           }
         );
         if (!response.ok)
           console.log("error with update")
+        else
+          window.location.href = "http://localhost:3000/dashboard/invoices"
       }
       catch
       {
-      
+        console.log("exception with update")
       }
     }
 
     // TODO: Handle Form submit, will add maybe tomorrow, or whenever, will need to change action on 53 to be this instead of the braces
   return (
-    <form action={e => {console.log("submitted update :D"); console.log( subscriptionName, amount, status, months)}}>
+    <form onSubmit={handleFormSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Invoice ID */}
         {/* <input type="hidden" name="id" value={invoice.id} /> */}

@@ -70,6 +70,50 @@ export default function UserSubscriptions() {
     ? allSubscriptions.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage)
     : [];
 
+    const handleDelete = async (name:string) => {
+      console.log(name)
+        try
+        {
+          const response = await fetch(
+            "http://localhost:8080/delete-subscription",
+            {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({Name: name})
+            }
+          );
+          if (!response.ok)
+            console.log(response)
+          else
+          {
+            try
+            {
+              const response = await fetch("http://localhost:8080/search-subscription", { 
+              method: "POST",
+              credentials: "include",
+              body: JSON.stringify({ search: searchParam }),
+              
+            });
+            if (response.ok) {
+
+              const data = await response.json();
+              setAllUserSubscription(data.body); // Put's the new data in the hook, so react regenerates the table
+            }
+          }
+          catch
+          {
+            console.log("error getting subscriptions")
+          }
+        }
+        }
+        catch
+        {
+          console.log("error deleting subscription")
+        }
+      }
 
   return (
     <div >
@@ -129,19 +173,21 @@ export default function UserSubscriptions() {
                 </td>
                 <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap">
                   <div className="flex items-center cursor-pointer space-x-2 ">
-                    <div className="flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center">
+                    {/* <div className="flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center">
                       <Image
                         className="h-5 w-auto dark:invert"
                         src={EditIcon}
                         alt="Edit Icon"
+                        onClick={e => console.log(subscription.name, subscription.month, subscription.amount)}
                       />
-                    </div>
+                    </div> */}
 
-                    <div className="flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center">
+                    <div className="flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center" onClick={() => handleDelete(subscription.name)}>
                       <Image
                         className="h-5 w-auto dark:invert"
                         src={DeleteIcon}
                         alt="Delete Icon"
+                        
                       />
                     </div>
                   </div>

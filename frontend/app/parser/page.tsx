@@ -1,21 +1,95 @@
 'use client'
 import { CurrencyDollarIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import { FormEventHandler, JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useRef, useState } from "react";
+import { FormEventHandler, JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useEffect, useRef, useState } from "react";
 import { lusitana } from "../ui/fonts";
+import { set } from "zod";
 export default function Home() {
 
   const handleFormSubmission: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
-    console.log(subscriptionName, amount, status, month);
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    //set this data to susbscriptions
+    Object.keys(data).forEach(key => {
+      const [type, id] = key.split('-');
+      if (type === 'subscription') {
+        //@ts-ignore
+        subscriptions[id].subscriptionName = data[key];
+      } else if (type === 'date') {
+        //@ts-ignore
+        subscriptions[id].formattedDate = data[key];
+      } else if (type === 'amount') {
+        //@ts-ignore
+        subscriptions[id].price = Number(data[key]);
+      }
+    });
+    setAmazingData(subscriptions);
   };
 
   const [subscriptions, setSubscriptions] = useState<Record<string, { formattedDate: string; price: number }> | null>(null);
-  const [allSubs, setAllSubs] = useState<Record<string, { formattedDate: string; price: number }> | null>(null);
-  const [subscriptionName, setSubscriptionName] = useState("");
-  const [amount, setAmount] = useState(0);
-  const [status, setStatus] = useState("Paid");
-  const [month, setMonth] = useState(0);
+  const [allSubs, setAllSubs] = useState<
+    { subscriptionName: string; amount: number; status: string; month: number; }[]
+  >([]);
+
+
+  const SendtoDB = async (data: { subscriptionName: string; amount: number; status: string; month: number; }[]) => {
+    const formattedData = data.map(({ subscriptionName, amount, status, month }) => ({
+      Name: subscriptionName,
+      Amount: amount,
+      Status: status,
+      Month: month,
+    }));
+    console.log(JSON.stringify(formattedData));
+    Object.keys(formattedData).forEach(async (key :any) => {
+      console.log(JSON.stringify(formattedData[key]));
+      const response = await fetch('http://localhost:8080/insert-subscription', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedData[key]),
+      });
+      if (response.ok) {
+        console.log("success");
+      } else {
+        console.error('Error uploading file:', response.statusText);
+      }
+    });
+  }
+  
+
+  const setAmazingData = (data: Record<string, { formattedDate: string; price: number }> | null) => {
+    console.log("amazing", data);
+    if (data === null) {
+      return;
+    }
+
+    const today = new Date();
+
+    const calculateMonths = (formattedDate: string) => {
+      const startDate = new Date(formattedDate);
+      const diffInMonths = (today.getFullYear() - startDate.getFullYear()) * 12 + (today.getMonth() - startDate.getMonth());
+      return diffInMonths;
+    }
+
+    const allSubsArray = Object.keys(data).map(subscriptionKey => {
+      const subscription = data[subscriptionKey];
+      //@ts-ignore
+      const subName = data[subscriptionKey].subscriptionName;
+      return {
+        subscriptionName: subName,
+        amount: subscription.price,
+        status: "Paid",
+        month: calculateMonths(subscription.formattedDate),
+      };
+    });
+    setAllSubs(allSubsArray);
+    SendtoDB(allSubsArray);
+  }
+
+
   const inputRef = useRef<HTMLInputElement>(null);
   const handleFileUpload: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
@@ -32,7 +106,6 @@ export default function Home() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           setSubscriptions(data);
         } else {
           console.error('Error uploading file:', response.statusText);
@@ -66,7 +139,6 @@ export default function Home() {
                       name={`subscription-${key}`}
                       className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
                       defaultValue={key}
-                      onChange={(e) => setSubscriptionName(e.target.value)}
                     />
                   </div>
 
@@ -81,10 +153,10 @@ export default function Home() {
                       type="date"
                       className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
                       defaultValue={value.formattedDate}
-                      onSubmit={
-                        //number of months from current data
-                        (e) => setMonth(Math.round((new Date(e.target.value).getTime() - new Date().getTime()) / (1000 * 3600 * 24 * 30)))
-                      }
+                    // onSubmit={
+                    //   //number of months from current data
+                    //   // (e) => setMonth(Math.round((new Date(e.target.value).getTime() - new Date().getTime()) / (1000 * 3600 * 24 * 30)))
+                    // }
                     />
                   </div>
 
@@ -99,20 +171,12 @@ export default function Home() {
                       type="number"
                       defaultValue={value.price}
                       placeholder="Enter USD amount"
-                      onSubmit={(e) => setAmount(Number(e.target.value))}
+                      // onSubmit={(e) => setAmount(Number(e.target.value))}
                       className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
                     />
                   </div>
-
                 </div>
               ))}
-
-              <div className="mb-2 w-full rounded-md bg-white p-4">
-                <div className="flex items-center justify-between border-b pb-4">
-                  {/* Additional content if needed */}
-                </div>
-              </div>
-
             </div>
           </div>
         </div>

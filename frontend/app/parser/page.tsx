@@ -40,7 +40,6 @@ export default function Home() {
       Status: status,
       Month: month,
     }));
-    console.log(JSON.stringify(formattedData));
     Object.keys(formattedData).forEach(async (key :any) => {
       console.log(JSON.stringify(formattedData[key]));
       const response = await fetch('http://localhost:8080/insert-subscription', {
@@ -169,7 +168,7 @@ export default function Home() {
                       id={`amount-${key}`}
                       name={`amount-${key}`}
                       type="number"
-                      defaultValue={value.price}
+                      step="any"                      defaultValue={value.price}
                       placeholder="Enter USD amount"
                       // onSubmit={(e) => setAmount(Number(e.target.value))}
                       className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"

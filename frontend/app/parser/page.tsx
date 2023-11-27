@@ -4,9 +4,18 @@ import { useRouter } from "next/navigation";
 import { FormEventHandler, JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useRef, useState } from "react";
 import { lusitana } from "../ui/fonts";
 export default function Home() {
-  const router = useRouter();
+
+  const handleFormSubmission: FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
+    console.log(subscriptionName, amount, status, month);
+  };
 
   const [subscriptions, setSubscriptions] = useState<Record<string, { formattedDate: string; price: number }> | null>(null);
+  const [allSubs, setAllSubs] = useState<Record<string, { formattedDate: string; price: number }> | null>(null);
+  const [subscriptionName, setSubscriptionName] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [status, setStatus] = useState("Paid");
+  const [month, setMonth] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleFileUpload: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
@@ -34,74 +43,87 @@ export default function Home() {
     }
   };
   return subscriptions ?
-  <>
-  <div>
-    <h1 className={`${lusitana.className} text-xl text-center m-3 text-gray-800 md:text-3xl md:leading-normal`}>
-      Parsed Subscriptions
-    </h1>
-  </div>
-  <form>
-  <div className="mt-6 flow-root">
-    <div className="inline-block min-w-full align-middle">
-      <div className="rounded-lg bg-gray-50 p-2 md:py-0">
+    <>
+      <div>
+        <h1 className={`${lusitana.className} text-xl text-center m-3 text-gray-800 md:text-3xl md:leading-normal`}>
+          Parsed Subscriptions
+        </h1>
+      </div>
+      <form onSubmit={handleFormSubmission}>
+        <div className="mt-6 flow-root">
+          <div className="inline-block min-w-full align-middle">
+            <div className="rounded-lg bg-gray-50 p-2 md:py-0">
 
-        {Object.entries(subscriptions).map(([key, value]) => (
-          <div key={key} className="border-b border-gray-200 p-2 sm:p-4">
-            {/* Choose Subscription */}
-            <div className="mb-4">
-              <label htmlFor={`subscription-${key}`} className="mb-2 block text-sm font-medium">
-                Choose Subscription
-              </label>
-              <input
-                id={`subscription-${key}`}
-                name={`subscription-${key}`}
-                className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
-                defaultValue={key}
-              />
+              {Object.entries(subscriptions).map(([key, value]) => (
+                <div key={key} className="border-b border-gray-200 p-2 sm:p-4">
+                  {/* Choose Subscription */}
+                  <div className="mb-4">
+                    <label htmlFor={`subscription-${key}`} className="mb-2 block text-sm font-medium">
+                      Choose Subscription
+                    </label>
+                    <input
+                      id={`subscription-${key}`}
+                      name={`subscription-${key}`}
+                      className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                      defaultValue={key}
+                      onChange={(e) => setSubscriptionName(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Choose Date */}
+                  <div className="mb-4">
+                    <label htmlFor={`date-${key}`} className="mb-2 block text-sm font-medium">
+                      Choose Date
+                    </label>
+                    <input
+                      id={`date-${key}`}
+                      name={`date-${key}`}
+                      type="date"
+                      className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                      defaultValue={value.formattedDate}
+                      onSubmit={
+                        //number of months from current data
+                        (e) => setMonth(Math.round((new Date(e.target.value).getTime() - new Date().getTime()) / (1000 * 3600 * 24 * 30)))
+                      }
+                    />
+                  </div>
+
+                  {/* Choose Amount */}
+                  <div className="mb-4">
+                    <label htmlFor={`amount-${key}`} className="mb-2 block text-sm font-medium">
+                      Choose an amount
+                    </label>
+                    <input
+                      id={`amount-${key}`}
+                      name={`amount-${key}`}
+                      type="number"
+                      defaultValue={value.price}
+                      placeholder="Enter USD amount"
+                      onSubmit={(e) => setAmount(Number(e.target.value))}
+                      className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                    />
+                  </div>
+
+                </div>
+              ))}
+
+              <div className="mb-2 w-full rounded-md bg-white p-4">
+                <div className="flex items-center justify-between border-b pb-4">
+                  {/* Additional content if needed */}
+                </div>
+              </div>
+
             </div>
-
-            {/* Choose Date */}
-            <div className="mb-4">
-              <label htmlFor={`date-${key}`} className="mb-2 block text-sm font-medium">
-                Choose Date
-              </label>
-              <input
-                id={`date-${key}`}
-                name={`date-${key}`}
-                type="date"
-                className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
-                defaultValue={value.formattedDate}
-              />
-            </div>
-
-            {/* Choose Amount */}
-            <div className="mb-4">
-              <label htmlFor={`amount-${key}`} className="mb-2 block text-sm font-medium">
-                Choose an amount
-              </label>
-              <input
-                id={`amount-${key}`}
-                name={`amount-${key}`}
-                type="number"
-                defaultValue={value.price}
-                placeholder="Enter USD amount"
-                className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
-              />
-            </div>
-          </div>
-        ))}
-
-        <div className="mb-2 w-full rounded-md bg-white p-4">
-          <div className="flex items-center justify-between border-b pb-4">
-            {/* Additional content if needed */}
           </div>
         </div>
-
-      </div>
-    </div>
-  </div>
-</form>
-</>
+        <button
+          type="submit"
+          className="w-1/3 m-6 box-content inline-flex items-center justify-center px-3 py-2 bg-blue-600 border border-transparent transition-transform hover:scale-105 rounded-md font-semibold capitalize text-white hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-red-700 focus:ring focus:ring-red-200 disabled:opacity-25 cursor-pointer"
+        >
+          Submit
+        </button>
+      </form>
+    </>
 
     : (
       <main className='flex min-h-screen flex-col items-center justify-between p-24'>

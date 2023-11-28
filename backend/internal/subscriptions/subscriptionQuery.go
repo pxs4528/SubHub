@@ -49,8 +49,12 @@ func (sh *SubscriptionHandler) GetSubId(response http.ResponseWriter,request *ht
 												FROM public.subscription_list
 												WHERE subscription_name LIKE $1`,sh.Subscription_list.Name).Scan(&subscription_id)
 	if err == pgx.ErrNoRows {
-		Response.Send(response,http.StatusNotFound,"Subscription not found",nil)
-		return ""
+		sh.DB.Exec(context.Background(), `INSERT INTO public.subscription_list(subscription_name) VALUES($1)`, sh.Subscription_list.Name)
+		new_err := sh.DB.QueryRow(context.Background(), `SELECT id FROM public.subscription_list WHERE subscription_name = $1`, sh.Subscription_list.Name).Scan(&subscription_id)
+		if new_err != nil {
+			Response.Send(response,http.StatusNotFound,"Subscription not found",nil)
+			return ""
+		}
 	} else if err != nil {
 		Response.Send(response,http.StatusInternalServerError,"Error getting the subscription",nil)
 		return ""
@@ -59,7 +63,7 @@ func (sh *SubscriptionHandler) GetSubId(response http.ResponseWriter,request *ht
 }
 
 
-func (sh *SubscriptionHandler) GetExpenseId(response http.ResponseWriter,request *http.Request) (string,string){
+func (sh *SubscriptionHandler) GetExpenseId(response http.ResponseWriter,request *http.Request) (string,string){ // Need to ask dhru what this does later
 	var expense_id string
 	err := sh.DB.QueryRow(context.Background(),`SELECT expense_id
 												FROM public.user_expenses

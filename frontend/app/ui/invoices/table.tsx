@@ -1,124 +1,235 @@
-import Image from "next/image";
-import { UpdateInvoice, DeleteInvoice } from "@/app/ui/invoices/buttons";
-import InvoiceStatus from "@/app/ui/invoices/status";
-import { formatDateToLocal, formatCurrency } from "@/app/lib/utils";
-import { fetchFilteredInvoices } from "@/app/lib/data";
+"use client";
 
-export default async function InvoicesTable({
-  query,
-  currentPage,
-}: {
-  query: string;
-  currentPage: number;
-}) {
-  const invoices = await fetchFilteredInvoices(query, currentPage);
+import { SubscriptionsTable } from "@/app/lib/definitions";
+import { SetStateAction, useEffect, useState } from "react";
+import Image from "next/image";
+import EditIcon from "@/public/assets/PencilSquare.svg";
+import DeleteIcon from "@/public/assets/Trash.svg";
+import RightArrowIcon from "@/public/assets/RightArrow.svg";
+import LeftArrowIcon from "@/public/assets/LeftArrow.svg";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { CreateInvoice } from "./buttons";
+
+
+function addLeadingZero(number: number) {
+  return number < 10 ? '0' + number : number.toString();
+
+}
+
+
+export default function UserSubscriptions() {
+  const [allSubscriptions, setAllUserSubscription] = useState<SubscriptionsTable[] | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [searchParam, setSearchParam] = useState('');
+  const rowsPerPage = 5;
+
+  function debounce<T extends (...args: any[]) => any>(func: T, delay: number): (...args: Parameters<T>) => void {
+    let debounceTimer: NodeJS.Timeout | null = null;
+
+    return (...args: Parameters<T>) => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  }
+
+
+
+  useEffect(() => {
+    const getAllUsersubscriptionData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/search-subscription", {
+          method: "Post",
+          credentials: "include",
+          body: JSON.stringify({ search: searchParam }),
+        });
+        if (response.ok) {
+
+          const data = await response.json();
+          setAllUserSubscription(data.body);
+        }
+        else {
+          window.location.href = "/login";
+        }
+      } catch (err) {
+        console.error("Error fetching subscription data: ", err);
+      }
+    };
+    getAllUsersubscriptionData();
+  }, [searchParam]);
+
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const totalPages = allSubscriptions ? Math.ceil(allSubscriptions.length / rowsPerPage) : 0;
+
+  const currentSubscriptions = allSubscriptions
+    ? allSubscriptions.slice(currentPage * rowsPerPage, (currentPage + 1) * rowsPerPage)
+    : [];
+
+    const handleDelete = async (name:string) => {
+      console.log(name)
+        try
+        {
+          const response = await fetch(
+            "http://localhost:8080/delete-subscription",
+            {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({Name: name})
+            }
+          );
+          if (!response.ok)
+            console.log(response)
+          else
+          {
+            try
+            {
+              const response = await fetch("http://localhost:8080/search-subscription", { 
+              method: "POST",
+              credentials: "include",
+              body: JSON.stringify({ search: searchParam }),
+              
+            });
+            if (response.ok) {
+
+              const data = await response.json();
+              setAllUserSubscription(data.body); // Put's the new data in the hook, so react regenerates the table
+            }
+          }
+          catch
+          {
+            console.log("error getting subscriptions")
+          }
+        }
+        }
+        catch
+        {
+          console.log("error deleting subscription")
+        }
+      }
 
   return (
-    <div className="mt-6 flow-root">
-      <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-          <div className="md:hidden">
-            {invoices?.map((invoice) => (
-              <div
-                key={invoice.id}
-                className="mb-2 w-full rounded-md bg-white p-4"
-              >
-                <div className="flex items-center justify-between border-b pb-4">
-                  <div>
-                    <div className="mb-2 flex items-center">
-                      <Image
-                        src={invoice.image_url}
-                        className="mr-2 rounded-full"
-                        width={28}
-                        height={28}
-                        alt={`${invoice.name}'s profile picture`}
-                      />
-                      <p>{invoice.name}</p>
-                    </div>
-                    <p className="text-sm text-gray-500">{invoice.email}</p>
-                  </div>
-                  <InvoiceStatus status={invoice.status} />
-                </div>
-                <div className="flex w-full items-center justify-between pt-4">
-                  <div>
-                    <p className="text-xl font-medium">
-                      {formatCurrency(invoice.amount)}
-                    </p>
-                    <p>{formatDateToLocal(invoice.date)}</p>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <UpdateInvoice id={invoice.id} />
-                    <DeleteInvoice id={invoice.id} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <table className="hidden min-w-full text-gray-900 md:table">
-            <thead className="rounded-lg text-left text-sm font-normal">
-              <tr>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Customer
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Email
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Amount
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Date
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Status
-                </th>
-                <th scope="col" className="relative py-3 pl-6 pr-3">
-                  <span className="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white">
-              {invoices?.map((invoice) => (
-                <tr
-                  key={invoice.id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
-                >
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={invoice.image_url}
-                        className="rounded-full"
-                        width={28}
-                        height={28}
-                        alt={`${invoice.name}'s profile picture`}
-                      />
-                      <p>{invoice.name}</p>
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {invoice.email}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {formatCurrency(invoice.amount)}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    {formatDateToLocal(invoice.date)}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                    <InvoiceStatus status={invoice.status} />
-                  </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex justify-end gap-3">
-                      <UpdateInvoice id={invoice.id} />
-                      <DeleteInvoice id={invoice.id} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div >
+      <div className="flex">
+        <div className="relative flex flex-1 flex-shrink-0 pb-10 pr-5">
+          <label htmlFor="search" className="sr-only">
+            Search
+          </label>
+          <input
+            className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+            placeholder={'Search Subscription'}
+            onChange={debounce((e: { target: { value: SetStateAction<string>; }; }) => {
+              setSearchParam(e.target.value);
+            }, 100)}
+          />
+          <MagnifyingGlassIcon className="absolute left-2.5 top-[14%] h-[20px] w-[20px] text-gray-500 peer-focus:text-gray-900" />
         </div>
+        <CreateInvoice />
+      </div>
+      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table className="w-full text-sm text-left rtl:text-right">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="text-white px-6 py-3">
+                Subscription name
+              </th>
+              <th scope="col" className="text-white px-6 py-3">
+                Duration
+              </th>
+              <th scope="col" className="text-white px-6 py-3">
+                Amount
+              </th>
+              <th scope="col" className="text-white px-6 py-3">
+                Status
+              </th>
+              <th scope="col" className="text-white px-6 py-3">
+                {""}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentSubscriptions && currentSubscriptions.map((subscription) => (
+              <tr key={subscription.subscription_id} className="odd:bg-white odd:dark:bg-gray-900  even:dark:bg-gray-600 border-b dark:border-gray-700">
+                <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap dark:invert">
+                  {subscription.name}
+                </th>
+                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap dark:invert">
+                  <div className="mx-5">
+                    {addLeadingZero(subscription.month)}
+                  </div>
+                </td>
+                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap dark:invert">
+                  {subscription.amount.toFixed(2)}
+                </td>
+                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap dark:invert">
+                  {subscription.status}
+                </td>
+                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap">
+                  <div className="flex items-center cursor-pointer space-x-2 ">
+                    {/* <div className="flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center">
+                      <Image
+                        className="h-5 w-auto dark:invert"
+                        src={EditIcon}
+                        alt="Edit Icon"
+                        onClick={e => console.log(subscription.name, subscription.month, subscription.amount)}
+                      />
+                    </div> */}
+
+                    <div className="flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center" onClick={() => handleDelete(subscription.name)}>
+                      <Image
+                        className="h-5 w-auto dark:invert"
+                        src={DeleteIcon}
+                        alt="Delete Icon"
+                        
+                      />
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="flex justify-center items-center py-3 space-x-1">
+        <button
+          disabled={currentPage === 0}
+          onClick={() => handlePageChange(currentPage - 1)}
+          className="py-2 px-4 sm:rounded-md bg-gray-700 hover:bg-gray-500"
+        >
+          <Image
+            className="mx-auto h-5 w-auto dark:invert"
+            src={LeftArrowIcon}
+            alt="Left Arrow Icon"
+          />
+        </button>
+
+        {Array.from({ length: totalPages }, (_, index) => (
+          <span key={index} className={`py-2 px-4 text-sm font-medium ${index === currentPage ? 'text-white bg-blue-600 sm:rounded-md' : 'text-white'}`}>
+            {index + 1}
+          </span>
+        ))}
+
+        <button
+          disabled={currentPage >= totalPages - 1}
+          onClick={() => handlePageChange(currentPage + 1)}
+          className="py-2 px-4 sm:rounded-md bg-gray-700 hover:bg-gray-500"
+        >
+          <Image
+            className="mx-auto h-5 w-auto dark:invert"
+            src={RightArrowIcon}
+            alt="Right Arrow Icon"
+          />
+        </button>
       </div>
     </div>
-  );
+
+  )
 }
+

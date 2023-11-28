@@ -1,77 +1,130 @@
-"use server";
-import { headers } from 'next/headers';
+"use client";
+import React, { useEffect, useState } from 'react';
 import { Card } from "@/app/ui/dashboard/cards";
-import RevenueChart from "@/app/ui/dashboard/revenue-chart";
-import LatestInvoices from "@/app/ui/dashboard/latest-invoices";
 import { lusitana } from "@/app/ui/fonts";
-import { OnLoad } from "next/dist/shared/lib/get-img-props";
-import {
-  fetchRevenue,
-  fetchLatestInvoices,
-  fetchCardData,
-} from "@/app/lib/data";
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers'
-import { getCookie, getCookies, setCookie } from 'cookies-next';
-import { NextPageContext } from 'next';
+import ChartComponent from '@/app/components/charts/index';
+import { LatestInvoice, Revenue } from '@/app/lib/definitions';
+import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
+import RevenueChart from "@/app/ui/dashboard/revenue-chart";
+import { set } from 'zod';
 
+interface SubscriptionData {
+  paidtotal: number;
+  pendingtotal: number;
+  totalamount: number;
+  count: number;
+}
 
 
 export default async function Page() {
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [latestSubsctiption, setLatestSubscription] = useState<LatestInvoice[] | null>(null);
+  const [monthlyData, setMonthlyData] = useState<number[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [revenue, setRevenue] = useState<Revenue[]>([]);
+  const getMonthName = (index: number): string => {
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    return months[index];
+  };
+  const fetchMonthlyExpenses = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/get-monthly-cost", {
+        method: "GET",
+        credentials: "include",
+      });
 
-    
-    
-    const JWTToken = cookies().get("Token")?.value
-    const Access = cookies().get("Access")?.value
-    const Validation = cookies().get("Validated")?.value
-    if(Validation !== 'True' || JWTToken == undefined || Access == undefined)
-      redirect("/login")
-    
-       
-    const response = await fetch("http://localhost:8080/validate-user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ 'Token': JWTToken }),
-    });
-    
+      if (response.ok) {
+        const data = await response.json();
+        const expensesData = data.body.map((item: any) => item.monthlyexpenses);
+        setMonthlyData(expensesData);
+        const monthlyExpensesData = data.body.map((item: any, index: number) => ({
+          month: getMonthName(index), // You need to implement getMonthName function
+          revenue: item.monthlyexpenses,
+        }));
+        setRevenue(monthlyExpensesData);
+      } else {
+        setError("Failed to fetch monthly expenses. Please try again later.");
+      }
+    } catch (err) {
+      console.error("Error fetching monthly expenses: ", err);
+      setError("An error occurred while fetching monthly expenses.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchMonthlyExpenses();
+  }, []);
 
-    // console.log(response.status)
-        
+  useEffect(() => {
+    const fetchSubscriptionData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/get-subscription-count", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (response.ok) {
 
+          const data = await response.json();
+          setSubscription(data.body);
+        }
+        else {
+          window.location.href = "/login";
+        }
+      } catch (err) {
+        console.error("Error fetching subscription data: ", err);
+      }
+    };
 
-  const headerList = headers();
-  const referer = headerList.get('Access');
-  // console.log(referer);
-  const {
-    numberOfInvoices,
-    numberOfCustomers,
-    totalPaidInvoices,
-    totalPendingInvoices,
-  } = await fetchCardData();
-  const latestInvoices = await fetchLatestInvoices();
-  const revenue = await fetchRevenue();
-  
+    const fetchLatestSubscription = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/get-latest-subscription", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (response.ok) {
+
+          const data = await response.json();
+          setLatestSubscription(data.body);
+        }
+        else {
+          window.location.href = "/login";
+        }
+      } catch (err) {
+        console.error("Error fetching latest subscription: ", err);
+      }
+    };
+
+    fetchSubscriptionData();
+    fetchLatestSubscription();
+  }, [200]);
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Card title="Collected" value={totalPaidInvoices} type="collected" />
-        <Card title="Pending" value={totalPendingInvoices} type="pending" />
-        <Card title="Total Invoices" value={numberOfInvoices} type="invoices" />
-        <Card
-          title="Total Customers"
-          value={numberOfCustomers}
-          type="customers"
-        />
+        <Card title="Paid Subscriptions" value={subscription?.paidtotal ?? 0} type="collected" />
+        <Card title="Pending Subscriptions" value={subscription?.pendingtotal ?? 0} type="pending" />
+        <Card title="Total Amount" value={subscription?.totalamount ?? 0} type="customers" />
+        <Card title="Total Subscriptions" value={subscription?.count ?? 0} type="invoices" />
       </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
+      <div>
+       <div className='hidden lg:block'>
+        <ChartComponent />
+       </div>
+       <div className='md:hidden'>
         <RevenueChart revenue={revenue} />
-        <LatestInvoices latestInvoices={latestInvoices} />
+       </div>
+       
+        <div>
+          <LatestInvoices latestInvoices={latestSubsctiption} />
+        </div>
       </div>
-    </main>
+    </main >
   );
 }

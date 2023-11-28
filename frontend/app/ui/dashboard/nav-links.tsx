@@ -3,6 +3,7 @@ import {
   UserGroupIcon,
   HomeIcon,
   DocumentDuplicateIcon,
+  PaintBrushIcon
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -12,10 +13,13 @@ import clsx from "clsx";
 const links = [
   { name: "Home", href: "/dashboard", icon: HomeIcon },
   {
-    name: "Invoices",
+    name: "Manage Subscriptions",
     href: "/dashboard/invoices",
     icon: DocumentDuplicateIcon,
   },
+  { name: "Edit Subscriptions",
+    href: "/dashboard/invoices/update",
+    icon: PaintBrushIcon},
   { name: "Import Data", href: "/parser", icon: UserGroupIcon },
 ];
 
@@ -30,9 +34,9 @@ export default function NavLinks() {
             key={link.name}
             href={link.href}
             className={clsx(
-              "flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3",
+              "dark:bg-gray-700 text-white flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-gray-500 md:flex-none md:justify-start md:p-2 md:px-3",
               {
-                "bg-sky-100 text-blue-600": pathname === link.href,
+                "text-blue-600": pathname === link.href,
               },
             )}
           >

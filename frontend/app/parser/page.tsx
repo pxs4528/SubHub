@@ -60,22 +60,24 @@ export default function Home() {
       Status: status,
       Month: month,
     }));
-    Object.keys(formattedData).forEach(async (key: any) => {
-      console.log(JSON.stringify(formattedData[key]));
+    
+    for( let i = 0; i < formattedData.length; i++)
+    {
+      console.log(JSON.stringify(formattedData[i]));
       const response = await fetch('http://localhost:8080/insert-subscription', {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formattedData[key]),
+        body: JSON.stringify(formattedData[i]),
       });
       if (response.ok) {
         console.log("success");
       } else {
         console.error('Error uploading file:', response.statusText);
       }
-    });
+    }
   }
 
 

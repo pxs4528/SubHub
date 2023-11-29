@@ -132,9 +132,9 @@ export default async function Page() {
       </h1>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Card title="Paid Subscriptions" value={subscription?.paidtotal ?? 0} type="collected" />
-        <Card title="Pending Subscriptions" value={subscription?.pendingtotal ?? 0} type="pending" />
-        <Card title="Total Amount" value={subscription?.totalamount ?? 0} type="customers" />
+        <Card title="Paid Subscriptions" value={Number(subscription?.paidtotal.toFixed(2)) ?? 0} type="collected" />
+        <Card title="Pending Subscriptions" value={Number(subscription?.pendingtotal.toFixed(2)) ?? 0} type="pending" />
+        <Card title="Total Amount" value={Number(subscription?.totalamount.toFixed(2)) ?? 0} type="customers" />
         <Card title="Total Subscriptions" value={subscription?.count ?? 0} type="invoices" />
       </div>
       <div>

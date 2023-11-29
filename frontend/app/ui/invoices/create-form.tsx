@@ -11,9 +11,11 @@ import {
   CurrencyDollarIcon,
   UserCircleIcon,
   CakeIcon,
+  CloudIcon
 } from "@heroicons/react/24/outline";
 import { Button } from "../button";
 import { number } from "zod";
+import { lusitana } from "../fonts";
 
 
 
@@ -29,8 +31,8 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
 
 
 
-  
-  
+
+
 
 
   const handleSubscriptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -50,7 +52,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
   };
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMonth(Number(e.target.value)) ;
+    setMonth(Number(e.target.value));
   }
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,15 +65,14 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
     setSubscriptionName(e.target.value);
   };
 
-  
+
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(subscriptionId, subscriptionName, amount, status, month);
     // Use subscriptionId and subscriptionName as needed, e.g., pass them to createInvoice function
     // createInvoice(subscriptionId, subscriptionName, amount, status, isOtherSelected);
-    try
-    {
+    try {
       const response = await fetch(
         "http://localhost:8080/insert-subscription",
         {
@@ -80,7 +81,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({Name: subscriptionName, Amount: amount, Status: status, Month: month})
+          body: JSON.stringify({ Name: subscriptionName, Amount: amount, Status: status, Month: month })
         }
       );
       if (!response.ok)
@@ -93,22 +94,22 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
       window.location.href = 'https://www.google.com/search?q=how+to+not+be+a+bozo&rlz=1C1UEAD_enUS1017US1020&oq=how+to+not+be+a+bozo&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCDYyOThqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8'
     }
   }
-  
+
 
   return (
     <form onSubmit={handleFormSubmit}>
-      <div className="rounded-md bg-gray-50 p-4 md:p-6">
+      <div className="rounded-md dark:bg-slate-800 bg-slate-200 p-4 md:p-6 shadow-lg dark:shadow-slate-200/50 shadow-slate-900/50">
         {/* Customer Name */}
         <div className="mb-4">
-          <label htmlFor="customer" className="mb-2 block text-sm font-medium">
+          <label htmlFor="customer" className={`${lusitana.className} mb-2 block font-medium text-lg text-slate-950 dark:text-slate-200`}>
             Choose Subscription
           </label>
           <div className="relative">
-            
+
             <select
               id="customer"
               name="customerId"
-              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              className={`${lusitana.className} peer block w-full rounded-md border border-slate-500 py-2 pl-10 text-sm outline-2 dark:bg-slate-700 text-slate-700 dark:text-slate-300`}
               defaultValue=""
               onChange={handleSubscriptionChange}
             >
@@ -116,28 +117,28 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
               <option value="" disabled>
                 Select a Subscription
               </option>
-              
+
               {customers?.map((customer) => (
                 <>
-                <option key={customer.id} value={customer.id}>
-                  {customer.subscription_name}
-                </option>
-                
+                  <option key={customer.id} value={customer.id}>
+                    {customer.subscription_name}
+                  </option>
+
                 </>
               ))}
               <option key="Other" value="Other">
-                  Other
-                </option>
-              
+                Other
+              </option>
+
             </select>
-            
-            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+
+            <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-700 dark:text-slate-300" />
           </div>
         </div>
-         {/* Other Subscription Name */}
-         {isOtherSelected && (
-          <div className="mb-4">
-            <label htmlFor="otherSubscription" className="mb-2 block text-sm font-medium">
+        {/* Other Subscription Name */}
+        {isOtherSelected && (
+          <div className="mb-4 relative">
+            <label htmlFor="otherSubscription" className={`${lusitana.className} mb-2 block font-medium text-lg text-slate-950 dark:text-slate-200`}>
               Enter Subscription Name
             </label>
             <input
@@ -147,14 +148,16 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
               placeholder="Enter subscription name"
               value={subscriptionName}
               onChange={handleSubscriptionNameChange}
-              className="block w-full rounded-md border border-gray-200 py-2 px-4 text-sm outline-2 placeholder:text-gray-500"
+              className={`${lusitana.className} peer block w-full rounded-md border border-slate-500 py-2 pl-10 text-sm outline-2 placeholder-slate-700 dark:placeholder-slate-300 dark:bg-slate-700 text-slate-950 dark:text-slate-100`}
             />
+            <CloudIcon className="pointer-events-none absolute left-3 top-[calc(60%)] h-[18px] w-[18px] text-slate-700 dark:text-slate-300" />
           </div>
         )}
 
+
         {/* Invoice Amount */}
         <div className="mb-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
+          <label htmlFor="amount" className={`${lusitana.className} mb-2 block font-medium text-lg text-slate-950 dark:text-slate-200`}>
             Choose an amount
           </label>
           <div className="relative mt-2 rounded-md">
@@ -165,33 +168,33 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
                 type="number"
                 step="0.01"
                 placeholder="Enter USD amount"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className={`${lusitana.className} peer block w-full rounded-md border border-slate-500 py-2 pl-10 text-sm outline-2 dark:bg-slate-700 placeholder-slate-700 dark:placeholder-slate-300 text-slate-950 dark:text-slate-100`}
                 onChange={handleAmountChange}
               />
-              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-700 dark:text-slate-300" />
             </div>
           </div>
         </div>
 
         {/* Invoice Status */}
         <div>
-          <label htmlFor="status" className="mb-2 block text-sm font-medium">
+          <label htmlFor="status" className={`${lusitana.className} mb-2 block font-medium text-lg text-slate-950 dark:text-slate-200`}>
             Set the subscription status
           </label>
-          <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
+          <div className="rounded-md border border-slate-500 dark:bg-slate-700 px-[14px] py-3">
             <div className="flex gap-4">
               <div className="flex items-center">
                 <input
                   id="Pending"
                   name="status"
                   type="radio"
-                  value="pending"
-                  className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
+                  value="Pending"
+                  className="h-4 w-4 border-slate-500 bg-slate-800 dark:text-slate-900 focus:ring-2 focus:ring-slate-500 dark:border-slate-300 dark:bg-slate-300 dark:ring-offset-slate-800 dark:focus:ring-slate-800"
                   onChange={handleStatusChange("Pending")}
                 />
                 <label
                   htmlFor="Pending"
-                  className="ml-2 flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300"
+                  className="ml-2 flex items-center gap-1.5 rounded-full bg-amber-300 px-3 py-1.5 text-xs font-medium text-slate-950"
                 >
                   Pending <ClockIcon className="h-4 w-4" />
                 </label>
@@ -201,13 +204,13 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
                   id="Paid"
                   name="status"
                   type="radio"
-                  value="paid"
-                  className="h-4 w-4 border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-gray-600"
+                  value="Paid"
+                  className="h-4 w-4 border-slate-500 bg-slate-800 dark:text-slate-900 focus:ring-2 focus:ring-slate-500 dark:border-slate-300 dark:bg-slate-300 dark:ring-offset-slate-800 dark:focus:ring-slate-800"
                   onChange={handleStatusChange("Paid")}
                 />
                 <label
                   htmlFor="Paid"
-                  className="ml-2 flex items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white dark:text-gray-300"
+                  className="ml-2 flex items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-slate-950"
                 >
                   Paid <CheckIcon className="h-4 w-4" />
                 </label>
@@ -217,7 +220,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
         </div>
         {/* start code for months omegalul */}
         <div className="mt-4">
-          <label htmlFor="amount" className="mb-2 block text-sm font-medium">
+          <label htmlFor="amount" className={`${lusitana.className} mb-2 block font-medium text-lg text-slate-950 dark:text-slate-200`}>
             Enter number of months
           </label>
           <div className="relative mt-2 rounded-md">
@@ -228,10 +231,10 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
                 type="number"
                 step="1"
                 placeholder="Enter amount of months"
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className={`${lusitana.className} peer block w-full rounded-md border border-slate-500 py-2 pl-10 text-sm outline-2 dark:bg-slate-700 placeholder-slate-700 dark:placeholder-slate-300 text-slate-950 dark:text-slate-100`}
                 onChange={handleMonthChange}
               />
-              <CakeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+              <CakeIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-700 dark:text-slate-300" />
             </div>
           </div>
         </div>
@@ -239,12 +242,12 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
       <div className="mt-6 flex justify-end gap-4">
         <Link
           href="/dashboard/invoices"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+          className="flex h-10 items-center rounded-lg px-4 text-sm font-medium transition-colors text-slate-950 bg-slate-100 dark:bg-slate-700 dark:text-slate-100 hover:text-slate-100 dark:hover:bg-slate-600 hover:bg-slate-700"
         >
           Cancel
         </Link>
         <Button type="submit">Create Invoice</Button>
       </div>
-    </form>
+    </form >
   );
 }

@@ -8,7 +8,9 @@ import DeleteIcon from "@/public/assets/Trash.svg";
 import RightArrowIcon from "@/public/assets/RightArrow.svg";
 import LeftArrowIcon from "@/public/assets/LeftArrow.svg";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { CreateInvoice } from "./buttons";
+import { CreateInvoice, DeleteInvoice, UpdateInvoice } from "./buttons";
+import InvoiceStatus from "./status";
+import { formatCurrency, formatDateToLocal } from "@/app/lib/utils";
 
 
 function addLeadingZero(number: number) {
@@ -130,65 +132,106 @@ export default function UserSubscriptions() {
         </div>
         <CreateInvoice />
       </div>
-      <div className="relative overflow-x-auto shadow-lg sm:rounded-lg shadow-lg dark:shadow-slate-200/20 shadow-slate-900/20">
-        <table className="w-full text-sm text-left rtl:text-right">
-          <thead className="text-xs uppercase text-slate-950 dark:text-slate-200 bg-slate-400 dark:bg-slate-700">
-            <tr>
-              <th scope="col" className="px-6 py-3 text-center">
-                Subscription name
-              </th>
-              <th scope="col" className="px-6 py-3 text-center">
-                Duration
-              </th>
-              <th scope="col" className="px-6 py-3 text-center">
-                Amount
-              </th>
-              <th scope="col" className="px-6 py-3 text-center">
-                Status
-              </th>
-              <th scope="col" className="px-6 py-3 text-center">
-                {""}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentSubscriptions && currentSubscriptions.map((subscription) => (
-              <tr key={subscription.subscription_id} className="odd:bg-slate-200 even:bg-slate-300 odd:dark:bg-gray-800  even:dark:bg-slate-900">
-                <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap text-slate-950 dark:text-slate-100 text-center">
-                  {subscription.name}
-                </th>
-                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap text-slate-950 dark:text-slate-100 text-center">
-                  <div className="mx-5">
-                    {addLeadingZero(subscription.month)}
+      <div className="mt-6 flow-root">
+        <div className="inline-block min-w-full align-middle">
+        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+        <div className="md:hidden">
+            {currentSubscriptions && currentSubscriptions.map((invoice) => (
+              <div
+                key={invoice.subscription_id}
+                className="mb-2 w-full rounded-md bg-white p-4"
+              >
+                <div className="flex items-center justify-between border-b pb-4">
+                  <div>
+                    <div className="mb-2 flex text-xl items-center">
+                      <p>{invoice.name}</p>
+                    </div>
                   </div>
-                </td>
-                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap text-slate-950 dark:text-slate-100 text-center">
-                  {subscription.amount.toFixed(2)}
-                </td>
-                <td scope="row" className="px-6 py-4 font-medium whitespace-nowrap text-slate-950 dark:text-slate-100 text-center">
-                  {subscription.status}
-                </td>
-                <td scope="row" className="px-6 py-4 text-center">
-                  <div className="flex justify-center cursor-pointer">
-                    <div className="group flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center" onClick={() => handleDelete(subscription.name)}>
+                  <InvoiceStatus status={invoice.status} />
+                </div>
+                <div className="flex w-full items-center justify-between pt-4">
+                  <div>
+                    <p className="text-lg font-medium">
+                      {(invoice.amount)} $
+                    </p>
+                    <p>{formatDateToLocal(invoice.date)}</p>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                  <div className="flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center" onClick={() => handleDelete(invoice.name)}>
                       <Image
-                        className="h-5 w-5 min-w-[20px] min-h-[20px] dark:invert group-hover:filter group-hover:invert"
+                        className="h-5 w-auto dark:invert"
                         src={DeleteIcon}
                         alt="Delete Icon"
+                        
                       />
                     </div>
                   </div>
-                </td>
-              </tr>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+          <table className="hidden min-w-full text-gray-900 md:table">
+            <thead className="rounded-lg text-left text-sm font-normal">
+              <tr>
+                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
+                  Customer
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Amount
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Date
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Status
+                </th>
+                <th scope="col" className="relative py-3 pl-6 pr-3">
+                  <span className="sr-only">Edit</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white">
+              {currentSubscriptions && currentSubscriptions.map((invoice) => (
+                <tr
+                  key={invoice.subscription_id}
+                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                >
+                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
+                    <div className="flex items-center gap-3">
+                      <p>{invoice.name}</p>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {invoice.amount} $
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {formatDateToLocal(invoice.date)}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    <InvoiceStatus status={invoice.status} />
+                  </td>
+                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
+                  <div className="flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center" onClick={() => handleDelete(invoice.name)}>
+                      <Image
+                        className="h-5 w-auto dark:invert"
+                        src={DeleteIcon}
+                        alt="Delete Icon"
+                        
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        </div>
       </div>
       <div className="flex justify-center items-center py-3 space-x-1">
         <button
           disabled={currentPage === 0}
           onClick={() => handlePageChange(currentPage - 1)}
-          className="py-2 px-4 sm:rounded-md dark:bg-slate-700 hover:bg-gray-500 bg-slate-300 hover:bg-slate-400 cursor-pointer"
+          className="py-2 px-4 sm:rounded-md dark:bg-slate-700 bg-slate-300 hover:bg-slate-400 cursor-pointer"
         >
           <Image
             className="mx-auto h-5 w-auto dark:invert"

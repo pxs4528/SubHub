@@ -113,15 +113,15 @@ export default function Login() {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="dark:bg-gray-900 min-h-screen bg-gray-50 flex sm:justify-center items-center pt-6 sm:pt-0">
-        <div id="2fabox" className="max-w-md mx-auto bg-gray-800 dark:border-gray-700 rounded-xl overflow-hidden p-6 shadow-md hover:shadow-lg w-1/2 absolute hidden">
+      <div className="bg-slate-100 dark:bg-slate-950 min-h-screen flex sm:justify-center items-center pt-6 sm:pt-0">
+        <div id="2fabox" className="max-w-md mx-auto bg-slate-800 dark:border-slate-700 rounded-xl overflow-hidden p-6 shadow-md hover:shadow-lg w-1/2 absolute hidden">
           <label htmlFor="textbox" className="block text-sm font-medium text-white">
             Enter 2FA Code here:
           </label>
           <input
             type="text"
             id="twofainput"
-            className=" w-3/4 mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200"
+            className=" w-3/4 mt-1 p-2 border border-slate-300 rounded-md focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200"
           />
           <div className="mt-4">
             <button
@@ -140,22 +140,22 @@ export default function Login() {
         </div>
         <div id="loginBox" className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
-            <div className="dark:invert flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+            <div className="flex items-center mb-6 text-2xl font-semibold">
               <Image
-                className="mx-auto h-10 w-auto"
+                className="dark:invert mx-auto h-10 w-auto"
                 src={Icon}
                 alt="SubHub Logo"
               />
             </div>
-            <div className="w-full rounded-lg shadow-lg dark:border dark:bg-gray-800 dark:border-gray-700 shadow-gray-500/50">
-              <h2 className="mt-10 text-center text-2xl font-bold leading-1 tracking-tight text-white">
+            <div className="w-full rounded-lg shadow-lg border bg-slate-200 border-slate-200 dark:border dark:bg-slate-800 dark:border-slate-700 shadow-slate-500/100">
+              <h2 className="mt-10 text-center text-2xl font-bold leading-1 tracking-tight text-slate-950 dark:text-slate-100">
                 Log in with your account
               </h2>
               <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                   <form className="space-y-4 md:space-y-6" onSubmit={(e) => validate(e)}>
                     <div>
-                      <label htmlFor="email" className="block text-lg font-medium leading-6 tracking-tight text-white">
+                      <label htmlFor="email" className="block text-lg font-medium leading-6 tracking-tight text-slate-950 dark:text-slate-100">
                         Email
                       </label>
                       <div className="mt-2">
@@ -168,12 +168,13 @@ export default function Login() {
                           type="email"
                           required={true}
                           placeholder="johndoe@gmail.com"
-                          className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          className="bg-slate-50 border border-slate-300 text-slate-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400 dark:text-slate-100 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+
                         />
                       </div>
                     </div>
                     <div>
-                      <label htmlFor="password" className="block text-lg font-medium leading-6 tracking-tight text-white">
+                      <label htmlFor="password" className="block text-lg font-medium leading-6 tracking-tight text-slate-950 dark:text-slate-100">
                         Password
                       </label>
                       <div className="mt-2">
@@ -188,7 +189,8 @@ export default function Login() {
                           minLength={8}
                           maxLength={15}
                           required={true}
-                          className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          className="bg-slate-50 border border-slate-300 text-slate-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400 dark:text-slate-100 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+
                         />
                       </div>
                     </div>
@@ -205,7 +207,7 @@ export default function Login() {
                   <div className="mt-6 text-center">
                     <div className="items-center flex  justify-center py-3 ">
                       <button
-                        className="flex items-center rounded-md px-4 py-1 hover:bg-gray-700  transition-transform hover:scale-105"
+                        className="group flex items-center rounded-md px-4 py-1 hover:bg-slate-800 dark:hover:bg-slate-700 transition-transform hover:scale-105"
                         onClick={() => redirectG()}
                       >
                         <svg
@@ -245,14 +247,14 @@ export default function Login() {
                             fill="#EA4335"
                           />
                         </svg>{" "}
-                        <span className="dark:text-white ml-2">
+                        <span className="text-slate-950 dark:text-slate-100 ml-2 group-hover:text-slate-100">
                           Continue with Google
                         </span>
                       </button>
                     </div>
-                    <div className="mt-6 text-center dark:text-white">
+                    <div className="mt-6 text-center text-slate-950 dark:text-slate-100">
                       Don't have an account? {' '}
-                      <a href="/signup" className="dark:text-white underline ">
+                      <a href="/signup" className="text-slate-950 dark:text-slate-100 underline ">
                         Sign up!
                       </a>
                     </div>

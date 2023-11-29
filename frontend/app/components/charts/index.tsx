@@ -2,25 +2,58 @@
 import React, { useEffect, useRef, useState } from "react";
 import Chart, { ChartConfiguration } from "chart.js/auto";
 import { lusitana } from "@/app/ui/fonts";
+import { Elsie_Swash_Caps } from "next/font/google";
 
+function isDarkMode() {
+  if (typeof window !== "undefined") {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
 
+  return false;
 
+}
 
 export default function ChartComponent() {
+  function useDarkMode() {
+    const [isDark, setIsDark] = useState(isDarkMode());
+
+    useEffect(() => {
+      const matcher = window.matchMedia('(prefers-color-scheme: dark)');
+      const onChange = (e: any) => setIsDark(e.matches);
+
+      matcher.addEventListener('change', onChange);
+      return () => matcher.removeEventListener('change', onChange);
+    }, []);
+
+    return isDark;
+  }
+
+  const isDark = useDarkMode();
+
+  function getGridColor() {
+    return isDark ? 'rgba(241,245,249,0.5)' : 'rgba(0, 0, 0, 0.5)';
+  }
+
+  function getTextColor() {
+    return isDark ? 'rgba(241,245,249)' : 'rgba(0, 0, 0)';
+  }
+
+
   const canvasEl = useRef<HTMLCanvasElement | null>(null);
   const [monthlyData, setMonthlyData] = useState<number[]>([]);
   const colors = {
-    purple: {
-      default: "rgba(221, 160, 221, 1)",
-      half: "rgba(221, 160, 221, 0.5)",
-      quarter: "rgba(221, 160, 221, 0.25)",
-      zero: "rgba(221, 160, 221, 0)"
+    purple: isDark ? {
+      default: "rgba(165, 197, 233,1)",
+      half: "rgba(165, 197, 233, 0.8)",
+      quarter: "rgba(165, 197, 233, 0.5)",
+      zero: "rgba(165, 197, 233, 0)"
+    } : {
+      default: "rgba(23,37,84,1)",
+      half: "rgba(23,37,84,0.8)",
+      quarter: "rgba(23,37,84,0.5)",
+      zero: "rgba(23,37,84,0)"
     },
-    indigo: {
-      default: "rgba(173, 216, 230, 1)",
-      quarter: "rgba(173, 216, 230, 0.25)"
-    },
-    text: "#FFF"
+    text: getTextColor()
   };
   useEffect(() => {
     const monthlyExpenses = async () => {
@@ -77,13 +110,13 @@ export default function ChartComponent() {
 
             x: {
               grid: {
-                color: 'rgba(255, 255, 255, 0.2)',
+                color: getGridColor(),
               },
               ticks: { color: colors.text },
             },
             y: {
               grid: {
-                color: 'rgba(255, 255, 255, 0.2)',
+                color: getGridColor(),
               },
               ticks: { color: colors.text },
             }

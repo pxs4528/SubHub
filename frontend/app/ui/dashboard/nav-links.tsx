@@ -17,9 +17,11 @@ const links = [
     href: "/dashboard/invoices",
     icon: DocumentDuplicateIcon,
   },
-  { name: "Edit Subscriptions",
+  {
+    name: "Edit Subscriptions",
     href: "/dashboard/invoices/update",
-    icon: PaintBrushIcon},
+    icon: PaintBrushIcon
+  },
   { name: "Import Data", href: "/parser", icon: UserGroupIcon },
 ];
 
@@ -34,7 +36,7 @@ export default function NavLinks() {
             key={link.name}
             href={link.href}
             className={clsx(
-              "dark:bg-gray-700 text-white flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-gray-500 md:flex-none md:justify-start md:p-2 md:px-3",
+              "text-slate-950 bg-slate-100 dark:bg-slate-700 dark:text-slate-100 flex h-[48px] grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-700 hover:text-slate-100 dark:hover:bg-slate-600 md:flex-none md:justify-start md:p-2 md:px-3",
               {
                 "text-blue-600": pathname === link.href,
               },

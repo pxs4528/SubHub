@@ -104,7 +104,7 @@ export default async function Page() {
   }, [200]);
   return (
     <main>
-      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
+      <h1 className={`${lusitana.className} text-slate-950 dark:text-slate-100 mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -114,13 +114,13 @@ export default async function Page() {
         <Card title="Total Subscriptions" value={subscription?.count ?? 0} type="invoices" />
       </div>
       <div>
-       <div className='hidden lg:block'>
-        <ChartComponent />
-       </div>
-       <div className='md:hidden'>
-        <RevenueChart revenue={revenue} />
-       </div>
-       
+        <div className='hidden lg:block'>
+          <ChartComponent />
+        </div>
+        <div className='md:hidden'>
+          <RevenueChart revenue={revenue} />
+        </div>
+
         <div>
           <LatestInvoices latestInvoices={latestSubsctiption} />
         </div>

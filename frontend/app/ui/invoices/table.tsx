@@ -10,6 +10,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { CreateInvoice, DeleteInvoice, UpdateInvoice } from "./buttons";
 import InvoiceStatus from "./status";
 import { formatCurrency, formatDateToLocal } from "@/app/lib/utils";
+import { lusitana } from "../fonts";
 
 
 function addLeadingZero(number: number) {
@@ -121,7 +122,7 @@ export default function UserSubscriptions() {
             Search
           </label>
           <input
-            className="peer block w-full rounded-md border text-slate-900 border-slate-300 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 py-[9px] pl-10 text-sm outline-2 placeholder:text-slate-600 dark:placeholder:text-slate-300 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className={`${lusitana.className} peer block w-full rounded-md border text-slate-900 border-slate-300 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-100 py-[9px] pl-10 text-sm outline-2 placeholder:text-slate-600 dark:placeholder:text-slate-300 dark:focus:ring-blue-500 dark:focus:border-blue-500`}
             placeholder={'Search Subscription'}
             onChange={debounce((e: { target: { value: SetStateAction<string>; }; }) => {
               setSearchParam(e.target.value);
@@ -142,7 +143,7 @@ export default function UserSubscriptions() {
                 >
                   <div className="flex items-center justify-between border-b border-slate-400 dark:border-slate-500 pb-4 text-slate-950 dark:text-slate-100">
                     <div>
-                      <div className="mb-2 flex text-xl items-center">
+                      <div className={`${lusitana.className} mb-2 flex text-xl items-center`}>
                         <p>{invoice.name}</p>
                       </div>
                     </div>
@@ -150,10 +151,10 @@ export default function UserSubscriptions() {
                   </div>
                   <div className="flex w-full items-center justify-between pt-4 text-slate-950 dark:text-slate-100">
                     <div>
-                      <p className="text-lg font-medium">
+                      <p className={`${lusitana.className} text-lg font-medium`}>
                         {(invoice.amount)} $
                       </p>
-                      <p>{formatDateToLocal(invoice.date)}</p>
+                      <p className={`${lusitana.className}`}>{formatDateToLocal(invoice.date)}</p>
                     </div>
                     <div className="flex justify-end gap-2">
                       <div className="group flex-1 sm:rounded-md p-2  hover:bg-blue-600 flex justify-center items-center" onClick={() => handleDelete(invoice.name)}>
@@ -169,7 +170,7 @@ export default function UserSubscriptions() {
               ))}
             </div>
             <table className="hidden min-w-full text-slate-950 md:table">
-              <thead className="rounded-lg text-left text-sm font-normal text-slate-950 dark:text-slate-100">
+              <thead className={`${lusitana.className} rounded-lg text-left text-sm font-normal text-slate-950 dark:text-slate-100`}>
                 <tr>
                   <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
                     Subscription
@@ -188,7 +189,7 @@ export default function UserSubscriptions() {
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={`${lusitana.className}`}>
                 {currentSubscriptions && currentSubscriptions.map((invoice) => (
                   <tr
                     key={invoice.subscription_id}

@@ -7,7 +7,7 @@ import { Button } from "../button";
 
 export default function SideNav() {
   return (
-    <div className="bg-slate-200 dark:bg-slate-950 flex h-full flex-col px-3 py-4 md:px-2">
+    <div className="bg-slate-200 dark:bg-slate-900 flex h-full flex-col px-3 py-4 md:px-2">
       <Link
         className="group dark:bg-slate-700 mb-2 flex h-20 items-end justify-start rounded-md bg-slate-100 p-4 md:h-40 hover:bg-slate-700 dark:hover:bg-slate-600"
         href="/"

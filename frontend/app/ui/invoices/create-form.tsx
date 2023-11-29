@@ -181,7 +181,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
           <label htmlFor="status" className={`${lusitana.className} mb-2 block font-medium text-lg text-slate-950 dark:text-slate-200`}>
             Set the subscription status
           </label>
-          <div className="rounded-md border border-slate-500 dark:bg-slate-700 px-[14px] py-3">
+          <div className="rounded-md border border-slate-500 bg-slate-100 dark:bg-slate-700 px-[14px] py-3">
             <div className="flex gap-4">
               <div className="flex items-center">
                 <input
@@ -242,7 +242,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
       <div className="mt-6 flex justify-end gap-4">
         <Link
           href="/dashboard/invoices"
-          className="flex h-10 items-center rounded-lg px-4 text-sm font-medium transition-colors text-slate-950 bg-slate-100 dark:bg-slate-700 dark:text-slate-100 hover:text-slate-100 dark:hover:bg-slate-600 hover:bg-slate-700"
+          className="flex h-10 items-center rounded-lg px-4 text-sm font-medium transition-colors text-slate-950 bg-slate-300 dark:bg-slate-700 dark:text-slate-100 hover:text-slate-100 dark:hover:bg-slate-600 hover:bg-slate-700"
         >
           Cancel
         </Link>

@@ -125,7 +125,7 @@ export default function Login() {
           />
           <div className="mt-4">
             <button
-              className="bg-blue-600 shadow-gray-500/50 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
+              className="bg-blue-600 shadow-gray-500/50 m-4 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
               onClick={() => ResendCode()}
             >
               Resend

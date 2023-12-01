@@ -1,20 +1,6 @@
 # SubHub - Subscription Manager
 
-<img src="frontend/src/assets/subhub_logo.svg"/>
-
-## Table of Contents
-
-- [Project Overview](#project-overview)
-- [Specifications and Design](#specifications-and-design)
-- [Makefile Instructions](#makefile-instructions)
-- [Code and Tests](#code-and-tests)
-- [Two Factor Authentication](#two-factor-authentication)
-- [Performance](#performance)
-- [Security Measures](#security-measures)
-- [Dashboard](#dashboard)
-- [PDF Parser](#pdf-parser)
-- [Future Iteration Plan](#future-iteration-plan)
-- [Customers and Users](#customers-and-users)
+<img src="frontend/public/assets/subhub_logo.svg"/>
 
 ## Project Overview
 

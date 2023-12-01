@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"backend/internal/Response"
+
 	"context"
 	"encoding/json"
 	"net/http"
@@ -77,17 +78,18 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 	}
 	uh.User.AuthType = "Google"
 
-	id := uh.ExistUser()
-	if id != "" {
+	id,name := uh.ExistUser()
+	if id != "" && name != "" {
 		uh.User.ID = id
+		uh.User.Name = name
 		JWT,err := uh.GenerateJWT()
 		if err != nil {
 			Response.Send(response,http.StatusInternalServerError,"Error Generating Session",nil)
 			return
 		}
-
 		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
 		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
+		http.SetCookie(response,SetRegularCookie("Name",uh.User.Name))
 		http.SetCookie(response,SetHttpOnlyCookie("Validated","True"))
 
 		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)
@@ -96,7 +98,6 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 	} else {
 
 		uh.User.ID = uuid.New().String()
-
 		JWT,err := uh.GenerateJWT()
 		if err != nil {
 			Response.Send(response,http.StatusInternalServerError,"Error Generating Session",nil)
@@ -107,6 +108,7 @@ func (uh *UserHandler) Callback(response http.ResponseWriter, request *http.Requ
 
 		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
 		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
+		http.SetCookie(response,SetRegularCookie("Name",uh.User.Name))
 		http.SetCookie(response,SetHttpOnlyCookie("Validated","True"))
 
 		http.Redirect(response,request,"http://localhost:3000/dashboard",http.StatusSeeOther)

@@ -5,6 +5,7 @@ import { FormEventHandler, JSXElementConstructor, PromiseLikeOfReactNode, ReactE
 import { lusitana } from "../ui/fonts";
 import { set } from "zod";
 export default function Home() {
+  const router = useRouter();
   const [keywords, setKeywords] = useState<string[]>([]);
   const [currentKeyword, setCurrentKeyword] = useState<string>('');
 
@@ -74,6 +75,7 @@ export default function Home() {
       });
       if (response.ok) {
         console.log("success");
+        router.push('/dashboard');
       } else {
         console.error('Error uploading file:', response.statusText);
       }

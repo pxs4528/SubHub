@@ -28,8 +28,8 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 		Response.Send(response,http.StatusInternalServerError,"Error getting the request",nil)
 		return
 	}
-	id := uh.ExistUser()
-	if id != "" {
+	id,name := uh.ExistUser()
+	if id != "" && name != "" {
 		Response.Send(response,http.StatusConflict,"User Exist",nil)
 		return
 	}
@@ -62,9 +62,10 @@ func (uh *UserHandler) NewSignUp(response http.ResponseWriter, request *http.Req
 	go uh.ValidateInsertCode()
 
 	go uh.Send()
-
+	
 	http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
 	http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
+	http.SetCookie(response,SetRegularCookie("Name",uh.User.Name))
 	http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
 
 

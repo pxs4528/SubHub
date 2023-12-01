@@ -74,8 +74,8 @@ func (uh *UserHandler) UserLogin(response http.ResponseWriter,request *http.Requ
 
 		http.SetCookie(response,SetHttpOnlyCookie("Token",JWT))
 		http.SetCookie(response,SetRegularCookie("Access",uh.User.ID))
+		http.SetCookie(response,SetRegularCookie("Name",uh.User.Name))
 		http.SetCookie(response,SetHttpOnlyCookie("Validated","False"))
-
 
 		Response.Send(response,http.StatusAccepted,"User logged in",nil)
 		return

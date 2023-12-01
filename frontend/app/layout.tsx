@@ -4,14 +4,14 @@ import { Metadata, Viewport } from "next";
 import react from '@/public/icon512_rounded.png'
 
 
-export const metadata : Metadata = {
+export const metadata: Metadata = {
   title: "SubHub",
   description: "Subscriptions made easy",
   manifest: "/manifest.json",
-  icons: { apple : '/icon-192x192.png.png'}
+  icons: { apple: '/icon-192x192.png.png' }
 };
 
-export const viewport : Viewport = {
+export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 

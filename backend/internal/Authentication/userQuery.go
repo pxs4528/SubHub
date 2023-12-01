@@ -39,15 +39,16 @@ func (uh *UserHandler) VerifyPassword() bool{
 }
 
 
-func (uh *UserHandler) ExistUser() string{
+func (uh *UserHandler) ExistUser() (string,string){
 	var id string
-	err := uh.DB.QueryRow(context.Background(), `SELECT id 
+	var name string
+	err := uh.DB.QueryRow(context.Background(), `SELECT id,name
 												FROM public.users
-												WHERE email = $1;`,uh.User.Email).Scan(&id)
+												WHERE email = $1;`,uh.User.Email).Scan(&id,&name)
 	if err == pgx.ErrNoRows {
-		return ""
+		return "",""
 	} else {
-		return id
+		return id,name
 	}
 }
 

@@ -12,21 +12,6 @@ export default function Login() {
   const [Email, setEmail] = useState("");
   const [Password, setPass] = useState("");
 
-  const arr = ["Token", "Validation", "Access"]
-  useEffect(() => {
-
-    arr.forEach(element => {
-      if (getCookie(element))
-        deleteCookie(element)
-    });
-  });
-
-
-  // for i  in cookies.get()
-  // if (cookies.get("Vaildated"))
-
-  // cookies.remove("Token")
-  // cookies.remove("Access")
 
 
   async function ResendCode() {

@@ -62,6 +62,8 @@ func NewRouter(pool *pgxpool.Pool) http.Handler {
 	mux.HandleFunc("/get-user-subscriptions",subscriptionHandler.GetAllUserSubscriptions)
 
 	mux.HandleFunc("/search-subscription",subscriptionHandler.SearchSubscriptions)
+
+	mux.HandleFunc("/sign-out",authentication.ClearAllCookie)
 	
 	return mux
 	

@@ -12,7 +12,48 @@ export default function Signup() {
   const [password, setPass] = useState("");
   const [name, setName] = useState("");
 
+  async function ResendCode() {
 
+    const response = await fetch(
+      "http://localhost:8080/resend-code",
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok)
+      console.log("error with new code")
+  }
+
+  async function ValidateCode(e: any) {
+    let inputbox = document.getElementById("twofainput") as HTMLInputElement
+    let Code: string = inputbox.value
+    console.log(JSON.stringify({ Code: Number(Code) }))
+    try {
+      const response = await fetch(
+        "http://localhost:8080/validate-twofa",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ Code: Number(Code) }),
+        }
+      );
+      console.log(response)
+      if (response.ok) {
+        router.push("/dashboard")
+      }
+
+    }
+    catch (error) {
+      console.log("Error :", error)
+    }
+  }
 
   const validate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -29,30 +70,13 @@ export default function Signup() {
       console.log(response.body);
 
       if (response.ok) {
-        let Code = prompt("Enter 2FA Code Here Please");
-        console.log(JSON.stringify({ Code: Number(Code) }));
-        try {
-          const code_response = await fetch(
-            "http://localhost:8080/validate-twofa",
-            {
-              method: "POST",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ Code: Number(Code) }),
-            }
-          );
-          const responseData = await code_response.json();
-
-          console.log(responseData);
-
-          if (code_response.ok) {
-            router.push("/dashboard");
-          }
-        } catch (error) {
-          console.error("Error:", error);
-        }
+        const loginBox = document.getElementById("signupBox")
+        loginBox!.style.filter = "blur(20px)"
+        loginBox!.style.pointerEvents = "none"
+        const twofabox = document.getElementById("2fabox")
+        twofabox!.style.filter = "blur(0px)" // handles blurring background
+        twofabox!.style.zIndex = "1"
+        twofabox!.style.display = 'inline'
       } else {
         // Handle other status codes
         const data = await response.json(); // Assuming the response contains JSON data
@@ -71,7 +95,31 @@ export default function Signup() {
   return (
     <div className="flex flex-col h-screen">
       <div className="bg-slate-100 dark:bg-slate-950 min-h-screen flex sm:justify-center items-center pt-6 sm:pt-0">
-        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div id="2fabox" className="max-w-md mx-auto bg-slate-200 dark:bg-slate-800 dark:border-slate-700 rounded-xl overflow-hidden p-6 shadow-md dark:shadow-slate-200/50 shadow-slate-900/50 w-1/2 absolute hidden">
+          <label htmlFor="textbox" className="block text-sm font-medium text-slate-950 dark:text-slate-100">
+            Enter 2FA Code here:
+          </label>
+          <input
+            type="text"
+            id="twofainput"
+            className=" w-3/4 mt-1 p-2 border border-slate-300 text-slate-900 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400 dark:text-slate-100 dark:focus:ring-blue-500 rounded-md focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200"
+          />
+          <div className="mt-4">
+            <button
+              className="bg-blue-600 shadow-gray-500/50 m-4 text-slate-100 py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
+              onClick={() => ResendCode()}
+            >
+              Resend
+            </button>
+            <button
+              className="bg-blue-600 shadow-gray-500/50 text-slate-100 py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-200"
+              onClick={e => ValidateCode(e)}
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+        <div id="signupBox" className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
             <div className="flex items-center mb-6 text-2xl font-semibold">
               <Image

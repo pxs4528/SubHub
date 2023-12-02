@@ -145,40 +145,40 @@ export default function Home() {
   return subscriptions ?
     <>
       <div>
-        <h1 className={`${lusitana.className} text-xl text-center m-3 text-gray-800 md:text-3xl md:leading-normal`}>
+        <h1 className={`${lusitana.className} text-xl text-center m-3 text-slate-950 dark:text-slate-100 md:text-3xl md:leading-normal`}>
           Parsed Subscriptions
         </h1>
       </div>
       <form onSubmit={handleFormSubmission}>
-        <div className="mt-6 flow-root">
+        <div className="mt-6 flow-root ">
           <div className="inline-block min-w-full align-middle">
-            <div className="rounded-lg bg-gray-50 p-2 md:py-0">
-
+            <div className="rounded-lg dark:bg-slate-800 bg-slate-200 p-2 md:py-0">
+              {/* bg-slate-50 text-slate-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400 dark:text-slate-100 dark:focus:ring-blue-500 dark:focus:border-blue-500 */}
               {Object.entries(subscriptions).map(([key, value]) => (
                 <div key={key} className="border-b border-gray-200 p-2 sm:p-4">
                   {/* Choose Subscription */}
                   <div className="mb-4">
-                    <label htmlFor={`subscription-${key}`} className="mb-2 block text-sm font-medium">
+                    <label htmlFor={`subscription-${key}`} className="mb-2 block text-sm font-medium text-slate-950 dark:text-slate-100">
                       Choose Subscription
                     </label>
                     <input
                       id={`subscription-${key}`}
                       name={`subscription-${key}`}
-                      className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                      className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 bg-slate-50 text-slate-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400 dark:text-slate-100 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       defaultValue={key}
                     />
                   </div>
 
                   {/* Choose Date */}
                   <div className="mb-4">
-                    <label htmlFor={`date-${key}`} className="mb-2 block text-sm font-medium">
+                    <label htmlFor={`date-${key}`} className="mb-2 block text-sm font-medium text-slate-950 dark:text-slate-100">
                       Choose Date
                     </label>
                     <input
                       id={`date-${key}`}
                       name={`date-${key}`}
                       type="date"
-                      className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                      className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 bg-slate-50 text-slate-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400 dark:text-slate-100 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       defaultValue={value.formattedDate}
                     // onSubmit={
                     //   //number of months from current data
@@ -189,7 +189,7 @@ export default function Home() {
 
                   {/* Choose Amount */}
                   <div className="mb-4">
-                    <label htmlFor={`amount-${key}`} className="mb-2 block text-sm font-medium">
+                    <label htmlFor={`amount-${key}`} className="mb-2 block text-sm font-medium text-slate-950 dark:text-slate-100">
                       Choose an amount
                     </label>
                     <input
@@ -199,7 +199,7 @@ export default function Home() {
                       step="any" defaultValue={value.price}
                       placeholder="Enter USD amount"
                       // onSubmit={(e) => setAmount(Number(e.target.value))}
-                      className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                      className="w-full rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 bg-slate-50 text-slate-900 focus:ring-primary-600 focus:border-primary-600 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400 dark:text-slate-100 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -217,12 +217,12 @@ export default function Home() {
     </>
 
     : (
-      <main className='flex min-h-screen flex-col items-center justify-between p-24'>
-         <div>
+      <main className='flex min-h-screen flex-col items-center justify-between p-24 text-slate-950 dark:text-slate-100'>
+        <div>
           <h2>You can enter keywords here to search for in your PDF:</h2>
           <ul>
             {keywords.map((keyword, index) => (
-              <li key={index}>
+              <li key={index} >
                 {keyword}
                 <button className='m-3' onClick={() => handleRemoveKeyword(index)}>❌</button>
               </li>
@@ -235,6 +235,7 @@ export default function Home() {
             value={currentKeyword}
             onKeyPress={handleKeyPress}
             onChange={handleChange}
+            className="my-5 bg-slate-50 text-slate-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 dark:bg-slate-700 dark:border-slate-600 dark:placeholder-slate-400 dark:text-slate-100 dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
         </div>
 

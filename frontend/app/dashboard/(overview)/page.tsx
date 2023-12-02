@@ -36,7 +36,6 @@ export default async function Page() {
   };
 
   useEffect(() => {
-
     const fetchMonthlyExpenses = async () => {
       try {
         const response = await fetch("http://localhost:8080/get-monthly-cost", {

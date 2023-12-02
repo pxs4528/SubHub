@@ -117,7 +117,7 @@ export default function EditInvoiceForm({ subscriptions }: { subscriptions: Subs
                 name="amount"
                 type="number"
                 step="0.01"
-                value={amount}
+                defaultValue={amount}
                 placeholder="Enter USD amount"
                 className="peer block w-full rounded-md border border-slate-500 py-2 pl-10 text-sm outline-2 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
                 onChange={handleAmountChange}

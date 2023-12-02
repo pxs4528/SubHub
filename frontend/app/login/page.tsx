@@ -99,6 +99,7 @@ export default function Login() {
   return (
     <div className="flex flex-col h-screen">
       <div className="bg-slate-100 dark:bg-slate-950 min-h-screen flex sm:justify-center items-center pt-6 sm:pt-0">
+        <div className="bg-slate-100 dark:bg-slate-950"></div>
         <div id="2fabox" className="max-w-md mx-auto bg-slate-800 dark:border-slate-700 rounded-xl overflow-hidden p-6 shadow-md hover:shadow-lg w-1/2 absolute hidden">
           <label htmlFor="textbox" className="block text-sm font-medium text-white">
             Enter 2FA Code here:
@@ -123,7 +124,7 @@ export default function Login() {
             </button>
           </div>
         </div>
-        <div id="loginBox" className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div id="loginBox" className="bg-slate-100 dark:bg-slate-950 flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
             <div className="flex items-center mb-6 text-2xl font-semibold">
               <Image

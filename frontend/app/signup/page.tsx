@@ -119,7 +119,7 @@ export default function Signup() {
             </button>
           </div>
         </div>
-        <div id="signupBox" className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div id="signupBox" className="bg-slate-100 dark:bg-slate-950 flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
             <div className="flex items-center mb-6 text-2xl font-semibold">
               <Image

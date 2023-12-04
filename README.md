@@ -1,85 +1,185 @@
-# SubHub - Subscription Manager
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+<a name="readme-top"></a>
+<!--
+*** Thanks for checking out the Best-README-Template. If you have a suggestion
+*** that would make this better, please fork the repo and create a pull request
+*** or simply open an issue with the tag "enhancement".
+*** Don't forget to give the project a star!
+*** Thanks again! Now go create something AMAZING! :D
+-->
 
-<img src="frontend/public/assets/subhub_logo.svg"/>
 
-## Project Overview
+
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/othneildrew/Best-README-Template">
+    <img src="frontend/public/assets/subhub_logo.svg" alt="Logo">
+  </a>
+
+  <h3 align="center">SubHub</h3>
+
+  <p align="center">
+    A Subscription Management Platform
+    <br />
+    <a href="#"><strong>Explore the docs » (work in progress)</strong></a>
+    <br />
+    <br />
+    <a href="https://nextjs-dashboard-brown-two.vercel.app/">View Demo</a>
+  </p>
+</div>
+
+
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
+
+
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 SubHub is a comprehensive subscription management application designed to help users efficiently manage their subscriptions. It provides a user-oriented, versatile solution for organizing subscription services.
 
-## Specifications and Design
 
-Our specification and design document covers key features, data structures, and input/output details. Each subscription entry includes vital information like service name, cost, billing cycle, renewal date, and payment method.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Makefile Instructions
 
-To streamline project management, we have included a Makefile that simplifies common tasks. Please use the following Makefile instructions:
 
-- **Frontend**: Install frontend dependencies.
-  ```shell
-  make frontend
-  ```
-- **Dev Frontend Server**: Run the development server for the frontend.
-  ```shell
-  make dev-frontend
-  ```
-- **Backend**: Manage backend Go modules.
-  ```shell
-  make backend
-  ```
-- **Run backend server**: Start the backend server.
-  ```shell
-  make run-backend
-  ```
-- **Run Both Frontend and Backend**
-  ```shell
-  make run
-  ```
+### Built With
 
-## Code and Tests
+This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
-- **Creating User Table**
-- **Creating Two Factor Authentication Table**
-- **Postman test for login for 10 minutes**
+* [![Next][Next.js]][Next-url]
+* [![React][React.js]][React-url]
+* [![Golang][Golang]][Golang-url]
+  <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Two Factor Authentication
 
-- **Description**: Users creating accounts manually will use a two-factor authentication system.
-- **Implementation**: A six-digit code is sent to the user's email during login/signup, with an automatic database deletion after 3 minutes.
 
-### Performance
+<!-- GETTING STARTED -->
+## Getting Started
 
-- **Description**: Improve system performance.
-- **Implementation**: Utilize goroutines for concurrency in Golang to speed up various processes.
+To get a local copy up and running follow these simple example steps.
 
-### Security Measures
+### Prerequisites
+* node
+* npm
+* golang
+ 
 
-- **Authentication and Authorization**: Secure user sessions using HTTP-only cookies, JWT tokens, and strong password hashing.
-- **Data Encryption**: Protect sensitive data with HTTPS encryption.
-- **Data Validation**: Sanitize and validate user inputs to prevent vulnerabilities.
+### Installation
 
-## Dashboard
+1. Clone the repo
+   ```sh
+   git clone https://github.com/pxs4528/SubHub
+   ```
+2. Install NPM packages
+   ```sh
+   cd frontend
+   npm install
+   npm run dev
+   frontend server should start at localhost:3000
+   ```
+3. Initialise Go 
+   ```sh
+   cd backend
+   make dev
+   backend server should start at localhost:8080
+   ```
 
-The dashboard provides a central hub for subscription management, including:
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-- **Subscription Overview**: A summary of active subscriptions.
-- **Subscription Management**: Add, remove, or edit subscription details.
-- **Data Visualization**: Graphical representations of spending and more.
-- **User Preferences**: Customizable settings.
 
-## PDF Parser
 
-- **Client-Side**: Handles file upload and transfer to the backend.
-- **Parsing**: PDFs are parsed based on keywords, and data is sent back as JSON.
-- **Future Plan**: Integrate the PDF Parser with the frontend and backend.
+<!-- USAGE EXAMPLES -->
+## Usage
 
-## Future Iteration Plan
+Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
-### Iteration 3
+_For more examples, please refer to the [Documentation](https://example.com)_
 
-- Complete Home Page
-- Complete PDF Parser
-- Dashboard and diagrams
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Customers and Users
 
-We have been surveying students at UTA for feedback on SubHub
+
+<!-- ROADMAP -->
+## Roadmap
+
+- [x] feat: Login/ Signup
+- [x] feat: 2fa
+- [x] feat: Creating, Editing, Deleting Subscription
+- [x] feat: Responsive Design
+- [x] feat: Dashboard action center with visualisations (d3.js)
+- [x] feat: PDF Parser
+
+See the [open issues](https://github.com/pxs4528/SubHub/issues) for a full list of proposed features (and known issues).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue.
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+[product-screenshot]: images/screenshot.png
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Next-url]: https://nextjs.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Golang]: https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white
+[Golang-url]: https://golang.org/ 

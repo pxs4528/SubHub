@@ -246,7 +246,7 @@ export default function Form({ customers }: { customers: SubscriptionsField[] | 
         >
           Cancel
         </Link>
-        <Button type="submit">Create Invoice</Button>
+        <Button type="submit">Insert Subscription</Button>
       </div>
     </form >
   );

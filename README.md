@@ -140,6 +140,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [x] feat: Login/ Signup
 - [x] feat: 2fa
 - [x] feat: Creating, Editing, Deleting Subscription
+- [x] feat: converting to Progressive web app [next-pwa](https://www.npmjs.com/package/next-pwa)
 - [x] feat: Responsive Design
 - [x] feat: Dashboard action center with visualisations (d3.js)
 - [x] feat: PDF Parser
